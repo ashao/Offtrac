@@ -1,0 +1,7 @@
+/scratch/data/offtrac/input
+/scratch/data/offtrac/input
+1,12
+SF6CFC
+../input/sf6atm.tsv
+../input/cfc11atm.tsv
+../input/cfc12atm.tsv 
