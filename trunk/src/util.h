@@ -29,5 +29,8 @@ void copy_darray3d(double ***arr1, double ***arr2, int nz, int NX, int NY);
 //BX-a
 void copy_fix_darray3d(double ***arr1, double arr2[NZ][NXMEM][NYMEM], int nz, int NX, int NY);
 //BX-e
-double linear_interp( double x0, double y0,  double x1, double y1, double xstar);
+
+
 // ashao
+double linear_interp( double x0, double y0,  double x1, double y1, double xstar);
+int calc_hindindex(int inmon, int nmonths);

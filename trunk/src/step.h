@@ -24,16 +24,3 @@ void z_depth(double h[NZ][NXMEM][NYMEM], double depth[NZ][NXMEM][NYMEM]);
 void z_sum(double h[NZ][NXMEM][NYMEM],double tot_depth[NXMEM][NYMEM]);
 #endif
 
-//begin ashao
-# if defined(SF6) || defined(CFC)
-double trac_calcsol(double TempK, double S, double sol_coeffs[7]);
-double trac_atmospheric( double thetime, int tracrecs,
-		int tracyear[MAXRECS], double tracN[MAXRECS], double tracS[MAXRECS],
-		int latidx);
-double trac_schmidt(double T, double sc_coeffs[4]);
-double trac_calcflux(double trac_Sc, double trac_atm, double trac_sol,
-		double icefrac, double pistonvel, double pres, double trac_con, double dt);
-
-# endif
-//end ashao
-

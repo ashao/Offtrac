@@ -113,6 +113,15 @@ void copy_fix_darray3d(double ***arr1, double arr2[NZ][NXMEM][NYMEM], int nz,
 }
 //BX-e
 // begin ashao
+
+void copy_2fix_darray3d(double (*arr1)[NXMEM][NYMEM], double (*arr2)[NXMEM][NYMEM], int nz,
+		int NX, int NY) {
+	int z, x, y;
+	for (z = 0; z < nz; z++)
+		for (x = 0; x < NX; x++)
+			for (y = 0; y < NY; y++)
+				arr1[z][x][y] = arr2[z][x][y];
+}
 double linear_interp(double x0, double y0, double x1, double y1, double xstar) {
 	double ystar;
 
@@ -127,4 +136,10 @@ double linear_interp(double x0, double y0, double x1, double y1, double xstar) {
 
 	return ystar;
 }
+
+
+
+
+
+
 // end ashao

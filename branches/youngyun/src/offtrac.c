@@ -954,17 +954,11 @@ int main(void)
     flags[6] = 0;
     flags[7] = 0;
     flags[8] = 0; /* ea, eb, eaml */
-#ifdef ENTRAIN
-    rflags[6]=1; rflags[7]=1; rflags[8]=1; /* ea, eb, eaml */
-#endif
     flags[18] = 0; /* ML potential density */
     rflags[18] = 0; /* ML potential density */
 #ifdef AGE
     flags[9] = 1;
     rflags[9] = 1; /* ideal age tracer*/
-# if defined (AGE2) || defined (AGE3)
-    flags[30]=1; rflags[30]=0; /* alk tracer used for hnew field*/
-# endif
 #endif
 
 
@@ -1003,12 +997,6 @@ int main(void)
 
     set_metrics();
     printf("Done setting metrics.\n");
-    // begin ashao
-# ifdef SF6
-
-    sf6nrecs = read_trac(sf6sc_coeffs, sf6sol_coeffs, sf6year, sf6N, sf6S);
-    printf("Read %d records for SF6\n\n", sf6nrecs);
-# endif
 
     /* Copy the variable descriptions to a list of the actual output variables. */
     for (i = 0; i < NOVARS; i++)
@@ -1063,9 +1051,6 @@ int main(void)
 #ifdef AGE
     if (flags[9])
 	set_darray3d_zero(mn_age, NZ, NXMEM, NYMEM);
-# if defined (AGE2) || defined (AGE3)
-    if (flags[30]) set_darray3d_zero(mn_hnew, NZ, NXMEM, NYMEM);
-# endif
 #endif
     // begin ashao
     // end ashao
@@ -1146,9 +1131,6 @@ int main(void)
     read_clim(imon,inxt,ilst);
 #  endif
 #endif
-#ifdef USE_CALC_H
-    z_sum(h, D);
-#endif
     printf("\nSetting up and initializing\n");
 
 #ifdef RESTART
@@ -1209,28 +1191,6 @@ int main(void)
     close_file(&cdfid, &fn);
     printf("netcdf record = %d\n",nrec++);
 #endif /* OUTPUT_IC */
-
-    // begin ashao
-    /*#ifdef RADIOACTIVE
-     #define fukulonidx 62
-     #define fukulatidx 145
-     for (k=0;k<4;k++) {
-     i131[k][fukulonidx][fukulatidx]=1.0e-6*1.3e2;
-     cs134[k][fukulonidx][fukulatidx]=1.0e-6*3.1e1;
-     cs136[k][fukulonidx][fukulatidx]=1.0e-6*2.8e0;
-     cs137[k][fukulonidx][fukulatidx]=1.0e-6*3.2e1;
-     ba140[k][fukulonidx][fukulatidx]=1.0e-6*5.0e0;
-     la140[k][fukulonidx][fukulatidx]=1.0e-6*2.5e0;
-
-     tr[mi131][k][fukulonidx][fukulatidx]=1.0e-6*1.3e2;
-     tr[mcs134][k][fukulonidx][fukulatidx]=1.0e-6*3.1e1;
-     tr[mcs136][k][fukulonidx][fukulatidx]=1.0e-6*2.8e0;
-     tr[mcs137][k][fukulonidx][fukulatidx]=1.0e-6*3.2e1;
-     tr[mba140][k][fukulonidx][fukulatidx]=1.0e-6*5.0e0;
-     tr[mla140][k][fukulonidx][fukulatidx]=1.0e-6*2.5e0;
-     }
-     #endif
-     */
 
     /*-------------------------------------------------------------------*
      *
@@ -1481,9 +1441,6 @@ int main(void)
 #ifdef AGE
 		if (flags[9])
 		    mult_darray3d(mn_age, NZ, NXMEM, NYMEM, frac);
-# if defined (AGE2) || defined (AGE3)
-		if (flags[30]) mult_darray3d(mn_hnew, NZ, NXMEM, NYMEM, frac);
-# endif
 #endif
 		// begin ashao
 		// end ashao
@@ -1543,9 +1500,6 @@ int main(void)
 #ifdef AGE
 		if (flags[9])
 		    set_darray3d_zero(mn_age, NZ, NXMEM, NYMEM);
-# if defined (AGE2) || defined (AGE3)
-		if (flags[30]) set_darray3d_zero(mn_hnew, NZ, NXMEM, NYMEM);
-# endif
 #endif
 		// begin ashao
 		// end ashao
@@ -1577,13 +1531,6 @@ int main(void)
 
     printf("start of array copying\n");
 
-#ifdef ENTRAIN
-    copy_fix_darray2d(mn_eaml, eaml);
-#endif
-#ifdef ENTRAIN
-    copy_darray3d(mn_ea, ea, NZ, NXMEM, NYMEM);
-    //    copy_darray3d(mn_eb, Salttm, NZ, NXMEM, NYMEM);
-#endif
     //HF #ifdef SMOOTH_REST
     copy_fix_darray3d(mn_h, h, NZ, NXMEM, NYMEM);
     //HF #endif
@@ -1818,9 +1765,6 @@ void write_ts(double wrts)
 
 #ifdef AGE
 	    var[9] = &mn_age[0][0][0];
-# if defined AGE2 || defined AGE3
-	    var[30] = &mn_hnew[0][0][0];
-# endif
 #endif
 
 

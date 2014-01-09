@@ -1,7 +1,0 @@
-<map id="G" name="G">
-<area shape="rect" href="$offtrac_8c.html" title="src/offtrac.c" alt="" coords="5,83,96,112"/>
-<area shape="rect" href="$read_8c.html" title="src/read.c" alt="" coords="144,83,224,112"/>
-<area shape="rect" href="$set__metrics_8c.html" title="src/set_metrics.c" alt="" coords="248,83,371,112"/>
-<area shape="rect" href="$step_8c.html" title="src/step.c" alt="" coords="395,83,475,112"/>
-<area shape="rect" href="$tracadv_8c.html" title="src/tracadv.c" alt="" coords="523,83,619,112"/>
-</map>

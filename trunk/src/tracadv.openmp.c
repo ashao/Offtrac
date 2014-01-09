@@ -19,16 +19,7 @@
 #include "offtrac.h"
 #include "alloc.h"
 
-#ifdef CFC
-extern double cfc11[NZ][NXMEM][NYMEM];
-extern double cfc12[NZ][NXMEM][NYMEM];
-extern int mCFC11, mCFC12;
-#endif
 
-#ifdef SF6
-extern double sf6[NZ][NXMEM][NYMEM];
-extern int mSF6;
-#endif
 
 static double dmax1, dmax2, dmin1, dmin2;
 #define D_MAX(a,b) (dmax1=(a),dmax2=(b),((dmax1) > (dmax2)) ?\
@@ -83,15 +74,6 @@ extern int ny;                       /* The number of y-points in the */
 #endif
 
 // for debugging
-#ifdef PHOSPHATE
-  extern int mPHOSPHATE;
-#endif
-#ifdef DIC
-extern int mDIC;
-#endif
-#ifdef OXYGEN
-  extern int mOXYGEN;
-#endif
 #ifdef AGE
   extern int mAGE;
 #endif
@@ -163,9 +145,6 @@ double hlst[NYMEM];
 	double MLMIN = 4.25;
 	double BLMIN = 0.20;
 
-#ifdef ENTRAIN
-  double nts = dt/DT; /* number of timesteps (#day*86400/3600seconds) */
-#endif
   int i, j, k, m, ii, pstage;
   int itt;
   double fract1;
@@ -273,21 +252,6 @@ double hlst[NYMEM];
 /* calculate the diapycnal velocities at the interfaces		*/
 /*   if we read in the ea, eb and eaml variables                */
 /*   Otherwise we read in wd directly                           */
-
-#ifdef ENTRAIN
-
-#pragma omp for  private(i,j)
-  for (i=X0;i<=nx+1;i++)                               
-      for (j=Y0;j<=ny;j++)
-        wd[0][i][j] = nts*eaml[i][j];                        
-
-#pragma omp for  private(i,j,k)
-     for (k=1;k<NZ;k++) {
-      for (i=X0;i<=nx+1;i++)
-	  for (j=Y0;j<=ny;j++)
-	      wd[k][i][j] = nts*(ea[k][i][j] - eb[k-1][i][j]); 
-      }
-#endif
 
 } // omp
 
@@ -539,32 +503,6 @@ double hlst[NYMEM];
 	}
       }
 
-#if defined(ZEROENTRAIN)
-	for (i=X1; i<=nx; i++) {
-		for (j=Y1; j<=ny; j++) {
-
-#ifdef CFC
-		        cfc11[0][i][j]=tr[mCFC11][0][i][j];
-		        cfc12[0][i][j]=tr[mCFC12][0][i][j];
-#endif
-#ifdef SF6
-			sf6[0][i][j]=tr[mSF6][0][i][j];
-#endif
-#ifdef ZEROENTRAIN
-		        if (hstart[0][i][j]<hend[0][i][j]) {
-#ifdef CFC
-				cfc11[0][i][j]=hstart[0][i][j]/hend[0][i][j]*cfc11[0][i][j];
-		                cfc12[0][i][j]=hstart[0][i][j]/hend[0][i][j]*cfc12[0][i][j];
-#endif
-#ifdef SF6
-				sf6[0][i][j]=hstart[0][i][j]/hend[0][i][j]*sf6[0][i][j];
-#endif
-			}
-#endif
-		}
-	}
-
-#endif
 
 /* ============================================================ */
 /*			now advect vertically			*/
