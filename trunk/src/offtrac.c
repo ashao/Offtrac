@@ -187,6 +187,7 @@ double trwarn[NTR][2];
 
 double umask[NXMEM][NYMEM];
 double vmask[NXMEM][NYMEM];
+int wetmask[NXMEM][NYMEM];
 
 int ksub[NXMEM][NYMEM];
 int ksub_clim[NXMEM][NYMEM];
