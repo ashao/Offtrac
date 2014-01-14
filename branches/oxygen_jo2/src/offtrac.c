@@ -1271,9 +1271,9 @@ int main(void)
 
 #ifdef OXYGEN
     flags[10]=1; rflags[10]=1; /* oxygen tracer */
-    flags[11]=1; rflags[11]=0; /* oxygen saturation */
-    flags[12]=1; rflags[12]=0; /* oxygen source-sink */
-    flags[13]=1; rflags[13]=0; /* oxygen fluxed into ML */
+    flags[11]=1; rflags[11]=1; /* oxygen saturation */
+    flags[12]=1; rflags[12]=1; /* oxygen source-sink */
+    flags[13]=1; rflags[13]=1; /* oxygen fluxed into ML */
 #endif
 #ifdef OXY18
     flags[25]=1; rflags[25]=1; /* oxygen 18 tracer */
@@ -1333,8 +1333,8 @@ int main(void)
 #ifdef PHOSPHATE
     flags[19]=1; rflags[19]=1; /* phosphate tracer */
     flags[22]=1; rflags[22]=1; /* dop tracer */
-    flags[24]=1; rflags[24]=0; /* pop flux */
-    flags[27]=1; rflags[27]=0; /* po4 obs */
+    flags[24]=1; rflags[24]=1; /* pop flux */
+    flags[27]=1; rflags[27]=1; /* po4 obs */
 #endif
 
 #ifdef NITRATE
