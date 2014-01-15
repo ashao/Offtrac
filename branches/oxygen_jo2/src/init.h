@@ -187,7 +187,7 @@
                                /* ea, eb, and eaml. Otherwise we must */
                                /* read in wd.                         */
 
-#define  RESTART                 /* define location of initial biotic fields   */ 
+#undef  RESTART                 /* define location of initial biotic fields   */ 
 			       /* see read_tracer_init in read.c for details */
 
 #ifndef VARIAB_FORC

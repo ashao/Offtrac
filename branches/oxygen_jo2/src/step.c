@@ -566,8 +566,8 @@ void step_fields(int iyear, int itts, int imon, int iterno) {
 #ifdef PHOSPHATE
 					tr[mPHOSPHATE][k][i][j] += dt * jpo4[k][i][j];
 					tr[mDOP][k][i][j] += dt * jdop[k][i][j];
-					if ( tr[mPHOSPHATE][k][i][j] < 0.0 ) tr[mPHOSPHATE][k][i][j] = 0.0;
-					if ( tr[mDOP][k][i][j] < 0.0 ) tr[mDOP][k][i][j] = 0.0;
+//					if ( tr[mPHOSPHATE][k][i][j] < 0.0 ) tr[mPHOSPHATE][k][i][j] = 0.0;
+//					if ( tr[mDOP][k][i][j] < 0.0 ) tr[mDOP][k][i][j] = 0.0;
 #endif
 #ifdef NITRATE
 					tr[mNITRATE][k][i][j] += dt * jno3[k][i][j];
@@ -579,7 +579,7 @@ void step_fields(int iyear, int itts, int imon, int iterno) {
 #endif /* NITRATE */
 #ifdef OXYGEN
 					tr[mOXYGEN][k][i][j] += dt * jo2[k][i][j];
-					if (tr[mOXYGEN][k][i][j] < 0.0) tr[mOXYGEN][k][i][j] = 0.0;
+//					if (tr[mOXYGEN][k][i][j] < 0.0) tr[mOXYGEN][k][i][j] = 0.0;
 #endif
 #ifdef OXY18
 					tr[mo18][k][i][j] += dt * jo18[k][i][j];
