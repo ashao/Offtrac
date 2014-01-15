@@ -29,6 +29,7 @@ extern double umask[NXMEM][NYMEM];   /* _mask are 1 over ocean and 0  */
 extern double vmask[NXMEM][NYMEM];   /* over land on the u & v grids. */
 
 extern double D[NXMEM][NYMEM];
+extern int wetmask[NXMEM][NYMEM];
 extern double lonh[NXMEM],lath[NYMEM];
 extern double dxh[NYMEM],dy;
 
@@ -694,7 +695,7 @@ void initialize(int imon)
 #ifdef OXYGEN
     for (i=0;i<=NXMEM-1;i++) {
 	for (j=0;j<=NYMEM-1;j++) {
-	    if (D[i][j]>MINIMUM_DEPTH) {
+	    if (wetmask[i][j]) {
 		for (k=0;k<=NZ-1;k++) {
 		    tr[m][k][i][j] = oxy_init[k][i][j];
 		}
@@ -854,7 +855,7 @@ void initialize(int imon)
 #ifdef PHOSPHATE
     for (i=0;i<=NXMEM-1;i++) {
 	for (j=0;j<=NYMEM-1;j++) {
-	    if (D[i][j]>MINIMUM_DEPTH) {
+	    if (wetmask[i][j]) {
 		for (k=0;k<=NZ-1;k++) {
 		    if (phosphate_init[k][i][j] < 0.0)
 		      printf("po4_init[%d][%d][%d]=%g\n",k,i,j,phosphate_init[k][i][j]);

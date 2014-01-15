@@ -27,7 +27,8 @@ extern  double dyh[NYTOT][NXTOT];
 extern  double dxq[NYTOT][NXTOT];
 extern  double dyq[NYTOT][NXTOT]; HF-e */
 
-extern  double areagr[NXMEM][NYMEM];
+extern double areagr[NXMEM][NYMEM];
+extern int wetmask[NXMEM][NYMEM];
 
 extern double ***u;
 extern double ***v;
@@ -330,6 +331,7 @@ void read_grid()
     double dxu_in[NYTOT][NXTOT], dxv_in[NYTOT][NXTOT];
     double dyh_in[NYTOT][NXTOT], dyq_in[NYTOT][NXTOT];
     double dyu_in[NYTOT][NXTOT], dyv_in[NYTOT][NXTOT];
+    int wet_in[NYTOT][NXTOT];
 
     long  start[MAX_NC_VARS];
     long  end[MAX_NC_VARS];
@@ -431,10 +433,16 @@ void read_grid()
     status = nc_get_vara_double(cdfid, varid, start, end, &dxu_in[0][0]);
     if (status != NC_NOERR) handle_error("read dxu", status);
 
+    status = nc_inq_varid(cdfid, "wet", &varid);
+    if (status != NC_NOERR) handle_error("wet", status);
+    status = nc_get_vara_int(cdfid, varid, start, end, &wetmask[0][0]);
+    if (status != NC_NOERR) handle_error("read wet", status);
 
     for (i=0;i<NXTOT;i++) {
 	for (j=0;j<NYTOT;j++) {
 	    areagr[i+2][j+2]= Ah[j][i];
+	    wetmask[i+2][j+2] = wet_in[j][i];
+
 	    DXq(i+2,j+2) = dxq_in[j][i];
 	    DYq(i+2,j+2) = dyq_in[j][i];
 	    DXv(i+2,j+2) = dxv_in[j][i];
@@ -461,6 +469,11 @@ void read_grid()
 	areagr[nx+2][j] = areagr[3][j];
 	areagr[0][j] = areagr[nx-1][j];
 	areagr[1][j] = areagr[nx][j];
+
+	wetmask[nx+1][j] = wetmask[2][j];
+	wetmask[nx+2][j] = wetmask[3][j];
+	wetmask[0][j] = wetmask[nx-1][j];
+	wetmask[1][j] = wetmask[nx][j];
 
 	DXq(nx+1,j) = DXq(2,j);
 	DXq(nx+2,j) = DXq(3,j);
@@ -509,6 +522,9 @@ void read_grid()
 	int ii = 363 - i;
 	areagr[ii][ny+1] = areagr[i][ny];
 	areagr[ii][ny+2] = areagr[i][ny-1];
+
+	wetmask[ii][ny+1] = wetmask[i][ny];
+	wetmask[ii][ny+2] = wetmask[i][ny-1];
 
 	DXq(ii,ny+1) = DXq(i,ny);
 	DXq(ii,ny+2) = DXq(i,ny-1);
@@ -1730,7 +1746,7 @@ void read_oxy_ic()
 
     for (i=X1;i<=nx;i++) {
 	for (j=Y1;j<=ny;j++) {
-	    if (D[i][j]>MINIMUM_DEPTH) {
+	    if (wetmask[i][j]) {
 		for (k=0;k<nzlevitus;k++)
 		    po4obsprof[k] = oxytmp[k][i][j];
 		for (k=0;k<NZ;k++) {
@@ -2486,7 +2502,7 @@ void read_tracer_init(int imon)
     printf("Initialize 3 for month %i.\n",imon);
     for (i=0;i<=NXMEM-1;i++) {
 	for (j=0;j<=NYMEM-1;j++) {
-	    if (D[i][j]>MINIMUM_DEPTH) {
+	    if (wetmask[i][j]) {
 		for (k=0;k<=NZ-1;k++)
 		    phosphate_init[k][i][j]   = po4_star_lay[k][i][j];
 	    } else {

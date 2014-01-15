@@ -57,6 +57,7 @@ extern double h_clim[NZ][NXMEM][NYMEM];
 extern double depth[NZ][NXMEM][NYMEM];
 extern double rml[2][NXMEM][NYMEM];
 extern double D[NXMEM][NYMEM];
+extern int wetmask[NXMEM][NYMEM];
 extern double ***uhtm, ***vhtm;
 extern double Temptm[NZ][NXMEM][NYMEM];
 extern double Salttm[NZ][NXMEM][NYMEM];
@@ -561,7 +562,7 @@ void step_fields(int iyear, int itts, int imon, int iterno) {
 	for (i = 0; i <= NXMEM - 1; i++) {
 		for (j = 0; j <= NYMEM - 1; j++) {
 			//BX - reinstated by HF
-			if (D[i][j] > MINIMUM_DEPTH) {
+			if (wetmask[i][j]) {
 				for (k = 0; k < NZ; k++) {
 #ifdef PHOSPHATE
 					tr[mPHOSPHATE][k][i][j] += dt * jpo4[k][i][j];
@@ -1054,7 +1055,7 @@ printf("MONTH %d\n",iterno);
 	// ashao: Added time step loop to simulate gas exchange
 	    for (i=X1;i<=nx;i++) {
 		for (j=Y1;j<=ny;j++) {
-		    if (D[i][j] > MINIMUM_DEPTH) {
+		    if (wetmask[i][j]) {
 			
 			tr[mOXYGEN][0][i][j]=o2_sat[0][i][j];
 			tr[mOXYGEN][1][i][j]=o2_sat[0][i][j];
@@ -1094,7 +1095,7 @@ printf("MONTH %d\n",iterno);
 					sf6year, sf6N, sf6S, j);
 #endif // SF6
 
-			if (D[i][j] > MINIMUM_DEPTH) {
+			if (wetmask[i][j]) {
 				 // Calculate saturation value for ocean tile
 #ifdef SF6
 				sf6tmp = atmpres[i][j] * sf6atm[i][j] * sf6_sol[0][i][j];
@@ -1567,7 +1568,7 @@ void isotope_R_del(int trnum1, int trnum2, double Rstandard,
 		for (j = 0; j <= NYMEM - 1; j++) {
 			for (k = 0; k < NZ; k++) {
 				//BX - reinstated by HF
-				if (D[i][j] > MINIMUM_DEPTH) {
+				if (wetmask[i][j]) {
 					R[k][i][j] = tr[trnum2][k][i][j] / tr[trnum1][k][i][j];
 					del[k][i][j] = (R[k][i][j] / Rstandard - 1.e0) * 1.e3;
 					//BX - reinstated by HF
@@ -1787,7 +1788,7 @@ void z_depth(double h[NZ][NXMEM][NYMEM], double depth[NZ][NXMEM][NYMEM]) {
 	for (i = X1; i <= nx; i++) {
 		for (j = Y1; j <= ny; j++) {
 			//BX - reinstated by HF
-			if (D[i][j] > MINIMUM_DEPTH) {
+			if (wetmask[i][j]) {
 				hsum = h[0][i][j];
 				depth[0][i][j] = h[0][i][j] * 0.5;
 				for (k = 1; k < NZ; k++) {
@@ -1929,7 +1930,7 @@ void conc_obs_layer(double h[NZ][NXMEM][NYMEM],
 	for (i = 0; i <= NXMEM - 1; i++) {
 		for (j = 0; j <= NYMEM - 1; j++) {
 			//BX - reinstated by HF
-			if (D[i][j] > MINIMUM_DEPTH) {
+			if (wetmask[i][j]) {
 				for (k = 0; k < nzlevitus; k++) {
 					concobsprof[k] = conc_lev[k][i][j];
 				}

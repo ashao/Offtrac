@@ -703,6 +703,7 @@ double atmpres[NXMEM][NYMEM];
 
 double areagr[NXMEM][NYMEM];
 double D[NXMEM][NYMEM];
+int wetmask[NXMEM][NYMEM];
 double ****tr;
 double trintegral[NTR];
 double trprofile[NZ];

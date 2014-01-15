@@ -1,6 +1,9 @@
 //HF new utility routines
 #include "init.h"
 #include <math.h>
+
+extern int wetmask[NXMEM][NYMEM];
+
 void set_darray2d_zero(double **arr, int NX, int NY) {
 	int x, y;
 	for (x = 0; x < NX; x++)
@@ -66,7 +69,7 @@ void mult_fix_darray2d_mv(double arr[NXMEM][NYMEM], double factor,
 	int x, y;
 	for (x = 0; x < NXMEM; x++)
 		for (y = 0; y < NYMEM; y++)
-			if (D[x][y] > MINIMUM_DEPTH) {
+			if (wetmask[x][y]) {
 				arr[x][y] *= factor;
 			} else {
 				arr[x][y] = mv;
@@ -79,7 +82,7 @@ void mult_darray3d_mv(double ***arr, int nz, int NX, int NY, double factor,
 	for (z = 0; z < nz; z++)
 		for (x = 0; x < NX; x++)
 			for (y = 0; y < NY; y++)
-				if (D[x][y] > MINIMUM_DEPTH) {
+				if (wetmask[x][y]) {
 					arr[z][x][y] *= factor;
 				} else {
 					arr[z][x][y] = mv;
