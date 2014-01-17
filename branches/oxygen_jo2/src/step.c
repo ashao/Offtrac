@@ -594,9 +594,11 @@ void step_fields(int iyear, int itts, int imon, int iterno) {
 #ifdef PHOSPHATE
 					tr[mPHOSPHATE][k][i][j] = misval;
 					tr[mDOP][k][i][j] = misval;
+					jpo4[k][i][j] = misval;
 #endif
 #ifdef OXYGEN
 					tr[mOXYGEN][k][i][j] = misval;
+					jo2[k][i][j] = misval;
 #endif
 #ifdef OXY18
 					tr[mo18][k][i][j] = misval;
