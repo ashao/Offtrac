@@ -235,7 +235,7 @@ void biotic_sms(int ibiodt)
 // compute depth at layer k as the depth of the point in the 
 //  middle of that layer
 	    D_ij = D[i][j]; // create local variable
-	    if (wetmask[i][j]) {
+	    if (D_ij>MINIMUM_DEPTH) {
 		hsum = h[0][i][j];
 		depth[0] = hsum * 0.5;
 		for (k=1;k<NZ;k++) {
@@ -526,7 +526,7 @@ void biotic_sms(int ibiodt)
 	    
 /*       bottom boundary condition for shallow grid points (D < 75m) */
 
-		if (D_ij < compensation_depth && wetmask[i][j]) {
+		if (D_ij < compensation_depth && D[i][j]>MINIMUM_DEPTH) {
 		    jremin_ij[kmax] = flux_pop_ij / h[kmax][i][j];
 		    // printf("D < comp_depth at grid point %i,%i \n",i,j);
 		}
@@ -728,7 +728,7 @@ void biotic_sms(int ibiodt)
 		}
 
 /*       bottom boundary condition for shallow grid points (D < 75m) */
-		if (D_ij < compensation_depth && wetmask[i][j]) {
+		if (D_ij < compensation_depth && D[i][j]>MINIMUM_DEPTH) {
 		    jca[kmax] = flux_caco3 / h[kmax][i][j];
 		    // printf("D < comp_depth at grid point %i,%i \n",i,j);
 		}

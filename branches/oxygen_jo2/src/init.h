@@ -12,7 +12,7 @@
 #define DMAX 6500.0            /*    The maximum depth of the basin,  */
                                /*  in m.  This is required for        */
                                /*  initanal.c to give valid advice.   */
-#define MINIMUM_DEPTH 1e-6     /*    The minimum ocean depth, in m.   */
+#define MINIMUM_DEPTH 0.5    /*    The minimum ocean depth, in m.   */
                                /*  Anything shallower than this depth */
                                /*  is assumed to be on land, and all  */
                                /*  appropriate fluxes are masked out. */

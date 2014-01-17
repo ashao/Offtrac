@@ -435,7 +435,7 @@ void read_grid()
 
     status = nc_inq_varid(cdfid, "wet", &varid);
     if (status != NC_NOERR) handle_error("wet", status);
-    status = nc_get_vara_int(cdfid, varid, start, end, &wetmask[0][0]);
+    status = nc_get_vara_int(cdfid, varid, start, end, &wet_in[0][0]);
     if (status != NC_NOERR) handle_error("read wet", status);
 
     for (i=0;i<NXTOT;i++) {
@@ -1746,7 +1746,7 @@ void read_oxy_ic()
 
     for (i=X1;i<=nx;i++) {
 	for (j=Y1;j<=ny;j++) {
-	    if (wetmask[i][j]) {
+	    if (D[i][j]>MINIMUM_DEPTH) {
 		for (k=0;k<nzlevitus;k++)
 		    po4obsprof[k] = oxytmp[k][i][j];
 		for (k=0;k<NZ;k++) {
@@ -2502,7 +2502,7 @@ void read_tracer_init(int imon)
     printf("Initialize 3 for month %i.\n",imon);
     for (i=0;i<=NXMEM-1;i++) {
 	for (j=0;j<=NYMEM-1;j++) {
-	    if (wetmask[i][j]) {
+	    if (D[i][j]>MINIMUM_DEPTH) {
 		for (k=0;k<=NZ-1;k++)
 		    phosphate_init[k][i][j]   = po4_star_lay[k][i][j];
 	    } else {

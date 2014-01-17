@@ -695,7 +695,7 @@ void initialize(int imon)
 #ifdef OXYGEN
     for (i=0;i<=NXMEM-1;i++) {
 	for (j=0;j<=NYMEM-1;j++) {
-	    if (wetmask[i][j]) {
+	    if (D[i][j]>MINIMUM_DEPTH) {
 		for (k=0;k<=NZ-1;k++) {
 		    tr[m][k][i][j] = oxy_init[k][i][j];
 		}
@@ -855,7 +855,7 @@ void initialize(int imon)
 #ifdef PHOSPHATE
     for (i=0;i<=NXMEM-1;i++) {
 	for (j=0;j<=NYMEM-1;j++) {
-	    if (wetmask[i][j]) {
+	    if (D[i][j]>MINIMUM_DEPTH) {
 		for (k=0;k<=NZ-1;k++) {
 		    if (phosphate_init[k][i][j] < 0.0)
 		      printf("po4_init[%d][%d][%d]=%g\n",k,i,j,phosphate_init[k][i][j]);

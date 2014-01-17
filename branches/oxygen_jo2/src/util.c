@@ -69,7 +69,7 @@ void mult_fix_darray2d_mv(double arr[NXMEM][NYMEM], double factor,
 	int x, y;
 	for (x = 0; x < NXMEM; x++)
 		for (y = 0; y < NYMEM; y++)
-			if (wetmask[x][y]) {
+			if (D[x][y]>MINIMUM_DEPTH) {
 				arr[x][y] *= factor;
 			} else {
 				arr[x][y] = mv;
@@ -82,7 +82,7 @@ void mult_darray3d_mv(double ***arr, int nz, int NX, int NY, double factor,
 	for (z = 0; z < nz; z++)
 		for (x = 0; x < NX; x++)
 			for (y = 0; y < NY; y++)
-				if (wetmask[x][y]) {
+				if (D[x][y]>MINIMUM_DEPTH) {
 					arr[z][x][y] *= factor;
 				} else {
 					arr[z][x][y] = mv;
