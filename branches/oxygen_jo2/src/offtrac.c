@@ -646,8 +646,37 @@ struct vardesc vars[NOVARS] =
 			"mole liter-1",
 			'd',
 			MISVAL
-		} //61
-
+		}, //61
+		{
+				"mn_jprod",
+				"jpo4 productivity",
+				"h",
+				"L",
+				"s",
+				"mole m-3 s-1",
+				'd',
+				MISVAL
+		}, //62
+		{
+				"mn_jremin",
+				"remineralization of po4",
+				"h",
+				"L",
+				"s",
+				"mole m-3 s-1",
+				'f',
+				MISVAL
+		}, //63
+		{
+				"mn_jremdop",
+				"remineralization of dop",
+				"h",
+				"L",
+				"s",
+				"mole m-3 s-1",
+				'f',
+				MISVAL
+		} // 64
 		// end ashao
 	};
 
@@ -927,6 +956,9 @@ double ***mn_phos;
 double ***mn_dop;
 double ***mn_pobs;
 double ***mn_jpo4;
+double ***mn_jprod;
+double ***mn_jremin;
+double ***mn_jremdop;
 double mn_pflux[NXMEM][NYMEM];
 # ifdef PROGNOSTIC
 double ***lightlim;
@@ -1336,6 +1368,9 @@ int main(void)
     flags[22]=1; rflags[22]=1; /* dop tracer */
     flags[24]=1; rflags[24]=1; /* pop flux */
     flags[27]=1; rflags[27]=1; /* po4 obs */
+    flags[62]=1; rflags[62]=1; /* jprod */
+    flags[63]=1; rflags[63]=1; /* jremin */
+    flags[64]=1; rflags[64]=1; /* jremdop */
 #endif
 
 #ifdef NITRATE
@@ -1627,6 +1662,9 @@ int main(void)
 #ifdef PHOSPHATE
     if (flags[24]) set_fix_darray2d_zero(mn_pflux);
     if (flags[33]) set_darray3d_zero(mn_jpo4, NZ, NXMEM, NYMEM);
+    if (flags[62]) set_darray3d_zero(mn_jprod, NZ, NXMEM, NYMEM);
+    if (flags[63]) set_darray3d_zero(mn_jremin, NZ, NXMEM, NYMEM);
+    if (flags[64]) set_darray3d_zero(mn_jremdop, NZ, NXMEM, NYMEM);
 # ifdef PROGNOSTIC
     set_darray3d_zero(lightlim, NZ, NXMEM, NYMEM);
     set_darray3d_zero(ironlim, NZ, NXMEM, NYMEM);
@@ -2477,6 +2515,24 @@ int main(void)
 			for (j=0;j<NYMEM;j++)
 			    mn_jpo4[k][i][j] += jpo4[k][i][j];
 		}
+	    if (flags[62]) {
+	    	for (k=0;k<NZ;k++)
+	    		for (i=0;i<NXMEM;i++)
+	    			for (j=0;j<NYMEM;j++)
+	    				mn_jprod[k][i][j] += jprod[k][i][j];
+	    }
+	    if (flags[63]) {
+	    	for (k=0;k<NZ;k++)
+	    		for (i=0;i<NXMEM;i++)
+	    			for (j=0;j<NYMEM;j++)
+	    				mn_jremin[k][i][j] += jremin[k][i][j];
+	    }
+	    if (flags[64])
+	    	for (k=0;k<NZ;k++)
+	    		for (i=0;i<NXMEM;i++)
+	    			for (j=0;j<NYMEM;j++)
+	    				mn_jremdop[k][i][j] += jremdop[k][i][j];
+	    }
 # ifdef PROGNOSTIC
 	    if (flags[35]) add_darray3d(mn_lightlim, lightlim, NZ, NXMEM, NYMEM);
 #  ifdef NITRATE
@@ -2715,6 +2771,9 @@ int main(void)
 		if (flags[22]) mult_darray3d_mv(mn_dop, NZ, NXMEM, NYMEM, frac, D, misval);
 		if (flags[27]) mult_darray3d_mv(mn_pobs, NZ, NXMEM, NYMEM, frac, D, misval);
 		if (flags[33]) mult_darray3d_mv(mn_jpo4, NZ, NXMEM, NYMEM, frac, D, misval);
+		if (flags[62]) mult_darray3d_mv(mn_jprod, NZ, NXMEM, NYMEM, frac, D, misval);
+		if (flags[63]) mult_darray3d_mv(mn_jremin, NZ, NXMEM, NYMEM, frac, D, misval);
+		if (flags[64]) mult_darray3d_mv(mn_jremdop, NZ, NXMEM, NYMEM, frac, D, misval);
 # ifdef PROGNOSTIC
 		if (flags[35]) mult_darray3d_mv(mn_lightlim, NZ, NXMEM, NYMEM, frac, D, misval);
 #  ifdef NITRATE
@@ -2893,6 +2952,9 @@ int main(void)
 		if (flags[22]) set_darray3d_zero(mn_dop, NZ, NXMEM, NYMEM);
 		if (flags[27]) set_darray3d_zero(mn_pobs, NZ, NXMEM, NYMEM);
 		if (flags[33]) set_darray3d_zero(mn_jpo4, NZ, NXMEM, NYMEM);
+		if (flags[62]) set_darray3d_zero(mn_jprod, NZ, NXMEM, NYMEM);
+		if (flags[63]) set_darray3d_zero(mn_jremin, NZ, NXMEM, NYMEM);
+		if (flags[64]) set_darray3d_zero(mn_jremdop, NZ, NXMEM, NYMEM);
 # ifdef PROGNOSTIC
 		set_darray3d_zero(lightlim, NZ, NXMEM, NYMEM);
 #  ifdef NITRATE
@@ -3296,6 +3358,27 @@ void write_ts(double wrts)
 		    for (j=0;j<NYMEM;j++)
 			mn_jpo4[k][i][j] = jpo4[k][i][j];
 	    }
+	if (flags[62])
+	    {
+	    for (k=0;k<NZ;k++)
+		for (i=0;i<NXMEM;i++)
+		    for (j=0;j<NYMEM;j++)
+			mn_jprod[k][i][j] = jprod[k][i][j];
+	    }
+	if (flags[63])
+	    {
+	    for (k=0;k<NZ;k++)
+		for (i=0;i<NXMEM;i++)
+		    for (j=0;j<NYMEM;j++)
+			mn_jremin[k][i][j] = jremin[k][i][j];
+	    }
+	if (flags[64])
+	    {
+	    for (k=0;k<NZ;k++)
+		for (i=0;i<NXMEM;i++)
+		    for (j=0;j<NYMEM;j++)
+			mn_jremdop[k][i][j] = jremdop[k][i][j];
+	    }
 # ifdef PROGNOSTIC
 	if (flags[35]) copy_darray3d(mn_lightlim, lightlim, NZ, NXMEM, NYMEM);
 #  ifdef NITRATE
@@ -3575,6 +3658,9 @@ void write_ts(double wrts)
 	    var[24] = &mn_pflux[0][0];
 	    var[27] = &mn_pobs[0][0][0];
 	    var[33] = &mn_jpo4[0][0][0];
+	    var[62] = &mn_jprod[0][0][0];
+	    var[63] = &mn_jremin[0][0][0];
+	    var[64] = &mn_jremdop[0][0][0];
 # ifdef PROGNOSTIC
 	    var[34] = &Temptm[0][0][0];
 	    var[35] = &mn_lightlim[0][0][0];

@@ -1382,8 +1382,8 @@ void read_biotic_bc(int imon,int itts)
 
     printf("Reading observed PO4 fields: \n");
 
-//    sprintf(infile,"woalevpo4.nc"); // ashao: changing to default woa09 file name
-    sprintf(infile,"p_an.himgrid.monthly.nc");
+    sprintf(infile,"woalevpo4.nc"); // ashao: changing to default woa09 file name
+//    sprintf(infile,"p_an.himgrid.monthly.nc");
     strcpy(inpath, directory);
     strcat(inpath, infile);
 
@@ -1693,8 +1693,8 @@ void read_oxy_ic()
 
     printf("Reading Levitus O2 climatology: \n");
 
- //   sprintf(infile,"lev94_o2.nc");
-    sprintf(infile,"woa09.o2.nc");
+    sprintf(infile,"lev94_o2.nc");
+//    sprintf(infile,"woa09.o2.nc");
     strcpy(inpath, directory);
     strcat(inpath, infile);
 
