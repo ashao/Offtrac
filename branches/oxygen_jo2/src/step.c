@@ -60,6 +60,7 @@ extern double depth[NZ][NXMEM][NYMEM];
 extern double rml[2][NXMEM][NYMEM];
 extern double D[NXMEM][NYMEM];
 extern int wetmask[NXMEM][NYMEM];
+extern double areagr[NXMEM][NYMEM];
 extern double ***uhtm, ***vhtm;
 extern double Temptm[NZ][NXMEM][NYMEM];
 extern double Salttm[NZ][NXMEM][NYMEM];
