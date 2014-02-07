@@ -746,6 +746,7 @@ int ksub_clim[NXMEM][NYMEM];
 
 int month;
 int mlen[12];
+const char *monthname[12];
 int icnt;
 
 double qlat[NYMEM];
@@ -1205,6 +1206,18 @@ for (i = 1; i <= 11; i++)
 	dmon[i] = dmon[i - 1] + mlen[i - 1];
 }
 
+monthname[0] = "January";
+monthname[1] = "February";
+monthname[2] = "March";
+monthname[3] = "April";
+monthname[4] = "May";
+monthname[5] = "June";
+monthname[6] = "July";
+monthname[7] = "August";
+monthname[8] = "September";
+monthname[9] = "October";
+monthname[10] = "November";
+monthname[11] = "December";
 /*----------------------------------*
  *
  *     get user input
@@ -2044,8 +2057,8 @@ for (cmon = inmon; cmon < inmon + tmon; cmon++)
 {
 	nmn++;
 
-	iterno = cmon - inmon;
-	printf("Iteration %d/%d\n", iterno, (int) (inmon + tmon - cmon));
+	// iterno = cmon - inmon;
+	// printf("Iteration %d/%d\n", iterno, (int) (inmon + tmon - cmon));
 
 	dyr = cmon / 12.0;
 	ndyr = (cmon + 1) / 12.0;
@@ -2061,15 +2074,15 @@ for (cmon = inmon; cmon < inmon + tmon; cmon++)
 #endif   // files in regular order (h before uvw)
 	mon = 12.0 * modf(dyr, iyr);
 	nxt = 12.0 * modf(ndyr, nyr);
-#ifdef SEPFILES
-	printf("the current month is %i-%g-%g \n", cmon, smon, mon);
-#else   // files in regular order (h before uvw)
-	printf("the current month is %i-%g \n",cmon,mon);
-#endif
-	printf("the current year is %g \n", *iyr);
+	printf("the current year is %g \n", (int) currtime);
 
 	imon = (int) (mon + 0.00001);
 	inxt = (int) (nxt + 0.00001);
+#ifdef SEPFILES
+	printf("Begin transport integration from end of %s \n",monthname[imon]);
+#else   // files in regular order (h before uvw)
+	printf("the current month is %i-%g \n",cmon,mon);
+#endif
 #ifdef SEPFILES
 	ismon = (int) (smon + 0.00001);
 	isnxt = (int) (snxt + 0.00001);
@@ -2077,6 +2090,8 @@ for (cmon = inmon; cmon < inmon + tmon; cmon++)
 	day = (*iyr) * 365.0 + dmon[imon];
 	*dy = day;
 	printf("the current day is -%g- \n", *dy);
+
+/* Redundant information if using 12-month normalyear inputs
 #ifdef SEPFILES
 	printf("the current ismon/smon is -%i-%g- \n", ismon, smon);
 	printf("the next smonth/mean index: -%i- \n", isnxt);
@@ -2084,6 +2099,7 @@ for (cmon = inmon; cmon < inmon + tmon; cmon++)
 	printf("the current imon/mon is -%i-%g- \n", imon,mon);
 	printf("the next month/mean index: -%i-%i- \n",inxt,nmn);
 #endif
+*/
 
 	/*   Begin added DT     */
 	if (mon == 0)
@@ -2100,10 +2116,12 @@ for (cmon = inmon; cmon < inmon + tmon; cmon++)
 	iyear = theyear;
 	/*   End added DT       */
 
-	dt = ((double) mlen[imon]);
+	// dt = ((double) mlen[imon]); //ashao: WRONG! INCCONSISTENT WITH TRANSPORT FIELDS
+	dt = (double) mlen[inxt];
 	dt = dt * 86400 / (double) NTSTEP;
 # ifdef SEPFILES
 	read_h(ismon, isnxt);
+	printf("Layer thicknesses from end of %s to end of %s\n",monthname[imon],monthname[inxt]);
 # else
 	read_h(imon,inxt);
 # endif
@@ -2118,6 +2136,7 @@ for (cmon = inmon; cmon < inmon + tmon; cmon++)
 #ifndef VARIAB_FORC
 # ifdef SEPFILES
 		//BX  files are not in regular order (uvw are midmonth and h starts with last month)
+		printf("Mass transports from %s\n",monthname[isnxt]);
 		read_uvw(isnxt, itts);
 		// for files in regular order (h before uvw) use code below
 		//BX read_uvw(imon,itts);
