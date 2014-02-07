@@ -21,7 +21,7 @@
 /*---------------------------------------------------------------------
  *     define variables and subroutines
  *---------------------------------------------------------------------*/
-
+double calc_inventory( int idx );
 void oxygen_saturation(double T[NZ][NXMEM][NYMEM], double S[NZ][NXMEM][NYMEM],
 		double o2_sat[NZ][NXMEM][NYMEM]);
 void co2_saturation(double T[NZ][NXMEM][NYMEM], double S[NZ][NXMEM][NYMEM],

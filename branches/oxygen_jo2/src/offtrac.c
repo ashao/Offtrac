@@ -669,7 +669,7 @@ struct vardesc vars[NOVARS] =
 		}, //32
 		{
 				"mn_jremdop",
-				"Remineralization of PO4",
+				"Remineralization of DOP",
 				'h',
 				'L',
 				's',
@@ -1892,7 +1892,7 @@ if (status != NC_NOERR)
 	handle_error(message,status);
 }
 
-err = write_time(cdfid,fn,timeid[0],nrec, dy);
+err = write_time(cdfid,fn,timeid[0],nrec, currtime); // Use currenttime instead
 if (err == -1) printf("Error writing day.\n");
 
 if (flags[3])
@@ -2118,6 +2118,7 @@ for (cmon = inmon; cmon < inmon + tmon; cmon++)
 
 	// dt = ((double) mlen[imon]); //ashao: WRONG! INCCONSISTENT WITH TRANSPORT FIELDS
 	dt = (double) mlen[inxt];
+	printf("Length of timestep: %d\n",dt);
 	dt = dt * 86400 / (double) NTSTEP;
 # ifdef SEPFILES
 	read_h(ismon, isnxt);
@@ -2849,7 +2850,7 @@ for (cmon = inmon; cmon < inmon + tmon; cmon++)
 				handle_error(message, status);
 			}
 
-			err = write_time(cdfid, fn, timeid[0], nrec, dy);
+			err = write_time(cdfid, fn, timeid[0], nrec, currtime); //Use current time instead
 			if (err == -1)
 				printf("Error writing day.\n");
 
