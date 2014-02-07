@@ -2143,8 +2143,9 @@ for (cmon = inmon; cmon < inmon + tmon; cmon++)
 # else
 		read_clim(imon,inxt,ilst);
 # endif
+		printf("Temperature/Salinity and biotic from %s\n",monthname[isnxt]);
 		read_ts(isnxt, itts);
-		read_biotic_bc(imon, itts);
+		read_biotic_bc(inxt, itts);
 		read_fields(inxt, itts);
 #endif
 # ifdef REST_ARCTIC
