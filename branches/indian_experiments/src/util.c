@@ -137,48 +137,8 @@ double linear_interp(double x0, double y0, double x1, double y1, double xstar) {
 	return ystar;
 }
 
-void wrap_reentrance_2d( void **arr ) {
-	int i, j, k;
-	//HF10022009	zonal re-entrance
 
 
-	for (j=0;j<=NYMEM-1;j++) {
-		arr[nx+1][j] = arr[2][j];
-		arr[nx+2][j] = arr[3][j];
-		arr[0][j] =   arr[nx-1][j];
-		arr[1][j] =   arr[nx][j];
-	}
-
-	//      meridional re-entrance
-	for (i=0;i<=nx+2;i++) {
-		ii = 363 - i;
-		arr[ii][ny+1] = arr[i][ny];
-		arr[ii][ny+2] = arr[i][ny-1];
-	}
-
-}
-
-void wrap_reentrance_3d( void ***arr, int nz) {
-
-	int i, j, k;
-	//HF10022009	zonal re-entrance
-
-	for (k=0;k<nz;k++) {
-		for (j=0;j<=NYMEM-1;j++) {
-			arr[k][nx+1][j] = arr[k][2][j];
-			arr[k][nx+2][j] = arr[k][3][j];
-			arr[k][0][j] =   arr[k][nx-1][j];
-			arr[k][1][j] =   arr[k][nx][j];
-		}
-
-		//      meridional re-entrance
-		for (i=0;i<=nx+2;i++) {
-			ii = 363 - i;
-			arr[k][ii][ny+1] = arr[k][i][ny];
-			arr[k][ii][ny+2] = arr[k][i][ny-1];
-		}
-	}
-}
 
 
 

@@ -48,6 +48,9 @@
 const double misval = -1.e+6;
 #define MISVAL -1.e+6
 
+const double r_bio_tau = 1.0 / (30.0 * 86400.0); // restoring time step
+
+
 //BX-e
 struct vardesc vars[NOVARS] =
 	{
@@ -151,7 +154,11 @@ double hend[NZ][NXMEM][NYMEM];
 double htest[NZ][NXMEM][NYMEM];
 #endif
 double hstart[NZ][NXMEM][NYMEM];
-
+#if defined AGE2 || defined AGE3
+//  for debugging
+//double hnew[NZ][NXMEM][NYMEM];
+double ***hnew;
+#endif
 double depth[NZ][NXMEM][NYMEM];
 double rml[2][NXMEM][NYMEM];
 double ***mn_u;
@@ -727,7 +734,7 @@ int main(void)
 	printf("the current ismon/smon is -%i-%g- \n", ismon, smon);
 	printf("the next smonth/mean index: -%i- \n", isnxt);
 
-	dt = ((double) mlen[imon]);
+	dt = ((double) mlen[inxt]);
 	dt = dt * 86400 / (double) NTSTEP;
 
 

@@ -23,7 +23,7 @@ extern const double parm_alpha_n15_n2fix;
 extern double ****tr;
 extern double D[NXMEM][NYMEM];
 extern double h[NZ][NXMEM][NYMEM];
-extern double po4_star_lev[NZPHOS][NXMEM][NYMEM];
+// extern double po4_star_lev[NZPHOS][NXMEM][NYMEM];
 extern double po4_star_lay[NZ][NXMEM][NYMEM];
 extern double Temptm[NZ][NXMEM][NYMEM];
 # ifdef PROGNOSTIC
@@ -204,8 +204,8 @@ void biotic_sms(int ibiodt)
     dt_bio = dt / (double) ibiodt;
     frac_dt_bio = 1.0 / (double) ibiodt;
 
-    printf("conc_obs_layer(h,po4_star_lev,po4_star_lay)\n");
-    conc_obs_layer(h,po4_star_lev,po4_star_lay);
+//    printf("conc_obs_layer(h,po4_star_lev,po4_star_lay)\n");
+//    conc_obs_layer(h,po4_star_lev,po4_star_lay);
 # ifdef PROGNOSTIC
 #  ifdef NITRATE
     // nitrate

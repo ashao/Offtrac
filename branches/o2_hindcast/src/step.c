@@ -13,21 +13,23 @@
 #include "init.h"
 #include "metrics.h"
 #include "alloc.h"
-#include "biotic.h"
 #include "step.h"
 #include "tracadv.h"
 #include "util.h"
 
+#if defined(OXYGEN) && defined(PHOSPHATE)
+
+#include "oxygen.h"
+#include "phosphate.h"
+
+#endif
 /*---------------------------------------------------------------------
  *     define variables and subroutines
  *---------------------------------------------------------------------*/
 
 void z_depth(double h[NZ][NXMEM][NYMEM], double depth[NZ][NXMEM][NYMEM]);
 void calc_ksub(double h[NZ][NXMEM][NYMEM]);
-void conc_obs_layer(double h[NZ][NXMEM][NYMEM],
-		double conc_lev[NZPHOS][NXMEM][NYMEM],
-		double conc_lay[NZ][NXMEM][NYMEM]);
-void tracer_integral(int trnum, double ***hvol);
+
 // void print_to_screen(int pquant[10], int pstage);
 #ifdef MERGED_ML
 void merge_ml_tr();
@@ -55,21 +57,6 @@ extern double sp_age[NZ][NXMEM][NYMEM];
 # endif
 #endif
 
-#ifdef OXYGEN
-extern double ***oxy_init;
-extern double o2_sat[NZ][NXMEM][NYMEM];
-extern double oxyflux[NXMEM][NYMEM];
-extern double jo2[NZ][NXMEM][NYMEM];
-extern double jo2_spec[NZ][NXMEM][NYMEM];
-extern double aou_spec[NZ][NXMEM][NYMEM];
-extern int mOXYGEN;
-double jo2_ocmip[NZ][NXMEM][NYMEM];
-double Sc_o2[NXMEM][NYMEM], Sk_o2[NXMEM][NYMEM];
-double ratio_sw,alpha_resp,ratio_o2_sw,Rsmow;
-# ifdef SPONGE
-extern double sp_oxygen[NZ][NXMEM][NYMEM];
-# endif
-#endif
 
 
 # ifdef SPONGE
@@ -121,10 +108,7 @@ void step_fields(int iyear, int itts, int imon, int iterno) {
 	 *     SCREEN PRINT CONTROL
 	 *
 	 *-----------------------------------------*/
-#ifdef OXYGEN
-	trwarn[mOXYGEN][0] = 1.0e-15;
-	trwarn[mOXYGEN][1] = 1.e0;
-#endif
+
 	doprint = 0;
 	pquant[1] = 0; /* print mass conservation checks? (1 = yes) */
 	pquant[2] = 1; /* print single grid point at each step? (1 = yes) */
@@ -140,7 +124,7 @@ void step_fields(int iyear, int itts, int imon, int iterno) {
 	 *
 	 *-----------------------------------------*/
 
-	z_depth(h, depth);
+	// z_depth(h, depth);
 
 
 	/*-----------------------------------------
@@ -192,8 +176,19 @@ void step_fields(int iyear, int itts, int imon, int iterno) {
 	 *    biological pump is linked to PO4
 	 *
 	 *-----------------------------------------*/
-
+#if defined(PHOSPHATE) && defined(OXYGEN)
 	ibiodt = 1; // number of biotic time steps per transport time step (dt)
+
+	// Update phosphate concentration for surface value restoration
+	read_woa_file(imon, hstart, po4_star_lay, "woa09levpo4", "WOAPO4");
+	biotic_sms(ibiodt);
+	surface_oxygen();
+	apply_oxygen_jterms;
+	apply_phosphate_jterms;
+
+
+#endif
+
 
 
 # ifdef MERGED_ML
@@ -213,16 +208,10 @@ void step_fields(int iyear, int itts, int imon, int iterno) {
 			//BX - reinstated by HF
 			if (D[i][j] > MINIMUM_DEPTH) {
 				for (k = 0; k < NZ; k++) {
-#ifdef OXYGEN
-					tr[mOXYGEN][k][i][j] += dt * jo2[k][i][j];
-#endif
 				}
 				//BX - reinstated by HF
 			} else {
 				for (k = 0; k < NZ; k++) {
-#ifdef OXYGEN
-					tr[mOXYGEN][k][i][j] = misval;
-#endif
 #ifdef AGE
 					tr[mAGE][k][i][j] = misval;
 #endif
@@ -245,34 +234,6 @@ void step_fields(int iyear, int itts, int imon, int iterno) {
 	}
 #endif
 
-#ifdef OXYGEN
-	oxygen_saturation(Temptm, Salttm, o2_sat);
-	// ashao: Added time step loop to simulate gas exchange
-	for (m=0;m<mdt;m++) {
-	    for (i=X1;i<=nx;i++) {
-		for (j=Y1;j<=ny;j++) {
-		    if (D[i][j] > MINIMUM_DEPTH) {
-
-			//ashao: Removed, Unknown source of coefficients
-			/* Sc_o2[i][j] = 1638.0 + Temptm[0][i][j] *
-				(-81.83 + Temptm[0][i][j] * (1.483 + Temptm[0][i][j] * (-0.008004))); */
-			// ashao: Wanninkhof 1992 for Schmidt number coefficients
-
-			h_mixedlyr = h[0][i][j] + h[1][i][j]; // Thickness of mixed layer (no buffer layers)
-			Sc_o2[i][j] = 1953.4 - 128*Temptm[0][i][j] + 3.9918*pow(Temptm[0][i][j],2) + 0.050091*pow(Temptm[0][i][j],3);
-			Sk_o2[i][j] = (1-fice[i][j])*xkw[i][j]*pow(Sc_o2[i][j]/660.0,-0.5);
-			oxyflux[i][j] = Sk_o2[i][j] * (o2_sat[0][i][j] - tr[mOXYGEN][0][i][j])*dt_gasex/h_mixedlyr;
-			tr[mOXYGEN][0][i][j]+=oxyflux[i][j];
-			tr[mOXYGEN][1][i][j]+=oxyflux[i][j];
-		    } else {
-			oxyflux[i][j] = 0.e0;
-		    }
-		}
-	    }
-	}
-
-	printf("OXYGEN SAT: %f\n",tr[mOXYGEN][0][100][100]/o2_sat[0][100][100]);
-#endif
 
 #ifdef MERGED_ML
 	merge_ml_tr();
@@ -532,67 +493,6 @@ double lin_interpp(double pleth, const double x[], const double z[],
 }
 #endif
 
-/* This routine maps observed concentrations onto isopycnal layers */
-void conc_obs_layer(double h[NZ][NXMEM][NYMEM],
-		double conc_lev[NZPHOS][NXMEM][NYMEM],
-		double conc_lay[NZ][NXMEM][NYMEM]) {
-	int i, j, k;
-	int nzlevitus = NZPHOS;
-	double depth[NZ][NXMEM][NYMEM];
-	double concobsprof[NZPHOS];
-	double levitus_depths[NZPHOS] = { 0, 10, 20, 30, 50, 75, 100, 120, 150,
-			200, 250, 300, 400, 500, 600, 700, 800, 900, 1000, 1100, 1200,
-			1300, 1400, 1500, 1750, 2000, 2500, 3000, 3500, 4000, 4500, 5000,
-			5500 };
-
-	/*---------------------------------------------------------------------
-	 *     calculate vertically interpolated concentration:
-	 *            levitus levels -> model layers
-	 *             conc_lev  -> conc_lay
-	 *---------------------------------------------------------------------*/
-	z_depth(h, depth);
-
-	//printf("Initialize 2a for month \n");
-	//HF for (i=X1;i<=nx;i++) {
-	//HF for (j=Y1;j<=ny;j++) {
-	for (i = 0; i <= NXMEM - 1; i++) {
-		for (j = 0; j <= NYMEM - 1; j++) {
-			//BX - reinstated by HF
-			if (D[i][j] > MINIMUM_DEPTH) {
-				for (k = 0; k < nzlevitus; k++) {
-					concobsprof[k] = conc_lev[k][i][j];
-				}
-				for (k = 0; k < NZ; k++) {
-					conc_lay[k][i][j] = lin_interp(depth[k][i][j], concobsprof,
-							levitus_depths, 0, nzlevitus);
-					if (conc_lay[k][i][j] < 0.e0)
-						conc_lay[k][i][j] = 0.;
-				}
-#ifdef MERGED_ML
-				//BX overwrite the top layers
-				for (k = 0; k <= 2; k = k + 2) {
-					conc_lay[k][i][j] = lin_interp(((depth[k][i][j] + depth[k
-							+ 1][i][j]) / 2.), concobsprof, levitus_depths, 0,
-							nzlevitus);
-					if (conc_lay[k][i][j] < 0.e0)
-						conc_lay[k][i][j] = 0.;
-					conc_lay[k + 1][i][j] = conc_lay[k][i][j];
-				}
-#endif
-
-				//BX - reinstated by HF
-			} else {
-				for (k = 0; k < NZ; k++) {
-					conc_lay[k][i][j] = misval;
-				}
-			}
-		}
-	}
-	/*-----------------------------------------------------------------------
-	 *     end of subroutine conc_obs_layer
-	 *-----------------------------------------------------------------------*/
-}
-
 double drtsafe(void(*funcd)(double, double *, double *), double x1, double x2,
 		double xacc) {
 
@@ -684,18 +584,6 @@ void merge_ml_j() {
 	for (i = X1; i <= nx; i++) {
 		for (j = Y1; j <= ny; j++) {
 			for (k = 0; k <= 2; k = k + 2) {
-# ifdef OXYGEN
-				jo2[k][i][j] = (jo2[k][i][j]*h[k][i][j]+
-						jo2[k+1][i][j]*h[k+1][i][j])/
-				(h[k][i][j] + h[k+1][i][j]);
-				jo2[k+1][i][j] = jo2[k][i][j];
-#  ifdef OXY18
-				jo18[k][i][j] = (jo18[k][i][j]*h[k][i][j]+
-						jo18[k+1][i][j]*h[k+1][i][j])/
-				(h[k][i][j] + h[k+1][i][j]);
-				jo18[k+1][i][j] = jo18[k][i][j];
-#  endif
-# endif
 			}
 		}
 	}

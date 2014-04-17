@@ -35,9 +35,6 @@ extern double h[NZ][NXMEM][NYMEM];
 extern double hend[NZ][NXMEM][NYMEM];
 extern double hstart[NZ][NXMEM][NYMEM];
 extern double rml[2][NXMEM][NYMEM];
-extern double po4_star_lev[NZPHOS][NXMEM][NYMEM];
-extern double po4_star_lay[NZ][NXMEM][NYMEM];
-
 extern double salt_woa[NXMEM][NYMEM];
 
 extern double dt;
@@ -50,11 +47,6 @@ extern int lastsave;
 extern double ***uhtm,***vhtm;
 extern double ***ea,***eb;
 extern double eaml[NXMEM][NYMEM];
-extern double Temptm[NZ][NXMEM][NYMEM];
-extern double Salttm[NZ][NXMEM][NYMEM];
-extern double atmpres[NXMEM][NYMEM];
-extern double xkw[NXMEM][NYMEM];
-extern double fice[NXMEM][NYMEM];
 extern double wd[NZ+1][NXMEM][NYMEM];
 
 extern double D[NXMEM][NYMEM];
@@ -71,11 +63,6 @@ extern double qlat[NYMEM],hlat[NYMEM];
 #ifdef AGE
 extern double age_init[NZ][NXMEM][NYMEM];
 #endif
-
-
-
-
-
 
 
 #ifdef ENTRAIN
@@ -1332,108 +1319,6 @@ void read_h(int imon, double (*hread)[NXMEM][NYMEM], char *fieldtype)
     }
 
 
-#ifdef LEV_OXY
-void read_oxy_ic()
-    {
-    int i,j,k;
-    int err, cdfid, timeid;
-    char infile[25], inpath[200];
-    FILE *file;
-    int status;
-
-    int levo2id;
-
-    size_t start[MAX_NC_VARS];
-    size_t count[MAX_NC_VARS];
-
-    float*** tmp3d;
-    double*** oxytmp;
-
-    int nzlevitus = NZPHOS;
-    double depth[NZ][NXMEM][NYMEM];
-    double po4obsprof[NZPHOS];
-    double levitus_depths[NZPHOS] = {0, 10, 20, 30, 50, 75, 100,
-	    120, 150, 200, 250, 300, 400, 500, 600,
-	    700, 800, 900, 1000, 1100, 1200, 1300,
-	    1400, 1500, 1750, 2000, 2500, 3000,
-	    3500, 4000, 4500, 5000, 5500};
-
-    printf("Reading Levitus O2 climatology: \n");
-
-    sprintf(infile,"lev94_o2.nc");
-    strcpy(inpath, directory);
-    strcat(inpath, infile);
-
-    printf("Looking for file '%s'.\n",inpath);
-
-    err = open_input_file(inpath,&file,&cdfid,&timeid);
-    if (err != 0) {
-	strcat(inpath, ".cdf");
-	err = open_input_file(inpath,&file,&cdfid,&timeid);
-	if (err != 0) {
-	    printf("Unable to find Levitus O2 file.\n");
-	    exit(-73);
-	}
-    }
-
-    if ((status = nc_inq_varid(cdfid, "LEVO2", &levo2id)))
-	ERR(status);
-
-    bzero(start, MAX_NC_VARS * sizeof(long));
-
-    count[0] = 1;
-    count[1] = NZPHOS;
-    count[2] = NYTOT;
-    count[3] = NXTOT;
-
-    tmp3d = alloc3d_f(NZPHOS,NYTOT,NXTOT);
-    oxytmp = alloc3d(NZPHOS,NXMEM,NYMEM);
-
-    start[0] = 0;
-
-    if ((status = nc_get_vara_float(cdfid,levo2id,start,count,tmp3d[0][0])))
-	ERR(status);
-
-    for (k=0;k<NZPHOS;k++) {
-	for (i=0;i<NXTOT;i++) {
-	    for (j=0;j<NYTOT;j++) {
-		oxytmp[k][i+2][j+2]= tmp3d[k][j][i]*1.e-3;
-	    }
-	}
-    }
-    //  temporary bug fix for northern-most row (j=211)
-    for (i=2;i<NXMEM;i++) {
-	for (k=0;k<NZPHOS;k++) {
-	    oxytmp[k][i][211] = oxytmp[k][i][210];
-	}
-    }
-
-    z_depth(h,depth);
-
-    for (i=X1;i<=nx;i++) {
-	for (j=Y1;j<=ny;j++) {
-	    if (D[i][j]>MINIMUM_DEPTH) {
-		for (k=0;k<nzlevitus;k++)
-		    po4obsprof[k] = oxytmp[k][i][j];
-		for (k=0;k<NZ;k++) {
-		    oxy_init[k][i][j] = lin_interp(depth[k][i][j], po4obsprof,
-			    levitus_depths, 0, nzlevitus);
-		    if (oxy_init[k][i][j] < 0.e0) oxy_init[k][i][j] = 0.;
-		}
-	    } else {
-		for (k=0;k<NZ;k++) {
-		    oxy_init[k][i][j] = misval;
-		}
-	    }
-	}
-    }
-
-    free3d_f(tmp3d, NZPHOS);
-    free3d(oxytmp, NZPHOS);
-    close_file(&cdfid,&file);
-    }
-#endif
-
 void read_ts(int imon,int itts)
     {
 
@@ -1863,46 +1748,6 @@ void read_sponge(void)
     }
 #endif /* SPONGE */
 
-
-
-/* void read_patch
- * Read in which grid cells to patch for estimation of TTD
- */
-void read_patch( double ttd_mask[NXMEM][NYMEM] )
-    {
-
-    /* Read ocmip gas exchange parameter fields */
-    int err, cdfid, timeid;
-    char infile[25], inpath[200];
-    FILE *file;
-    int status;
-
-    int patchid;
-
-
-    printf("Enter name of file with TTD patchmask\n");
-    gets(infile);
-
-    strcpy(inpath, directory);
-    strcat(inpath, infile);
-    printf("Reading TTD Patch: %s\n",inpath);
-
-    err = open_input_file(inpath,&file,&cdfid,&timeid);
-    if (err != 0) {
-	strcat(inpath, ".cdf");
-	err = open_input_file(inpath,&file,&cdfid,&timeid);
-	if (err != 0) {
-	    printf("Unable to find TTD Patch file.\n");
-	    exit(-73);
-	}
-    }
-
-    read_field(cdfid,file,"mask", NXTOT,NYTOT,1, 0,0,0, 0,0,0, 1, ttd_mask[0]);
-    close_file(&cdfid,&file);
-
-    return;
-
-    }
 
 /* ashao: Read data routines (UH, VH, WD, T, S) for hindcast runs */
 void read_var3d( char inpath[200], char varname[200], int imon, double ***data)

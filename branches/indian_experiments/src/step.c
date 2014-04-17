@@ -13,6 +13,7 @@
 #include "init.h"
 #include "metrics.h"
 #include "alloc.h"
+#include "biotic.h"
 #include "step.h"
 #include "tracadv.h"
 #include "util.h"
@@ -23,7 +24,10 @@
 
 void z_depth(double h[NZ][NXMEM][NYMEM], double depth[NZ][NXMEM][NYMEM]);
 void calc_ksub(double h[NZ][NXMEM][NYMEM]);
-
+void conc_obs_layer(double h[NZ][NXMEM][NYMEM],
+		double conc_lev[NZPHOS][NXMEM][NYMEM],
+		double conc_lay[NZ][NXMEM][NYMEM]);
+void tracer_integral(int trnum, double ***hvol);
 // void print_to_screen(int pquant[10], int pstage);
 #ifdef MERGED_ML
 void merge_ml_tr();
@@ -475,6 +479,67 @@ double lin_interpp(double pleth, const double x[], const double z[],
 	return xout;
 }
 #endif
+
+/* This routine maps observed concentrations onto isopycnal layers */
+void conc_obs_layer(double h[NZ][NXMEM][NYMEM],
+		double conc_lev[NZPHOS][NXMEM][NYMEM],
+		double conc_lay[NZ][NXMEM][NYMEM]) {
+	int i, j, k;
+	int nzlevitus = NZPHOS;
+	double depth[NZ][NXMEM][NYMEM];
+	double concobsprof[NZPHOS];
+	double levitus_depths[NZPHOS] = { 0, 10, 20, 30, 50, 75, 100, 120, 150,
+			200, 250, 300, 400, 500, 600, 700, 800, 900, 1000, 1100, 1200,
+			1300, 1400, 1500, 1750, 2000, 2500, 3000, 3500, 4000, 4500, 5000,
+			5500 };
+
+	/*---------------------------------------------------------------------
+	 *     calculate vertically interpolated concentration:
+	 *            levitus levels -> model layers
+	 *             conc_lev  -> conc_lay
+	 *---------------------------------------------------------------------*/
+	z_depth(h, depth);
+
+	//printf("Initialize 2a for month \n");
+	//HF for (i=X1;i<=nx;i++) {
+	//HF for (j=Y1;j<=ny;j++) {
+	for (i = 0; i <= NXMEM - 1; i++) {
+		for (j = 0; j <= NYMEM - 1; j++) {
+			//BX - reinstated by HF
+			if (D[i][j] > MINIMUM_DEPTH) {
+				for (k = 0; k < nzlevitus; k++) {
+					concobsprof[k] = conc_lev[k][i][j];
+				}
+				for (k = 0; k < NZ; k++) {
+					conc_lay[k][i][j] = lin_interp(depth[k][i][j], concobsprof,
+							levitus_depths, 0, nzlevitus);
+					if (conc_lay[k][i][j] < 0.e0)
+						conc_lay[k][i][j] = 0.;
+				}
+#ifdef MERGED_ML
+				//BX overwrite the top layers
+				for (k = 0; k <= 2; k = k + 2) {
+					conc_lay[k][i][j] = lin_interp(((depth[k][i][j] + depth[k
+							+ 1][i][j]) / 2.), concobsprof, levitus_depths, 0,
+							nzlevitus);
+					if (conc_lay[k][i][j] < 0.e0)
+						conc_lay[k][i][j] = 0.;
+					conc_lay[k + 1][i][j] = conc_lay[k][i][j];
+				}
+#endif
+
+				//BX - reinstated by HF
+			} else {
+				for (k = 0; k < NZ; k++) {
+					conc_lay[k][i][j] = misval;
+				}
+			}
+		}
+	}
+	/*-----------------------------------------------------------------------
+	 *     end of subroutine conc_obs_layer
+	 *-----------------------------------------------------------------------*/
+}
 
 double drtsafe(void(*funcd)(double, double *, double *), double x1, double x2,
 		double xacc) {

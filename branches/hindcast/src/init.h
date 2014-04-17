@@ -41,46 +41,9 @@
 
 #define MERGED_ML                /* merge the first and second two     */
                                /* layers for all BGC variables       */
-////////////////////////* remove 
-#undef  PHOSPHATE              /* define phosphate as two! tracers    */
-//#define PROGNOSTIC             /* use the prognostic model           */
-#if defined PHOSPHATE && defined PROGNOSTIC
-//# define NITRATE                /* define NO3 and DON as tracers       */
-#endif
-#ifdef NITRATE
-# define N15_CYCLE              /* define 15NO3 and DO15N as tracers   */
-#endif
-#undef  DIC                    /* define dissolved inorganic carbon   */
 
-///////////!!keep this
 #define  AGE                    /*  Define ideal age tracer in years.  */
-///////////!!keep this
 
-#undef SAT_TRACER		/* use relative saturation as a tracer */
-
-#undef TTD_BP			/* ashao: Estimate TTD with boundary impulse */
-
-#undef  INERT                  /*  replace age code with argon        */
-
-#undef  JO2_SPEC               /* specify oxygen SMS via input file   */
-
-#undef  UNIVENT                /* specify "preformed" aou via input file      */ 
-//#undef  obsPsupply             /* compute P supply from observed distribution */
-
-//I probably shouldn't delete the age stuff
-//#define AGEEXP                 /* run experiment with age tracers in  */
-                               /* layer 6 (k=5) set to 1, 0 else      */
-#undef AGE1                   /* run experiment with age tracers in  */
-                               /* set to 1 and not restored           */
-#undef AGE2                   /* run experiment with age tracer      */
-                               /* patch in the EqPac set to 1 and     */
-                               /* not restored                        */
-#undef AGE3                   /* original AGE tracer with hnew output  */
-                               /* This option is not compatible with DIC */
-
-#undef VIRTFLUX                /* calculate virtual fluxes            */
-//up to here
-/////////////////////remove */
 #define TRNCINIT	       /* read in initial tracers values from */
 			       /* netCDF files -- otherwise initialize*/
 			       /* analytically 			      */
@@ -98,49 +61,12 @@
                                /*    Moved here from offtrac.c        */
                                /*  25OCT07 BX ashao                   */
 
-#define NZPHOS 33              /*  The number of depth levels for the  */
-                               /*  PO4 input file. Added 30OCT07 BX    */
-/////////////////* remove
 #define BEGYEAR 1900			/* ashao: Set the start year, for
  	 	 	 	 	 	 	 	 tracers with atmospheric histories */
 
 #undef HINDCAST			/* Expect to read in hindcasat fields */
 #define BEGHIND 1948        /* The first year of hindcast fields */
 #define ENDHIND 2007 		/* Last year of hindcast fields */
-
-#define BPTIME 0          /* The year in which the boundary propagator */
-                           /* is set to a non-zero value at the surface */
-
-#undef TTDEST                 /* This option is to infer a TTD two */
-                            /* different ways by spiking 1 at the surface */
-
-
-#ifdef DIC
-# define GLODAP_IC                /*  Use GLODAP climatology as initial    */
-                               /*  conditions for DIC and Alk           */
-                               /*  The number of depth levels is as for */
-                               /*  the PO4 input file. Added 07JUL08 BX */
-#endif
-
-//BX#define NOREST 14              /*  Number of variables used in        */
-//BX                               /*    vardesc structure for restarts.  */
-//BX                               /*  30OCT07 BX                         */
-
-#undef REST_ARCTIC            /*  Restore Arctic Ocean                */
-                               /*  28NOV07 BX                         */
-
-#undef FILTR_ARCTIC           /*  Filter diffusion in the Arctic Ocean */ 
-                               /*  21NOV07 BX                         */
-
-#undef BIOTIC_TS              /*  Use more than one biotic timestep per dt */ 
-                               /*  28NOV07 BX                         */
-
-#undef TRACER_TS              /*  Use more than one tracer timestep per dt */ 
-                               /*  27FEB08 BX DISABLED AFTER 01APR08    */
-
-#undef EPSI_CHECK             /* Check for erratic values in layers with */
-                               /* minimum thickness and correct them    */
-////////////////remove */                               /*  17JUL08 BX                           */
 
 #define SEPFILES              /* For use with separate input files for    */
                               /* U,V,W,H                                */
@@ -165,15 +91,6 @@
 #undef WRTTS                  /* Write output after each sub time step */
                               /* for debugging - 04AUG08 BX           */
 
-/*  Specify whether sponges are used.                                 */
-#undef SPONGE                 /*    If SPONGE is defined, sponges    */
-                               /*  may be applied anywhere in the     */
-                               /*  domain. The exact location and     */
-                               /*  properties of those sponges are    */
-                               /*  specified from initialize.c.       */
-
-#undef VARIAB_FORC            /*  Use time varying forcing fields     */
-                              /*  If switched off, use climatology    */
 #ifdef VARIAB_FORC
 
 # define TS_VARIAB             /* Specify if T and S are read from 
@@ -188,9 +105,6 @@
                                /* If ENTRAIN is defined, must read in */
                                /* ea, eb, and eaml. Otherwise we must */
                                /* read in wd.                         */
-
-//HF #undef  RESTART                 /* define location of initial biotic fields   */ 
-			       /* see read_tracer_init in read.c for details */
 
 #ifndef VARIAB_FORC
 # define SMOOTH_REST            /* save h to restart file and use it to */
@@ -358,15 +272,3 @@
 #ifndef RESTART
 # undef SMOOTH_REST
 #endif
-
-
-////////////////////*/remove
-// begin ashao
-#undef GASEX
-#undef TSMEAN		//ashao: use annually averaged T/S. Expects ts.annual.mean.nc
-//uhhh what
-#undef ADV1D		     /* Disable zonal/meridional advection */
-
-// end ashao
-
-

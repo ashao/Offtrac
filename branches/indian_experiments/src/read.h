@@ -15,3 +15,6 @@ void read_tracer_init(int imon);
 void read_buoy(int imon);
 void read_sponge(void);
 void read_grid();
+#ifdef LEV_OXY
+void read_oxy_ic(void);
+#endif
