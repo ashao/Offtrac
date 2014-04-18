@@ -4,6 +4,8 @@
 #include <math.h>
 #include "init.h"
 #include "step.h"
+#include "oxygen.h"
+#include "phosphate.h"
 
 extern const double misval;
 extern int wetmask[NXMEM][NYMEM];
@@ -20,12 +22,7 @@ extern const double parm_alpha_n15_n2fix;
 
 #ifdef PHOSPHATE 
 
-extern double ****tr;
-extern double D[NXMEM][NYMEM];
-extern double h[NZ][NXMEM][NYMEM];
-extern double po4_star_lev[NZWOA][NXMEM][NYMEM];
-extern double po4_star_lay[NZ][NXMEM][NYMEM];
-extern double Temptm[NZ][NXMEM][NYMEM];
+
 # ifdef PROGNOSTIC
 extern double fe_lev[NZWOA][NXMEM][NYMEM];
 extern double fe_lay[NZ][NXMEM][NYMEM];
@@ -41,16 +38,8 @@ extern double ***ironlim;
 extern double no3_lev[NZWOA][NXMEM][NYMEM];
 extern double no3_lay[NZ][NXMEM][NYMEM];
 # endif
-extern double dt;
-extern double jpo4[NZ][NXMEM][NYMEM];
-extern double jdop[NZ][NXMEM][NYMEM];
-extern double jremdop[NZ][NXMEM][NYMEM];
-extern double jprod[NZ][NXMEM][NYMEM];
-extern double jremin[NZ][NXMEM][NYMEM];
-extern double flux_pop[NXMEM][NYMEM];
-#ifdef OXYGEN
-extern double jo2[NZ][NXMEM][NYMEM];
-#endif
+
+
 #ifdef OXY18
 extern double jo18[NZ][NXMEM][NYMEM];
 extern double Ro18o16[NZ][NXMEM][NYMEM];
@@ -79,12 +68,6 @@ extern double ***jdic;
 extern double ***jalk;
 #endif
 
-extern int mPHOSPHATE;
-extern int mDOP;
-
-#ifdef OXYGEN
-extern int mOXYGEN;
-#endif
 
 #ifdef OXY18
 extern int mo18;

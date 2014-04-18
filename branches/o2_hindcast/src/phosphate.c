@@ -5,6 +5,8 @@
  *      Author: ashao
  */
 #include "init.h"
+#include "biotic.h"
+#include "netcdf.h"
 /* PHOSPHATE VARIABLE DECLARATIONS */
 // Auxiliary variables
 int mPHOSPHATE;

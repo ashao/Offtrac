@@ -1,4 +1,5 @@
 #include "oxygen.h"
+#include "biotic.h"
 extern int mOXYGEN;
 #include "init.h"
 #include "phosphate.h"
