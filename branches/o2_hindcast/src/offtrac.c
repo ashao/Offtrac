@@ -26,7 +26,12 @@
 #include "initialize.h"
 #include "iocdf.h"
 #include "read.h"
+#ifdef OXYGEN
 
+#include "oxygen.h"
+#include "phosphate.h"
+
+#endif
 /*-------------------------------------------------------------------*
  *                                                                   *
  *     define variables and subroutines
@@ -138,7 +143,7 @@ struct vardesc vars[NOVARS] =
 				's',
 				"mol m^-3",
 				'd',
-				misval
+				-1e6	
 		}, // 10
 		{
 				"mn_jo2",
@@ -148,8 +153,8 @@ struct vardesc vars[NOVARS] =
 				's',
 				"mol m^-3",
 				'd',
-				misval
-		}, // 11
+				-1e6
+		} // 11
 };
 
 void alloc_fields(void);
@@ -192,11 +197,6 @@ double wd[NZ + 1][NXMEM][NYMEM];
 
 double Temptm[NZ][NXMEM][NYMEM];
 double Salttm[NZ][NXMEM][NYMEM];
-double salt_woa[NXMEM][NYMEM];
-double windspeed[NXMEM][NYMEM];
-double xkw[NXMEM][NYMEM];
-double fice[NXMEM][NYMEM];
-double atmpres[NXMEM][NYMEM];
 
 double areagr[NXMEM][NYMEM];
 double D[NXMEM][NYMEM];
@@ -294,6 +294,15 @@ char output_filename[200];
 double wrts;
 int nvar = 0, cdfid, timeid[2];
 size_t nrec = 0;
+#endif
+
+#ifdef OXYGEN
+
+int mOXYGEN;
+double ***mn_oxygen;
+double ***mn_jo2;
+double jo2[NZ][NXMEM][NYMEM];
+
 #endif
 
 /*-------------------------------------------------------------------*
@@ -648,6 +657,11 @@ printf("\nSetting up and initializing\n");
 initialize(inmon,run_name);
 #else
 initialize(imon);
+#endif
+
+#ifdef OXYGEN
+initialize_oxygen;
+initialize_phosphate;
 #endif
 nmn = 0;
 

@@ -36,7 +36,8 @@ extern double hend[NZ][NXMEM][NYMEM];
 extern double hstart[NZ][NXMEM][NYMEM];
 extern double rml[2][NXMEM][NYMEM];
 extern double salt_woa[NXMEM][NYMEM];
-
+extern double Temptm[NZ][NXMEM][NYMEM];
+extern double Salttm[NZ][NXMEM][NYMEM];
 extern double dt;
 /*   Begin added DT    */
 extern int beginyear;
@@ -84,140 +85,6 @@ extern double sp_age[NZ][NXMEM][NYMEM];
 #endif
 
 #define ERR(e) {printf("Error: %s\n", nc_strerror(e)); exit(2);}
-
-void read_fields(int imon,int itts)
-    {
-
-    /* Read ocmip gas exchange parameter fields */
-    int i,j;
-    int err, cdfid, timeid;
-    char infile[25], inpath[200];
-    FILE *file;
-    int status;
-
-    int xkwid, ficeid, atmpid;
-
-    size_t start[MAX_NC_VARS];
-    size_t count[MAX_NC_VARS];
-
-    float** tmp2d;
-    int inxt,iprv;
-    double fact0,fact1,fact2;
-    float** tmp2dp;
-    float** tmp2dn;
-
-    if (imon==11) {
-	inxt = 0;
-	iprv = 10;
-    } else if (imon==0) {
-	inxt = 1;
-	iprv = 11;
-    } else {
-	inxt = imon + 1;
-	iprv = imon - 1;
-    }
-    //  calculate weight factors for input files - fact0 for previous month,
-    //   fact1 for imon, fact2 for next month
-    fact1 = 0.5 + ((2.0*(double)itts-1.0) / (2.0*(double)NTSTEP));
-    if (fact1 <= 1.0) {
-	fact0 = 1.0 - fact1;
-	fact2 = 0.0;
-    } else {
-	fact0 = 0.0;
-	fact2 = fact1 - 1.0;
-	fact1 = 2.0 - fact1;
-    }
-
-    // ashao: Modifying so that other things other than OCMIP fields can be used
-    printf("Reading gasex fields: \n");
-    sprintf(infile,"gasx_himgrid.nc");
-
-    strcpy(inpath, directory);
-    strcat(inpath, infile);
-    printf("Reading gasex fields: %s\n",inpath);
-
-    err = open_input_file(inpath,&file,&cdfid,&timeid);
-    if (err != 0) {
-	strcat(inpath, ".cdf");
-	err = open_input_file(inpath,&file,&cdfid,&timeid);
-	if (err != 0) {
-	    printf("Unable to find gasex file.\n");
-	    exit(-73);
-	}
-    }
-
-    printf("read gasex month=%i\n",imon);
-
-    if ((status = nc_inq_varid(cdfid, "OCMIP_FICE", &ficeid)))
-	ERR(status);
-    if ((status = nc_inq_varid(cdfid, kw_varname, &xkwid)))
-	ERR(status);
-    if ((status = nc_inq_varid(cdfid, "OCMIP_ATMP", &atmpid)))
-	ERR(status);
-
-    bzero(start, MAX_NC_VARS * sizeof(long));
-
-    count[0] = 1;
-    count[1] = NYTOT;
-    count[2] = NXTOT;
-
-    tmp2d = alloc2d_f(NYTOT, NXTOT);
-    tmp2dp = alloc2d_f(NYTOT, NXTOT);
-    tmp2dn = alloc2d_f(NYTOT, NXTOT);
-    start[0] = imon;
-    if ((status = nc_get_vara_float(cdfid,atmpid,start,count,tmp2d[0])))
-	ERR(status);
-    start[0] = iprv;
-    if ((status = nc_get_vara_float(cdfid,atmpid,start,count,tmp2dp[0])))
-	ERR(status);
-    start[0] = inxt;
-    if ((status = nc_get_vara_float(cdfid,atmpid,start,count,tmp2dn[0])))
-	ERR(status);
-    for (i=0;i<NXTOT;i++)
-	for (j=0;j<NYTOT;j++)
-	    atmpres[i+2][j+2]= fact1 * tmp2d[j][i] +
-	    fact0 * tmp2dp[j][i] + fact2 * tmp2dn[j][i];
-
-    start[0] = imon;
-    if ((status = nc_get_vara_float(cdfid,ficeid,start,count,tmp2d[0])))
-	ERR(status);
-    start[0] = iprv;
-    if ((status = nc_get_vara_float(cdfid,ficeid,start,count,tmp2dp[0])))
-	ERR(status);
-    start[0] = inxt;
-    if ((status = nc_get_vara_float(cdfid,ficeid,start,count,tmp2dn[0])))
-	ERR(status);
-    for (i=0;i<NXTOT;i++)
-	for (j=0;j<NYTOT;j++)
-	    fice[i+2][j+2]= fact1 * tmp2d[j][i] +
-	    fact0 * tmp2dp[j][i] + fact2 * tmp2dn[j][i];
-
-    start[0] = imon;
-    if ((status = nc_get_vara_float(cdfid,xkwid,start,count,tmp2d[0])))
-	ERR(status);
-    start[0] = iprv;
-    if ((status = nc_get_vara_float(cdfid,xkwid,start,count,tmp2dp[0])))
-	ERR(status);
-    start[0] = inxt;
-    if ((status = nc_get_vara_float(cdfid,xkwid,start,count,tmp2dn[0])))
-	ERR(status);
-    for (i=0;i<NXTOT;i++)
-	for (j=0;j<NYTOT;j++)
-	    xkw[i+2][j+2]= fact1 * tmp2d[j][i] +
-	    fact0 * tmp2dp[j][i] + fact2 * tmp2dn[j][i];
-
-    free2d_f(tmp2dp, NYTOT);
-    free2d_f(tmp2dn, NYTOT);
-    free2d_f(tmp2d, NYTOT);
-    //BX  temporary bug fix for northern-most row (j=211)
-    for (i=2;i<=NXMEM;i++) {
-	atmpres[i][211] = atmpres[i][210];
-	fice[i][211]    = fice[i][210];
-	xkw[i][211]     = xkw[i][210];
-    }
-    close_file(&cdfid,&file);
-    }
-
 void read_fieldave(int imon)
     {
     }
@@ -1792,7 +1659,7 @@ void read_var3d( char inpath[200], char varname[200], int imon, double ***data)
 
 
 
-void read_woa_file(int imon, double ***harray, double, ***outarray, char *filename, char *varname) {
+void read_woa_file(int imon, double ***harray, double ***outarray, char *filename, char *varname) {
 
 	int i,j,k;
 	int err, cdfid, timeid;

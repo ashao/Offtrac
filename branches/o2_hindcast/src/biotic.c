@@ -23,11 +23,11 @@ extern const double parm_alpha_n15_n2fix;
 extern double ****tr;
 extern double D[NXMEM][NYMEM];
 extern double h[NZ][NXMEM][NYMEM];
-extern double po4_star_lev[NZPHOS][NXMEM][NYMEM];
+extern double po4_star_lev[NZWOA][NXMEM][NYMEM];
 extern double po4_star_lay[NZ][NXMEM][NYMEM];
 extern double Temptm[NZ][NXMEM][NYMEM];
 # ifdef PROGNOSTIC
-extern double fe_lev[NZPHOS][NXMEM][NYMEM];
+extern double fe_lev[NZWOA][NXMEM][NYMEM];
 extern double fe_lay[NZ][NXMEM][NYMEM];
 extern double par_lay[NZ][NXMEM][NYMEM];
 extern double sfc_swr[NXMEM][NYMEM];
@@ -38,7 +38,7 @@ extern double ***nitrlim;
 extern double ***ironlim;
 # endif /* PROGNOSTIC */
 # ifdef NITRATE
-extern double no3_lev[NZPHOS][NXMEM][NYMEM];
+extern double no3_lev[NZWOA][NXMEM][NYMEM];
 extern double no3_lay[NZ][NXMEM][NYMEM];
 # endif
 extern double dt;
@@ -103,9 +103,9 @@ void biotic_sms(int ibiodt)
 {
     int i, j, k, l, kjunk;
     int kcomp, kmax; 
-    double po4obsprof[NZPHOS], junk;
+    double po4obsprof[NZWOA], junk;
 # ifdef PROGNOSTIC
-    double feobsprof[NZPHOS];
+    double feobsprof[NZWOA];
 # endif
     double compensation_depth, martin_coeff, fracprod;
     double phi_p, kappa_p, phi_ca;
@@ -153,8 +153,8 @@ void biotic_sms(int ibiodt)
     //ratio_o2_sw = 1.00075;
 #endif
 
-    int nzlevitus = NZPHOS;
-    double levitus_depths[NZPHOS] = {0, 10, 20, 30, 50, 75, 100, 
+    int nzlevitus = NZWOA;
+    double levitus_depths[NZWOA] = {0, 10, 20, 30, 50, 75, 100, 
 				    120, 150, 200, 250, 300, 400, 500, 600,
 				    700, 800, 900, 1000, 1100, 1200, 1300, 
 				    1400, 1500, 1750, 2000, 2500, 3000, 

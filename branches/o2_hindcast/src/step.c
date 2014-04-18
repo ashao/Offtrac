@@ -21,7 +21,7 @@
 
 #include "oxygen.h"
 #include "phosphate.h"
-
+extern double po4_star_lay[NZ][NXMEM][NYMEM];
 #endif
 /*---------------------------------------------------------------------
  *     define variables and subroutines
@@ -38,6 +38,7 @@ void merge_ml_j();
 //double cfc_atmospheric(double now, int icfc);
 
 extern double h[NZ][NXMEM][NYMEM];
+extern double hstart[NZ][NXMEM][NYMEM];
 extern double depth[NZ][NXMEM][NYMEM];
 extern double D[NXMEM][NYMEM];
 extern double ***ea, ***eb;

@@ -1,6 +1,6 @@
 //HF new utility routines
 #include "init.h"
-
+#include "math.h"
 void set_darray2d_zero(double **arr, int NX, int NY) {
 	int x, y;
 	for (x = 0; x < NX; x++)
@@ -137,10 +137,10 @@ double linear_interp(double x0, double y0, double x1, double y1, double xstar) {
 	return ystar;
 }
 
-void wrap_reentrance_2d( void **arr ) {
+void wrap_reentrance_2d( double **arr ) {
 	int i, j, k;
 	//HF10022009	zonal re-entrance
-
+	int ii;
 
 	for (j=0;j<=NYMEM-1;j++) {
 		arr[nx+1][j] = arr[2][j];
@@ -158,9 +158,11 @@ void wrap_reentrance_2d( void **arr ) {
 
 }
 
-void wrap_reentrance_3d( void ***arr, int nz) {
+void wrap_reentrance_3d( double ***arr, int nz) {
 
 	int i, j, k;
+
+	int ii;
 	//HF10022009	zonal re-entrance
 
 	for (k=0;k<nz;k++) {

@@ -23,7 +23,6 @@ double ***mn_jprod;
 double ***phosphate_init;
 double po4[NZ][NXMEM][NYMEM];
 double jpo4[NZ][NXMEM][NYMEM];
-double po4_star_lev[NZWOA][NXMEM][NYMEM];
 double po4_star_lay[NZ][NXMEM][NYMEM];
 double jprod[NZ][NXMEM][NYMEM];
 double jremin[NZ][NXMEM][NYMEM];

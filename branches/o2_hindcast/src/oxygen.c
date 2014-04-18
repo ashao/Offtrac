@@ -8,9 +8,9 @@ extern int mOXYGEN;
 // Auxiliary variables
 extern int mOXYGEN;
 // Output arrays
-double ***mn_oxygen;
+extern double ***mn_oxygen;
 double ***mn_o2sat;
-double ***mn_jo2;
+extern double ***mn_jo2;
 double mn_oxyflux[NXMEM][NYMEM];
 // Working arrays
 double ***oxy_init;
