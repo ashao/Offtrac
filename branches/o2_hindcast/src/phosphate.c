@@ -34,7 +34,7 @@ double jremdop[NZ][NXMEM][NYMEM];
 double jdop[NZ][NXMEM][NYMEM];
 double flux_pop[NXMEM][NYMEM];
 double ***dop_init;
-void initialize_phosphate( int imon )
+void allocate_phosphate(  )
 {
 	int i,j,k;
 	extern char restart_filename[200];
@@ -54,6 +54,8 @@ void initialize_phosphate( int imon )
 	phosphate_init = alloc3d(NZ,NXMEM,NYMEM);
 	dop_init = alloc3d(NZ,NXMEM,NYMEM);
 	po4_star_lay = alloc3d(NZ,NXMEM,NYMEM);
+}
+void initialize_phosphate( int imon ) {
 #ifdef WOA_PHOS
 	printf("Initializing phosphate from WOA09\n");
 	read_woa_file(imon, hstart, phosphate_init, "woalevpo4.nc", "WOAPO4");

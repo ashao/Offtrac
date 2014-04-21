@@ -24,7 +24,7 @@ double jo2[NZ][NXMEM][NYMEM];
 extern double D[NXMEM][NYMEM];
 extern double ****tr;
 
-void initialize_oxygen ( int imon ) {
+void allocate_oxygen (  ) {
 	extern double hstart[NZ][NXMEM][NYMEM];
 	extern char restart_filename[200];
 	printf("Allocating oxygen arrays\n");
@@ -39,6 +39,9 @@ void initialize_oxygen ( int imon ) {
 	mn_jo2 = alloc3d(NZ,NXMEM,NYMEM);
 	mn_o2sat = alloc3d(NZ,NXMEM,NYMEM);
 	oxy_init = alloc3d(NZ,NXMEM,NYMEM);
+}
+
+void initialize_oxygen( ) {
 	// Determine how to set the initial distribution of oxygen
 #ifdef WOA_OXY
 	printf("Initializing oxygen from WOA09\n");

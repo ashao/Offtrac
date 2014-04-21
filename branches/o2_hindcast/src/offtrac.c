@@ -552,9 +552,9 @@ close_file(&cdfid, &fn);
 
 
 #ifdef OXYGEN
-printf("Initializing oxygen and phosphate from month %d\n",imon);
-initialize_oxygen( imon );
-initialize_phosphate( imon );
+printf("Allocating arrays for oxygen and phosphate\n");
+allocate_oxygen( );
+allocate_phosphate( );
 #endif
 
 /* Allocate the memory for the fields to be calculated.		*/
@@ -640,6 +640,9 @@ if (usehindcast) {
 	if ( (currtime >= BEGHIND) || (currtime < (ENDHIND+1) ) ) {
 		hindindex=inmon;
 		read_h(ismon,hend,"hind");
+	}
+	else {
+		read_h(ismon, hend,"clim");
 	}
 }
 else {

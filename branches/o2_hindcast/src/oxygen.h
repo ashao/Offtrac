@@ -8,6 +8,7 @@
 #include "init.h"
 
 /* SUBROUTINE PROTOTYPES */
+void allocate_oxygen(  );
 void initialize_oxygen( int imon );
 void oxygen_saturation(double T[NZ][NXMEM][NYMEM], double S[NZ][NXMEM][NYMEM],
 		double o2_sat[NZ][NXMEM][NYMEM]);

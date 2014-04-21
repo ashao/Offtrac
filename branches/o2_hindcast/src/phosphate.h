@@ -30,6 +30,7 @@ extern double flux_pop[NXMEM][NYMEM];
 //
 
 /* SUBROUTINE prototypes */
-void initialize_phosphate( );
+void allocate_phosphate( );
+void initialize_phosphate( int imon );
 void apply_phosphate_jterms();
 
