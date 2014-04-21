@@ -654,7 +654,10 @@ else {
 //BX
 // read_h(imon,inxt);
 
-
+#if defined(OXYGEN) && defined(PHOSPHATE)
+initialize_oxygen( imon );
+initialize_phosphate( imon );
+#endif
 
 #ifdef USE_CALC_H
 z_sum(h, D);

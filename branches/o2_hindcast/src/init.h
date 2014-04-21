@@ -37,7 +37,7 @@
 
 /* Specify properties of the passive tracers                          */
 
-#define NUM_ADV_ITER 30         /* number of iterations for advection */
+#define NUM_ADV_ITER 100         /* number of iterations for advection */
 
 #define MERGED_ML                /* merge the first and second two     */
                                /* layers for all BGC variables       */

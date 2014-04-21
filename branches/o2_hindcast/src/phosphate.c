@@ -40,8 +40,6 @@ void allocate_phosphate(  )
 	extern char restart_filename[200];
 	// Base the indices of the main tracer array off of the oxygen index
 	extern int mOXYGEN;
-	extern double hstart[NZ][NXMEM][NYMEM];
-	extern double ****tr;
 	mDOP = mOXYGEN+1;
 	mPHOSPHATE = mDOP+1;
 	printf("mDOP: %d mPHOSPHATE: %d\n",mDOP,mPHOSPHATE);
@@ -56,9 +54,12 @@ void allocate_phosphate(  )
 	po4_star_lay = alloc3d(NZ,NXMEM,NYMEM);
 }
 void initialize_phosphate( int imon ) {
+	int i,j,k;
+	extern double hend[NZ][NXMEM][NYMEM];
+	extern double ****tr;
 #ifdef WOA_PHOS
 	printf("Initializing phosphate from WOA09\n");
-	read_woa_file(imon, hstart, phosphate_init, "woalevpo4.nc", "WOAPO4");
+	read_woa_file(imon, hend, phosphate_init, "woalevpo4.nc", "WOAPO4");
 	printf("Initializing DOP to zero\n");
 	set_darray3d_zero(dop_init, NZ, NXMEM, NYMEM);
 #endif

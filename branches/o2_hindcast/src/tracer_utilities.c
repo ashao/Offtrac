@@ -87,7 +87,5 @@ void z_depth(double h[NZ][NXMEM][NYMEM], double depth[NZ][NXMEM][NYMEM]) {
 		}
 	}
 
-	for (k=0;k<NZ;k++)
-		printf("depth[%d]=%f\n",depth[k][127][127]);
 
 }

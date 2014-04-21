@@ -25,8 +25,6 @@ extern double D[NXMEM][NYMEM];
 extern double ****tr;
 
 void allocate_oxygen (  ) {
-	extern double hstart[NZ][NXMEM][NYMEM];
-	extern char restart_filename[200];
 	printf("Allocating oxygen arrays\n");
 
 	int i, j, k;
@@ -41,11 +39,14 @@ void allocate_oxygen (  ) {
 	oxy_init = alloc3d(NZ,NXMEM,NYMEM);
 }
 
-void initialize_oxygen( ) {
+void initialize_oxygen(int imon ) {
+	int i,j,k;
+	extern double hend[NZ][NXMEM][NYMEM];
+	extern char restart_filename[200];
 	// Determine how to set the initial distribution of oxygen
 #ifdef WOA_OXY
 	printf("Initializing oxygen from WOA09\n");
-	read_woa_file(imon, hstart, oxy_init, "woa09.o2.nc", "LEVO2");
+	read_woa_file(imon, hend, oxy_init, "woa09.o2.nc", "LEVO2");
 #endif
 
 #ifdef RESTART
