@@ -27,7 +27,7 @@ extern double h[NZ][NXMEM][NYMEM];
 extern double dt;
 
 // extern double po4_star_lev[NZWOA][NXMEM][NYMEM]; unused ashao
-extern double ***po4_star_lay;
+// extern double ***po4_star_lay;
 extern double Temptm[NZ][NXMEM][NYMEM];
 /*
 extern double jpo4[NZ][NXMEM][NYMEM];
@@ -39,13 +39,12 @@ extern double flux_pop[NXMEM][NYMEM];
 */
 #ifdef OXYGEN
 extern double jo2[NZ][NXMEM][NYMEM];
+extern int mOXYGEN;
 #endif
+
 extern int mPHOSPHATE;
 extern int mDOP;
 
-#ifdef OXYGEN
-extern int mOXYGEN;
-#endif
 
 # ifdef PROGNOSTIC
 extern double fe_lev[NZWOA][NXMEM][NYMEM];

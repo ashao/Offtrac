@@ -18,4 +18,4 @@ void read_tracer_init(int imon);
 void read_buoy(int imon);
 void read_sponge(void);
 void read_grid();
-void read_woa_file(int imon, double ***harray, double ***array, char *filename, char *varname);
+void read_woa_file(int imon, double harray[NZ][NXMEM][NYMEM], double ***array, char *filename, char *varname);

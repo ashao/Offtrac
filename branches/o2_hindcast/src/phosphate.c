@@ -36,14 +36,15 @@ double flux_pop[NXMEM][NYMEM];
 double ***dop_init;
 void initialize_phosphate( int imon )
 {
-	
+	int i,j,k;
 	extern char restart_filename[200];
 	// Base the indices of the main tracer array off of the oxygen index
 	extern int mOXYGEN;
 	extern double hstart[NZ][NXMEM][NYMEM];
-	mDOP = mOXYGEN++;
-	mPHOSPHATE = mDOP++;
-
+	extern double ****tr;
+	mDOP = mOXYGEN+1;
+	mPHOSPHATE = mDOP+1;
+	printf("mDOP: %d mPHOSPHATE: %d\n",mDOP,mPHOSPHATE);
 	mn_phos = alloc3d(NZ,NXMEM,NYMEM);
 	mn_dop = alloc3d(NZ,NXMEM,NYMEM);
 	mn_pobs = alloc3d(NZ,NXMEM,NYMEM);
@@ -66,6 +67,16 @@ void initialize_phosphate( int imon )
 	printf("Initializing dop from restart: %s\n",restart_filename);
 	read_var3d( restart_filename, "mn_dop", imon, double dop_init);
 #endif
+
+	for (k=0;k<NZ;k++)
+		for (i=0;i<NXMEM;i++)
+			for(j=0;j<NYMEM;j++) {
+			tr[mDOP][k][i][j] = dop_init[k][i][j];
+			tr[mPHOSPHATE][k][i][j] = phosphate_init[k][i][j];
+
+			}
+	free3d(dop_init,NZ);
+	free3d(phosphate_init,NZ);
 }
 
 void apply_phosphate_jterms( ) {
@@ -74,6 +85,7 @@ void apply_phosphate_jterms( ) {
 	extern double ****tr;
 	extern double D[NXMEM][NYMEM];
 	// j terms here are calculated from biotic_sms routine in biotic.c
+	printf("Applying j terms for phosphate\n");
 	for (i = 0; i <= NXMEM - 1; i++) {
 		for (j = 0; j <= NYMEM - 1; j++) {
 			//BX - reinstated by HF
@@ -83,9 +95,12 @@ void apply_phosphate_jterms( ) {
 					tr[mDOP][k][i][j] += dt * jdop[k][i][j];
 				}
 			} else {
+
+				for (k = 0; k < NZ; k++) {
 				tr[mPHOSPHATE][k][i][j] = 0.0;
 				tr[mDOP][k][i][j] = 0.0;
 				jpo4[k][i][j] = 0.0;
+				}
 			}
 		}
 	}

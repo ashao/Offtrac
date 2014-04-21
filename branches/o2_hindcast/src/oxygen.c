@@ -1,30 +1,30 @@
 #include <stdio.h>
 #include "oxygen.h"
 #include "biotic.h"
-int mOXYGEN;
 #include "init.h"
 #include "phosphate.h"
 #include "netcdf.h"
 #include "alloc.h"
 #include "init.h"
 #include <math.h>
+#include "oxygen.h"
 /* OXYGEN VARIABLE DECLARATIONS */
 // Auxiliary variables
 int mOXYGEN;
 // Output arrays
-double*** mn_oxygen;
-double*** mn_o2sat;
-double*** mn_jo2;
+double ***mn_oxygen;
+double ***mn_o2sat;
+double ***mn_jo2;
 double mn_oxyflux[NXMEM][NYMEM];
 // Working arrays
-double*** oxy_init;
+double ***oxy_init;
 double o2_sat[NZ][NXMEM][NYMEM];
 double oxyflux[NXMEM][NYMEM];
 double jo2[NZ][NXMEM][NYMEM];
+extern double D[NXMEM][NYMEM];
+extern double ****tr;
 
 void initialize_oxygen ( int imon ) {
-	extern double ****tr;
-	extern double D[NXMEM][NYMEM];
 	extern double hstart[NZ][NXMEM][NYMEM];
 	extern char restart_filename[200];
 	printf("Allocating oxygen arrays\n");
@@ -42,23 +42,23 @@ void initialize_oxygen ( int imon ) {
 	// Determine how to set the initial distribution of oxygen
 #ifdef WOA_OXY
 	printf("Initializing oxygen from WOA09\n");
-//	read_woa_file(imon, hstart, oxy_init, "woa09.o2.nc", "o_an");
+	read_woa_file(imon, hstart, oxy_init, "woa09.o2.nc", "LEVO2");
 #endif
 
 #ifdef RESTART
 	printf("Initializing oxygen from restart %s\n",restart_filename);
-	read_var3d( restart_filename, "mn_oxygen", imon, double oxy_init)
+	read_var3d( restart_filename, "mn_oxygen", 0, oxy_init);
 #endif
 
 	// Copy the initialized tracer value over to main trace array
-	for (i=0;i<=NXMEM-1;i++) {
-		for (j=0;j<=NYMEM-1;j++) {
+	for (i=0;i<NXMEM;i++) {
+		for (j=0;j<NYMEM;j++) {
 			if (D[i][j]>MINIMUM_DEPTH) {
-				for (k=0;k<=NZ-1;k++) {
+				for (k=0;k<NZ;k++) {
 					tr[mOXYGEN][k][i][j] = oxy_init[k][i][j];
 				}
 			} else {
-				for (k=0;k<=NZ-1;k++)
+				for (k=0;k<NZ;k++)
 					tr[mOXYGEN][k][i][j] = 0.0;
 			}
 		}
@@ -94,8 +94,8 @@ void oxygen_saturation(double T[NZ][NXMEM][NYMEM], double S[NZ][NXMEM][NYMEM],
 	C0 = -4.88682E-07;
 
 	for (k = 0; k < NZ; k++) {
-		for (i = X1; i <= nx; i++) {
-			for (j = Y1; j <= ny; j++) {
+		for (i = X1; i < NXMEM; i++) {
+			for (j = Y1; j < NYMEM; j++) {
 				// HF this was set to 298.15, but T is in C, not K here!
 				// HF the Garcia and Gordon paper uses t=40C as upper bound
 				if (T[k][i][j] > 40.0) {
@@ -124,18 +124,19 @@ void oxygen_saturation(double T[NZ][NXMEM][NYMEM], double S[NZ][NXMEM][NYMEM],
 void apply_oxygen_jterms( ) {
 	int i,j,k;
 	extern double dt;
-	extern double ****tr;
-	extern double D[NXMEM][NYMEM];
 	// j terms here are calculated from biotic_sms routine in biotic.c
-	for (i = 0; i <= NXMEM - 1; i++) {
-		for (j = 0; j <= NYMEM - 1; j++) {
-			//BX - reinstated by HF
+	printf("dt=%f,mOXYGEN=%d\n",dt,mOXYGEN);
+	printf("Example jo2/o2: %f/%f\n",jo2[10][127][127],tr[mOXYGEN][10][127][127]);
+	for (i = 0; i < NXMEM; i++) {
+		for (j = 0; j <NYMEM; j++) {
 			if (D[i][j]>MINIMUM_DEPTH) {
 				for (k = 0; k < NZ; k++) {
 					tr[mOXYGEN][k][i][j] += dt * jo2[k][i][j];
 				}
 			} else {
+				for (k = 0; k < NZ; k++) {
 				tr[mOXYGEN][k][i][j] = 0.0;
+				}
 			}
 		}
 	}

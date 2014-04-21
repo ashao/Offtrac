@@ -5,7 +5,6 @@ double lin_interpp(double pleth, const double x[], const double z[],
 		int istart, int npts);
 
 
-void z_depth(double h[NZ][NXMEM][NYMEM], double depth[NZ][NXMEM][NYMEM]);
 
 // begin ashao
 /*     Begin added DT     */

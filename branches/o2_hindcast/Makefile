@@ -61,7 +61,8 @@ OFFSRC = $(SRCDIR)/offtrac.c $(SRCDIR)/read.c \
         $(SRCDIR)/alloc.c $(SRCDIR)/alloc_arrays.c \
 	$(SRCDIR)/masks.c $(SRCDIR)/set_metrics.c\
 	$(SRCDIR)/util.c $(SRCDIR)/biotic.c\
-	$(SRCDIR)/oxygen.c $(SRCDIR)/phosphate.c
+	$(SRCDIR)/oxygen.c $(SRCDIR)/phosphate.c \
+	$(SRCDIR)/tracer_utilities.c 
 
 offtrac: $(OFFSRC) $(SRCDIR)/init.h
 	$(CC)  $(OFFSRC) -o $(OUTNAME) $(CDFFLAGS) $(CFLAGS) $(LDFLAGS)

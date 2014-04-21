@@ -1660,7 +1660,7 @@ void read_var3d( char inpath[200], char varname[200], int imon, double ***data)
 
 
 
-void read_woa_file(int imon, double ***harray, double ***outarray, char *filename, char *varname) {
+void read_woa_file(int imon, double harray[NZ][NXMEM][NYMEM], double ***outarray, char *filename, char *varname) {
 
 	int i,j,k;
 	int err, cdfid, timeid;
@@ -1684,7 +1684,7 @@ void read_woa_file(int imon, double ***harray, double ***outarray, char *filenam
 			1400, 1500, 1750, 2000, 2500, 3000,
 			3500, 4000, 4500, 5000, 5500};
 
-	printf("Reading from WOA09 climatology: \n");
+//	printf("Reading from WOA09 climatology: \n");
 
 	//   sprintf(infile,"lev94_o2.nc");
 	sprintf(infile,filename);

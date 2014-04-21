@@ -508,11 +508,30 @@ lastsave = -1;
  *
  *----------------------------------*/
 
-read_grid;
+read_grid();
 printf("Done reading grid or metric file.\n");
 
-set_metrics;
+set_metrics();
 printf("Done setting metrics.\n");
+printf("Reading bathymetry, D.\n");
+
+// initialize D to be all ocean first
+
+for (i = 0; i <= NXMEM - 1; i++)
+{
+	for (j = 0; j <= NYMEM - 1; j++)
+	{
+		D[i][j] = MINIMUM_DEPTH;
+	}
+}
+#ifndef USE_CALC_H
+printf("calling read_D\n");
+read_D();
+for (i = 0; i <= NXMEM - 1; i++)
+	for (j = 0; j <= NYMEM - 1; j++)
+		if (D[i][j] < 10.0)
+			D[i][j] = MINIMUM_DEPTH;
+#endif
 
 /* Copy the variable descriptions to a list of the actual output variables. */
 for (i = 0; i < NOVARS; i++)
@@ -577,28 +596,8 @@ if (flags[9])
 	set_darray3d_zero(mn_age, NZ, NXMEM, NYMEM);
 
 #endif
-printf("Reading bathymetry, D.\n");
-
-// initialize D to be all ocean first
-
-for (i = 0; i <= NXMEM - 1; i++)
-{
-	for (j = 0; j <= NYMEM - 1; j++)
-	{
-		D[i][j] = MINIMUM_DEPTH;
-	}
-}
-#ifndef USE_CALC_H
-printf("calling read_D\n");
-read_D();
-
-for (i = 0; i <= NXMEM - 1; i++)
-	for (j = 0; j <= NYMEM - 1; j++)
-		if (D[i][j] < 10.0)
-			D[i][j] = MINIMUM_DEPTH;
-#endif
-
-//read_grid();
+// These were already called earlier: ashao
+//read_grid(); 
 //set_metrics();
 
 dyr = inmon / 12;
@@ -1263,7 +1262,6 @@ var[9] = &mn_age[0][0][0];
 #endif
 
 #ifdef OXYGEN
-printf("mn_oxygen address: %d\n",&mn_oxygen[0][0][0]);
 var[10] = &mn_oxygen[0][0][0];
 var[11] = &mn_jo2[0][0][0];
 #endif

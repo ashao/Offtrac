@@ -18,16 +18,14 @@
 #include "util.h"
 
 #if defined(OXYGEN) && defined(PHOSPHATE)
-
+#include "tracer_utilities.h"
 #include "oxygen.h"
 #include "phosphate.h"
-extern double ***po4_star_lay;
 #endif
 /*---------------------------------------------------------------------
  *     define variables and subroutines
  *---------------------------------------------------------------------*/
 
-void z_depth(double h[NZ][NXMEM][NYMEM], double depth[NZ][NXMEM][NYMEM]);
 void calc_ksub(double h[NZ][NXMEM][NYMEM]);
 
 // void print_to_screen(int pquant[10], int pstage);
@@ -184,9 +182,10 @@ void step_fields(int iyear, int itts, int imon, int iterno) {
 	read_woa_file(imon, hstart, po4_star_lay, "woalevpo4.nc", "WOAPO4");
 	printf("Calculating biotic sources/sinks\n");
 	biotic_sms(ibiodt);
-	surface_oxygen;
-	apply_oxygen_jterms;
-	apply_phosphate_jterms;
+	surface_oxygen();
+	apply_oxygen_jterms();
+	apply_phosphate_jterms();
+
 
 
 #endif
@@ -358,44 +357,6 @@ void calc_ksub(double htemp[NZ][NXMEM][NYMEM]) {
 
 }
 
-
-
-void z_depth(double h[NZ][NXMEM][NYMEM], double depth[NZ][NXMEM][NYMEM]) {
-	/* compute depth in meters for use in tracer depth dependent functions
-	 * Ivan Lima - Nov 2002 */
-	int i, j, k;
-	double hsum;
-	/* initialize variables with zero */
-
-	for (k = 0; k < NZ; k++) {
-		for (i = X1; i <= nx; i++) {
-			for (j = Y1; j <= ny; j++) {
-				depth[k][i][j] = 0.0;
-			}
-		}
-	}
-	/* compute depth at layer k as the the depth of the point in the
-	 * middle of that layer */
-	for (i = X1; i <= nx; i++) {
-		for (j = Y1; j <= ny; j++) {
-			//BX - reinstated by HF
-			if (D[i][j] > MINIMUM_DEPTH) {
-				hsum = h[0][i][j];
-				depth[0][i][j] = h[0][i][j] * 0.5;
-				for (k = 1; k < NZ; k++) {
-					depth[k][i][j] = hsum + h[k][i][j] * 0.5;
-					hsum += h[k][i][j];
-				}
-				//BX - reinstated by HF
-			} else {
-				for (k = 0; k < NZ; k++) {
-					depth[k][i][j] = misval;
-				}
-			}
-		}
-	}
-
-}
 
 #ifdef USE_CALC_H
 void z_sum(double h[NZ][NXMEM][NYMEM],double tot_depth[NXMEM][NYMEM])

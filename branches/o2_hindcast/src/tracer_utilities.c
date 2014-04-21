@@ -4,7 +4,9 @@
  *  Created on: Apr 15, 2014
  *      Author: ashao
  */
-
+#include "init.h"
+#include "tracer_utilities.h"
+extern double D[NXMEM][NYMEM];
 void conc_obs_layer(double h[NZ][NXMEM][NYMEM],
 		double conc_lev[NZWOA][NXMEM][NYMEM],
 		double conc_lay[NZ][NXMEM][NYMEM]) {
@@ -43,7 +45,7 @@ void conc_obs_layer(double h[NZ][NXMEM][NYMEM],
 				//BX - reinstated by HF
 			} else {
 				for (k = 0; k < NZ; k++) {
-					conc_lay[k][i][j] = misval;
+					conc_lay[k][i][j] = 0.0;
 				}
 			}
 		}
@@ -79,7 +81,7 @@ void z_depth(double h[NZ][NXMEM][NYMEM], double depth[NZ][NXMEM][NYMEM]) {
 				//BX - reinstated by HF
 			} else {
 				for (k = 0; k < NZ; k++) {
-					depth[k][i][j] = misval;
+					depth[k][i][j] = 0.0;
 				}
 			}
 		}
