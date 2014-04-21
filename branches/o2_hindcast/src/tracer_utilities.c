@@ -68,8 +68,8 @@ void z_depth(double h[NZ][NXMEM][NYMEM], double depth[NZ][NXMEM][NYMEM]) {
 	}
 	/* compute depth at layer k as the the depth of the point in the
 	 * middle of that layer */
-	for (i = X1; i <= nx; i++) {
-		for (j = Y1; j <= ny; j++) {
+	for (i = X1; i <NXMEM; i++) {
+		for (j = Y1; j <NYMEM; j++) {
 			//BX - reinstated by HF
 			if (D[i][j]>MINIMUM_DEPTH) {
 				hsum = h[0][i][j];
@@ -86,5 +86,8 @@ void z_depth(double h[NZ][NXMEM][NYMEM], double depth[NZ][NXMEM][NYMEM]) {
 			}
 		}
 	}
+
+	for (k=0;k<NZ;k++)
+		printf("depth[%d]=%f\n",depth[k][127][127]);
 
 }
