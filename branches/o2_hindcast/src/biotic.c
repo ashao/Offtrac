@@ -4,7 +4,6 @@
 #include <math.h>
 #include "init.h"
 #include "step.h"
-#include "oxygen.h"
 #include "phosphate.h"
 
 extern const double misval;
@@ -22,6 +21,31 @@ extern const double parm_alpha_n15_n2fix;
 
 #ifdef PHOSPHATE 
 
+extern double ****tr;
+extern double D[NXMEM][NYMEM];
+extern double h[NZ][NXMEM][NYMEM];
+extern double dt;
+
+// extern double po4_star_lev[NZWOA][NXMEM][NYMEM]; unused ashao
+extern double ***po4_star_lay;
+extern double Temptm[NZ][NXMEM][NYMEM];
+/*
+extern double jpo4[NZ][NXMEM][NYMEM];
+extern double jdop[NZ][NXMEM][NYMEM];
+extern double jremdop[NZ][NXMEM][NYMEM];
+extern double jprod[NZ][NXMEM][NYMEM];
+extern double jremin[NZ][NXMEM][NYMEM];
+extern double flux_pop[NXMEM][NYMEM];
+*/
+#ifdef OXYGEN
+extern double jo2[NZ][NXMEM][NYMEM];
+#endif
+extern int mPHOSPHATE;
+extern int mDOP;
+
+#ifdef OXYGEN
+extern int mOXYGEN;
+#endif
 
 # ifdef PROGNOSTIC
 extern double fe_lev[NZWOA][NXMEM][NYMEM];
@@ -81,6 +105,9 @@ extern int mNITRATE_15n;
 extern int mDON_15n;
 # endif
 #endif /* NITRATE */
+
+
+const double r_bio_tau = 1.0 / (30.0 * 86400.0);
 
 void biotic_sms(int ibiodt)
 {
@@ -186,9 +213,10 @@ void biotic_sms(int ibiodt)
 
     dt_bio = dt / (double) ibiodt;
     frac_dt_bio = 1.0 / (double) ibiodt;
-
+/* deprecated by ashao
     printf("conc_obs_layer(h,po4_star_lev,po4_star_lay)\n");
     conc_obs_layer(h,po4_star_lev,po4_star_lay);
+*/ 
 # ifdef PROGNOSTIC
 #  ifdef NITRATE
     // nitrate

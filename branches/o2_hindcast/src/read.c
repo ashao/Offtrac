@@ -126,6 +126,7 @@ void read_grid()
     end[0] = NYTOT;
     end[1] = NXTOT;
 
+	printf("end %d %d\n",end[0],end[1]);
     //HF
     status = nc_inq_varid(cdfid, "latq", &varid);
     if (status != NC_NOERR) handle_error("inq latq", status);
@@ -134,8 +135,8 @@ void read_grid()
     //BX-a  ncvarget(cdfid, 2, start, end, latq);
 
     //CAD should these loop indices be hardwired (to i=0;i<NYTOT) ?
-    for (i=0;i<NYTOT;i++) {
-	qlat[i+2]=(double)latq[i];
+   for (i=0;i<NYTOT;i++) {
+qlat[i+2]=(double)latq[i];
     }
 
     //HF ncvarget(cdfid, 2, start, end, lath);
@@ -1683,7 +1684,7 @@ void read_woa_file(int imon, double ***harray, double ***outarray, char *filenam
 			1400, 1500, 1750, 2000, 2500, 3000,
 			3500, 4000, 4500, 5000, 5500};
 
-	printf("Reading Levitus O2 climatology: \n");
+	printf("Reading from WOA09 climatology: \n");
 
 	//   sprintf(infile,"lev94_o2.nc");
 	sprintf(infile,filename);

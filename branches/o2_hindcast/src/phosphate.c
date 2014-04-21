@@ -5,8 +5,10 @@
  *      Author: ashao
  */
 #include "init.h"
-#include "biotic.h"
 #include "netcdf.h"
+#include "phosphate.h"
+#include "alloc.h"
+#include <stdio.h>
 /* PHOSPHATE VARIABLE DECLARATIONS */
 // Auxiliary variables
 int mPHOSPHATE;
@@ -25,21 +27,20 @@ double ***mn_jprod;
 double ***phosphate_init;
 double po4[NZ][NXMEM][NYMEM];
 double jpo4[NZ][NXMEM][NYMEM];
-double po4_star_lay[NZ][NXMEM][NYMEM];
+double ***po4_star_lay;
 double jprod[NZ][NXMEM][NYMEM];
 double jremin[NZ][NXMEM][NYMEM];
 double jremdop[NZ][NXMEM][NYMEM];
 double jdop[NZ][NXMEM][NYMEM];
 double flux_pop[NXMEM][NYMEM];
-
-extern int mDOP;
-extern int mPHOSPHATE;
+double ***dop_init;
 void initialize_phosphate( int imon )
 {
-
+	
 	extern char restart_filename[200];
 	// Base the indices of the main tracer array off of the oxygen index
 	extern int mOXYGEN;
+	extern double hstart[NZ][NXMEM][NYMEM];
 	mDOP = mOXYGEN++;
 	mPHOSPHATE = mDOP++;
 
@@ -51,9 +52,10 @@ void initialize_phosphate( int imon )
 	mn_jprod = alloc3d(NZ,NXMEM,NYMEM);
 	phosphate_init = alloc3d(NZ,NXMEM,NYMEM);
 	dop_init = alloc3d(NZ,NXMEM,NYMEM);
+	po4_star_lay = alloc3d(NZ,NXMEM,NYMEM);
 #ifdef WOA_PHOS
 	printf("Initializing phosphate from WOA09\n");
-	read_woa_file(imon, hstart, phosphate_init, "woa09levpo4", "WOAPO4");
+	read_woa_file(imon, hstart, phosphate_init, "woalevpo4.nc", "WOAPO4");
 	printf("Initializing DOP to zero\n");
 	set_darray3d_zero(dop_init, NZ, NXMEM, NYMEM);
 #endif
@@ -69,7 +71,8 @@ void initialize_phosphate( int imon )
 void apply_phosphate_jterms( ) {
 	int i,j,k;
 	extern double dt;
-
+	extern double ****tr;
+	extern double D[NXMEM][NYMEM];
 	// j terms here are calculated from biotic_sms routine in biotic.c
 	for (i = 0; i <= NXMEM - 1; i++) {
 		for (j = 0; j <= NYMEM - 1; j++) {
@@ -80,9 +83,9 @@ void apply_phosphate_jterms( ) {
 					tr[mDOP][k][i][j] += dt * jdop[k][i][j];
 				}
 			} else {
-				tr[mPHOSPHATE][k][i][j] = misval;
-				tr[mDOP][k][i][j] = misval;
-				jpo4[k][i][j] = misval;
+				tr[mPHOSPHATE][k][i][j] = 0.0;
+				tr[mDOP][k][i][j] = 0.0;
+				jpo4[k][i][j] = 0.0;
 			}
 		}
 	}

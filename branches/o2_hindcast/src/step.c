@@ -21,7 +21,7 @@
 
 #include "oxygen.h"
 #include "phosphate.h"
-extern double po4_star_lay[NZ][NXMEM][NYMEM];
+extern double ***po4_star_lay;
 #endif
 /*---------------------------------------------------------------------
  *     define variables and subroutines
@@ -181,9 +181,10 @@ void step_fields(int iyear, int itts, int imon, int iterno) {
 	ibiodt = 1; // number of biotic time steps per transport time step (dt)
 
 	// Update phosphate concentration for surface value restoration
-	read_woa_file(imon, hstart, po4_star_lay, "woa09levpo4", "WOAPO4");
+	read_woa_file(imon, hstart, po4_star_lay, "woalevpo4.nc", "WOAPO4");
+	printf("Calculating biotic sources/sinks\n");
 	biotic_sms(ibiodt);
-	surface_oxygen();
+	surface_oxygen;
 	apply_oxygen_jterms;
 	apply_phosphate_jterms;
 

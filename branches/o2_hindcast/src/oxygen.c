@@ -1,29 +1,33 @@
+#include <stdio.h>
 #include "oxygen.h"
 #include "biotic.h"
-extern int mOXYGEN;
+int mOXYGEN;
 #include "init.h"
 #include "phosphate.h"
 #include "netcdf.h"
-
+#include "alloc.h"
+#include "init.h"
+#include <math.h>
 /* OXYGEN VARIABLE DECLARATIONS */
 // Auxiliary variables
-extern int mOXYGEN;
+int mOXYGEN;
 // Output arrays
-extern double ***mn_oxygen;
-double ***mn_o2sat;
-extern double ***mn_jo2;
+double*** mn_oxygen;
+double*** mn_o2sat;
+double*** mn_jo2;
 double mn_oxyflux[NXMEM][NYMEM];
 // Working arrays
-double ***oxy_init;
+double*** oxy_init;
 double o2_sat[NZ][NXMEM][NYMEM];
 double oxyflux[NXMEM][NYMEM];
 double jo2[NZ][NXMEM][NYMEM];
 
 void initialize_oxygen ( int imon ) {
 	extern double ****tr;
-	extern double D[NXMEM[NYMEM];
+	extern double D[NXMEM][NYMEM];
 	extern double hstart[NZ][NXMEM][NYMEM];
 	extern char restart_filename[200];
+	printf("Allocating oxygen arrays\n");
 
 	int i, j, k;
 
@@ -35,11 +39,10 @@ void initialize_oxygen ( int imon ) {
 	mn_jo2 = alloc3d(NZ,NXMEM,NYMEM);
 	mn_o2sat = alloc3d(NZ,NXMEM,NYMEM);
 	oxy_init = alloc3d(NZ,NXMEM,NYMEM);
-
 	// Determine how to set the initial distribution of oxygen
 #ifdef WOA_OXY
 	printf("Initializing oxygen from WOA09\n");
-	read_woa_file(imon, hstart, oxy_init, "woa09.o2.nc", "o_an");
+//	read_woa_file(imon, hstart, oxy_init, "woa09.o2.nc", "o_an");
 #endif
 
 #ifdef RESTART
@@ -56,12 +59,12 @@ void initialize_oxygen ( int imon ) {
 				}
 			} else {
 				for (k=0;k<=NZ-1;k++)
-					tr[mOXYGEN][k][i][j] = misval;
+					tr[mOXYGEN][k][i][j] = 0.0;
 			}
 		}
 	}
 
-	free3d(oxy_init);
+	free3d(oxy_init,NZ);
 
 }
 
@@ -121,7 +124,8 @@ void oxygen_saturation(double T[NZ][NXMEM][NYMEM], double S[NZ][NXMEM][NYMEM],
 void apply_oxygen_jterms( ) {
 	int i,j,k;
 	extern double dt;
-
+	extern double ****tr;
+	extern double D[NXMEM][NYMEM];
 	// j terms here are calculated from biotic_sms routine in biotic.c
 	for (i = 0; i <= NXMEM - 1; i++) {
 		for (j = 0; j <= NYMEM - 1; j++) {
@@ -131,7 +135,7 @@ void apply_oxygen_jterms( ) {
 					tr[mOXYGEN][k][i][j] += dt * jo2[k][i][j];
 				}
 			} else {
-				tr[mOXYGEN][k][i][j] = misval;
+				tr[mOXYGEN][k][i][j] = 0.0;
 			}
 		}
 	}
@@ -141,6 +145,7 @@ void apply_oxygen_jterms( ) {
 
 void surface_oxygen( ) {
 	int i,j,k;
+	extern double ****tr;
 
 	// Set oxygen values to saturation at the mixed layer to mimic equilibrium with the atmosphere
 	extern double Temptm[NZ][NXMEM][NYMEM];

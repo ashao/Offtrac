@@ -27,7 +27,6 @@
 #include "iocdf.h"
 #include "read.h"
 #ifdef OXYGEN
-
 #include "oxygen.h"
 #include "phosphate.h"
 
@@ -215,9 +214,8 @@ int month;
 int mlen[12];
 int icnt;
 
-double qlat[NYMEM];
 double hlat[NYMEM];
-
+double qlat[NYMEM];
 #ifdef ENTRAIN
 double ea_init[NZ][NXMEM][NYMEM];
 double eaml_init[NXMEM][NYMEM];
@@ -298,10 +296,10 @@ size_t nrec = 0;
 
 #ifdef OXYGEN
 
-int mOXYGEN;
-double ***mn_oxygen;
-double ***mn_jo2;
-double jo2[NZ][NXMEM][NYMEM];
+extern int mOXYGEN;
+extern double ***mn_oxygen;
+extern double ***mn_jo2;
+extern double jo2[NZ][NXMEM][NYMEM];
 
 #endif
 
@@ -510,10 +508,10 @@ lastsave = -1;
  *
  *----------------------------------*/
 
-read_grid();
+read_grid;
 printf("Done reading grid or metric file.\n");
 
-set_metrics();
+set_metrics;
 printf("Done setting metrics.\n");
 
 /* Copy the variable descriptions to a list of the actual output variables. */
@@ -533,7 +531,15 @@ create_file(output_filename, NETCDF_FILE, var_out, nvar, &fn, &cdfid,
 printf("Closing file \n");
 close_file(&cdfid, &fn);
 
+
+#ifdef OXYGEN
+printf("Initializing oxygen and phosphate from month %d\n",imon);
+initialize_oxygen( imon );
+initialize_phosphate( imon );
+#endif
+
 /* Allocate the memory for the fields to be calculated.		*/
+printf("allocating fields\n");
 alloc_fields();
 
 /* initialize tracer pointers					*/
@@ -592,8 +598,8 @@ for (i = 0; i <= NXMEM - 1; i++)
 			D[i][j] = MINIMUM_DEPTH;
 #endif
 
-read_grid();
-set_metrics();
+//read_grid();
+//set_metrics();
 
 dyr = inmon / 12;
 smon = (double) ((int) inmon % NMONTHS);
@@ -659,10 +665,6 @@ initialize(inmon,run_name);
 initialize(imon);
 #endif
 
-#ifdef OXYGEN
-initialize_oxygen;
-initialize_phosphate;
-#endif
 nmn = 0;
 
 //HF the next line should be in init.h (and be optional!)
@@ -1253,7 +1255,7 @@ void alloc_fields(void)
 	var[6] = &mn_ea[0][0][0];
 	var[7] = &mn_eb[0][0][0];
 	var[8] = &mn_eaml[0][0];
-	var[18] = &mn_rml[0][0][0];
+	//var[18] = &mn_rml[0][0][0];
 
 #ifdef AGE
 var[9] = &mn_age[0][0][0];
@@ -1261,6 +1263,7 @@ var[9] = &mn_age[0][0][0];
 #endif
 
 #ifdef OXYGEN
+printf("mn_oxygen address: %d\n",&mn_oxygen[0][0][0]);
 var[10] = &mn_oxygen[0][0][0];
 var[11] = &mn_jo2[0][0][0];
 #endif

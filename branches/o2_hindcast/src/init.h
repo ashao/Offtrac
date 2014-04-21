@@ -48,7 +48,7 @@
 			       /* netCDF files -- otherwise initialize*/
 			       /* analytically 			      */
 
-#define NTR 1                 /*  The number of tracers to carry.    */
+#define NTR 3                 /*  The number of tracers to carry.    */
                                /*  Must add up to total of AGE,       */
                                /*    OXYGEN, O18, (CFC11 + CFC12),    */
                                /*    (DOP + PHOSPHATE), (DIC + ALK)   */
@@ -261,7 +261,7 @@
 #define KD   1.00e-5		/* was 1.00e-5		*/
 #endif
 
-#define NML 2
+#define NML 1
 
 #define MDT 4800
 //HF
@@ -273,7 +273,6 @@
 #define OXYGEN
 #define NZWOA 33
 #define WOA_OXY
-#define WOA_PO4
+#define WOA_PHOS
 #define PHOSPHATE
-
 

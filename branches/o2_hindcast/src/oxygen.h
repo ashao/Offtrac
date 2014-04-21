@@ -5,12 +5,13 @@
  *      Author: ashao
  */
 
-
+#include "init.h"
 
 /* SUBROUTINE PROTOTYPES */
 void initialize_oxygen( int imon );
 void oxygen_saturation(double T[NZ][NXMEM][NYMEM], double S[NZ][NXMEM][NYMEM],
 		double o2_sat[NZ][NXMEM][NYMEM]);
+
 void surface_oxygen();
 void apply_oxygen_jterms();
 
