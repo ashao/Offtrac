@@ -6,50 +6,27 @@
  */
 #include "init.h"
 #include "tracer_utilities.h"
+#include "alloc.h"
+
 extern double D[NXMEM][NYMEM];
-void conc_obs_layer(double h[NZ][NXMEM][NYMEM],
-		double conc_lev[NZWOA][NXMEM][NYMEM],
-		double conc_lay[NZ][NXMEM][NYMEM]) {
-	int i, j, k;
-	int nzlevitus = NZWOA;
-	double depth[NZ][NXMEM][NYMEM];
-	double concobsprof[NZWOA];
-	double levitus_depths[NZWOA] = { 0, 10, 20, 30, 50, 75, 100, 120, 150,
-			200, 250, 300, 400, 500, 600, 700, 800, 900, 1000, 1100, 1200,
-			1300, 1400, 1500, 1750, 2000, 2500, 3000, 3500, 4000, 4500, 5000,
-			5500 };
+double ***Temptm,***Salttm;
 
-	/*---------------------------------------------------------------------
-	 *     calculate vertically interpolated concentration:
-	 *            levitus levels -> model layers
-	 *             conc_lev  -> conc_lay
-	 *---------------------------------------------------------------------*/
-	z_depth(h, depth);
+void allocate_ts( ) {
 
-	//printf("Initialize 2a for month \n");
-	//HF for (i=X1;i<=nx;i++) {
-	//HF for (j=Y1;j<=ny;j++) {
-	for (i = 0; i <= NXMEM - 1; i++) {
-		for (j = 0; j <= NYMEM - 1; j++) {
-			//BX - reinstated by HF
-			if (D[i][j]>MINIMUM_DEPTH) {
-				for (k = 0; k < nzlevitus; k++) {
-					concobsprof[k] = conc_lev[k][i][j];
-				}
-				for (k = 0; k < NZ; k++) {
-					conc_lay[k][i][j] = lin_interp(depth[k][i][j], concobsprof,
-							levitus_depths, 0, nzlevitus);
-					if (conc_lay[k][i][j] < 0.e0)
-						conc_lay[k][i][j] = 0.;
-				}
-				//BX - reinstated by HF
-			} else {
-				for (k = 0; k < NZ; k++) {
-					conc_lay[k][i][j] = 0.0;
-				}
-			}
-		}
-	}
+	Temptm = alloc3d(NZ,NXMEM,NYMEM);
+	Salttm = alloc3d(NZ,NXMEM,NYMEM);
+
+}
+
+void read_temp_and_salt( int imon, char *fieldtype) {
+	extern char directory[75];
+	char inpath[200];
+	strcpy(directory,inpath);
+	strcat(inpath,sprintf("ts-%s.nc",fieldtype));
+
+	read_var3d( inpath, "temp", imon, Temptm);
+	read_var3d( inpath, "salt", imon, Salttm);
+
 }
 
 void z_depth(double h[NZ][NXMEM][NYMEM], double depth[NZ][NXMEM][NYMEM]) {

@@ -28,7 +28,7 @@ extern double dt;
 
 // extern double po4_star_lev[NZWOA][NXMEM][NYMEM]; unused ashao
 // extern double ***po4_star_lay;
-extern double Temptm[NZ][NXMEM][NYMEM];
+extern double ***Temptm;
 /*
 extern double jpo4[NZ][NXMEM][NYMEM];
 extern double jdop[NZ][NXMEM][NYMEM];

@@ -5,7 +5,7 @@
  *      Author: ashao
  */
 
-void conc_obs_layer(double h[NZ][NXMEM][NYMEM],double conc_lev[NZWOA][NXMEM][NYMEM],
-		double conc_lay[NZ][NXMEM][NYMEM]);
-void z_depth(double h[NZ][NXMEM][NYMEM], double depth[NZ][NXMEM][NYMEM]);
 
+void z_depth(double h[NZ][NXMEM][NYMEM], double depth[NZ][NXMEM][NYMEM]);
+void allocate_ts( );
+void read_temp_and_salt( int imon, char *fieldtype);

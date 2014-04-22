@@ -8,7 +8,7 @@ void read_biotic_bc(int imon,int itts);
 
 
 
-void read_ts(int imon,int itts);
+// void read_ts(int imon,int itts); removed in favor of read_temp_and_salt
 void read_clim(int imon,int inxt,int ilst);
 #ifdef RESTART
 void read_tracer_init(int imon, char *run_name);

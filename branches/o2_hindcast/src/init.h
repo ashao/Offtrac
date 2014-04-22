@@ -56,7 +56,7 @@
                                /*    (15NO3 + DO15N), SF6
 				/* CFC11_sat, CFC12_sat, SF6_sar ashao    */
 
-#define NOVARS 12              /*  Number of variables used in        */
+#define NOVARS 15              /*  Number of variables used in        */
                                /*    vardesc structure for output.    */
                                /*    Moved here from offtrac.c        */
                                /*  25OCT07 BX ashao                   */

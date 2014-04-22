@@ -72,7 +72,7 @@ void initialize_oxygen(int imon ) {
 
 }
 
-void oxygen_saturation(double T[NZ][NXMEM][NYMEM], double S[NZ][NXMEM][NYMEM],
+void oxygen_saturation(double ***T, double ***S,
 		double o2_sat[NZ][NXMEM][NYMEM]) {
 	/* compute oxygen saturation concentrations in the mixed layer in ml/l
 	 * using Garcia and Gordon 1992 (L&O,1307) and convert to mol/m^3.
@@ -153,11 +153,12 @@ void surface_oxygen( ) {
 	extern double ****tr;
 
 	// Set oxygen values to saturation at the mixed layer to mimic equilibrium with the atmosphere
-	extern double Temptm[NZ][NXMEM][NYMEM];
-	extern double Salttm[NZ][NXMEM][NYMEM];
+	extern double ***Temptm;
+	extern double ***Salttm;
 	oxygen_saturation(Temptm, Salttm, o2_sat);
 	for (k=0;k<NML;k++)
 		for (i=0;i<NXMEM;i++)
 			for (j=0;j<NYMEM;j++)
 				tr[mOXYGEN][k][i][j]=o2_sat[k][i][j];
 }
+

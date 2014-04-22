@@ -36,8 +36,8 @@ extern double hend[NZ][NXMEM][NYMEM];
 extern double hstart[NZ][NXMEM][NYMEM];
 extern double rml[2][NXMEM][NYMEM];
 extern double salt_woa[NXMEM][NYMEM];
-extern double Temptm[NZ][NXMEM][NYMEM];
-extern double Salttm[NZ][NXMEM][NYMEM];
+///extern double Temptm[NZ][NXMEM][NYMEM];
+///extern double Salttm[NZ][NXMEM][NYMEM];
 extern double dt;
 /*   Begin added DT    */
 extern int beginyear;
@@ -1186,14 +1186,14 @@ void read_h(int imon, double (*hread)[NXMEM][NYMEM], char *fieldtype)
 
     }
 
-
+/* ALL REMOVED IN FAVOR OF READ_TEMP_AND_SALT //ashao
 void read_ts(int imon,int itts)
     {
 
 #ifdef TS_VARIAB
-    /* Read temperature and salinity from time varying records. */
+    //  Read temperature and salinity from time varying records.
 #else
-    /* Read temperature and salinity from climatology. */
+     // Read temperature and salinity from climatology.
 #endif
     int i,j,k;
     int err, cdfid, timeid;
@@ -1330,12 +1330,12 @@ void read_ts(int imon,int itts)
 		Salttm[k][i+2][j+2]= fact1 * tmp3d[k][j][i] +
 		fact0 * tmp3dp[k][j][i] + fact2 * tmp3dn[k][j][i];
 
-    /*    // do not use salt_woa from file--use SSS from variability file
+        // do not use salt_woa from file--use SSS from variability file
 	for (i=0;i<NXTOT;i++) {
 	  for (j=0;j<NYTOT;j++) {
 	    salt_woa[i+2][j+2]= Salttm[0][j][i];
 	  }
-	  } */
+	  }
 
     free3d_f(tmp3d, NZ);
     free3d_f(tmp3dp, NZ);
@@ -1464,7 +1464,7 @@ void read_ts(int imon,int itts)
     for (i=2;i<=NXMEM;i++) {
 	salt_woa[i][211] = salt_woa[i][210];
     }
-*/
+*/ /*
 
     if (NZ < 24) {
 	free3d_f(tmp3d, 24);
@@ -1480,7 +1480,7 @@ void read_ts(int imon,int itts)
 #endif // TS_VARIAB
     }
 
-
+*/
 
 #ifdef RESTART
 void read_tracer_init(int imon, char *run_name)

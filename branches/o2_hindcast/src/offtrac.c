@@ -26,10 +26,10 @@
 #include "initialize.h"
 #include "iocdf.h"
 #include "read.h"
+#include "tracer_utilities.h"
 #ifdef OXYGEN
 #include "oxygen.h"
 #include "phosphate.h"
-
 #endif
 /*-------------------------------------------------------------------*
  *                                                                   *
@@ -153,7 +153,38 @@ struct vardesc vars[NOVARS] =
 				"mol m^-3",
 				'd',
 				-1e6
-		} // 11
+		}, // 11
+		{
+				"mn_o2sat",
+				"Oxygen saturation",
+				'h',
+				'L',
+				's',
+				"mol m^-3",
+				'd',
+				-1e6
+		}, // 12
+		{
+				"mn_dop",
+				"Dissolved organic phosphate concentration",
+				'h',
+				'L',
+				's',
+				"mol m^-3",
+				'd',
+				-1e6
+		}, //13
+		{
+				"mn_phos",
+				"Inorganic phosphate concentration",
+				'h',
+				'L',
+				's',
+				"mol m^-3",
+				'd',
+				-1e6
+		} //14
+
 };
 
 void alloc_fields(void);
@@ -194,8 +225,10 @@ double ***mn_eb;
 double mn_eaml[NXMEM][NYMEM];
 double wd[NZ + 1][NXMEM][NYMEM];
 
+/*
 double Temptm[NZ][NXMEM][NYMEM];
 double Salttm[NZ][NXMEM][NYMEM];
+*/
 
 double areagr[NXMEM][NYMEM];
 double D[NXMEM][NYMEM];
@@ -292,15 +325,6 @@ char output_filename[200];
 double wrts;
 int nvar = 0, cdfid, timeid[2];
 size_t nrec = 0;
-#endif
-
-#ifdef OXYGEN
-
-extern int mOXYGEN;
-extern double ***mn_oxygen;
-extern double ***mn_jo2;
-extern double jo2[NZ][NXMEM][NYMEM];
-
 #endif
 
 /*-------------------------------------------------------------------*
@@ -483,8 +507,15 @@ for (i = 1; i <= 11; i++)
 	rflags[9] = 1; /* ideal age tracer*/
 #endif
 #ifdef OXYGEN
-	flags[10] = 1;
-	flags[11] = 1;
+	flags[10] = 1; // Oxygen tracer
+	flags[11] = 1; // jo2
+	flags[12] = 1; // oxygen sat
+	flags[13] = 1; // mn_dop
+	flags[14] = 1; // mn_phosphate
+	rflags[10] = 1; // oxygen
+	rflags[13] = 1; // dop
+	rflags[14] = 1; // phosphate
+
 #endif
 
 	printf("Enter base name for output\n");
@@ -557,6 +588,9 @@ allocate_oxygen( );
 allocate_phosphate( );
 #endif
 
+// Allocate temperature and salinity data arrays to be read in
+allocate_ts();
+
 /* Allocate the memory for the fields to be calculated.		*/
 printf("allocating fields\n");
 alloc_fields();
@@ -594,7 +628,18 @@ if (flags[7])
 #ifdef AGE
 if (flags[9])
 	set_darray3d_zero(mn_age, NZ, NXMEM, NYMEM);
-
+#endif
+#if defined(OXYGEN) && defined(PHOSPHATE)
+if (flags[10])
+	set_darray3d_zero(mn_oxygen, NZ, NXMEM, NYMEM);
+if (flags[11]) // jo2
+	set_darray3d_zero(mn_jo2, NZ, NXMEM, NYMEM);
+if (flags[12]) // oxygen sat
+	set_darray3d_zero(mn_o2sat, NZ, NXMEM, NYMEM);
+if (flags[13])  // mn_dop
+	set_darray3d_zero(mn_dop, NZ, NXMEM, NYMEM);
+if (flags[14]); // mn_phosphate
+	set_darray3d_zero(mn_phos, NZ, NXMEM, NYMEM);
 #endif
 // These were already called earlier: ashao
 //read_grid(); 
@@ -795,18 +840,21 @@ for (cmon = inmon; cmon < inmon + tmon; cmon++)
 				printf("Reading in UVW from hindcast\n");
 				read_uvw(hindindex,"hind");
 				read_h(hindindex+1,hend,"hind");
+				read_temp_and_salt( hindindex, "hind");
 				hindindex++;
 			}
 			else {
 
 				printf("Reading in UVW from climatology\n");
 				read_uvw(isnxt,"clim");
+				read_temp_and_salt( isnxt, "clim");
 				read_h(isnxt, hend,"clim");
 			}
 		}
 		else {
 			printf("Reading in UVW from climatology\n");
 			read_uvw(isnxt,"clim");
+			read_temp_and_salt( isnxt, "clim");
 			read_h(isnxt, hend,"clim");
 		}
 		printf("Month- hstart:%d hend:%d\n",ismon,isnxt);
@@ -898,6 +946,9 @@ for (cmon = inmon; cmon < inmon + tmon; cmon++)
 				{
 					mn_oxygen[k][i][j] += tr[mOXYGEN][k][i][j];
 					mn_jo2[k][i][j] += jo2[k][i][j];
+					mn_o2sat[k][i][j] += o2_sat[k][i][j];
+					mn_phos[k][i][j] += tr[mPHOSPHATE][k][i][j];
+					mn_dop[k][i][j] += tr[mDOP][k][i][j];
 				}
 			}
 		}
@@ -934,6 +985,10 @@ for (cmon = inmon; cmon < inmon + tmon; cmon++)
 
 			mult_darray3d(mn_oxygen, NZ, NXMEM, NYMEM, frac);
 			mult_darray3d(mn_jo2, NZ, NXMEM, NYMEM, frac);
+			mult_darray3d(mn_o2sat, NZ, NXMEM, NYMEM, frac);
+			mult_darray3d(mn_phos, NZ, NXMEM, NYMEM, frac);
+			mult_darray3d(mn_dop, NZ, NXMEM, NYMEM, frac);
+
 
 #endif
 			if (flags[18])
@@ -997,6 +1052,9 @@ for (cmon = inmon; cmon < inmon + tmon; cmon++)
 #ifdef OXYGEN
 			set_darray3d_zero(mn_oxygen,NZ,NXMEM,NYMEM);
 			set_darray3d_zero(mn_jo2,NZ,NXMEM,NYMEM);
+			set_darray3d_zero(mn_o2sat, NZ, NXMEM, NYMEM, frac);
+			set_darray3d_zero(mn_phos, NZ, NXMEM, NYMEM, frac);
+			set_darray3d_zero(mn_dop, NZ, NXMEM, NYMEM, frac);
 #endif
 			// begin ashao
 			// end ashao
@@ -1270,6 +1328,10 @@ var[9] = &mn_age[0][0][0];
 #ifdef OXYGEN
 var[10] = &mn_oxygen[0][0][0];
 var[11] = &mn_jo2[0][0][0];
+var[12] = &mn_o2sat[0][0][0];
+var[13] = &mn_dop[0][0][0];
+var[14] = &mn_phos[0][0][0];
+
 #endif
 
 // end ashao
