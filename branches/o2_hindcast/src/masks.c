@@ -7,6 +7,7 @@
 
 extern double umask[NXMEM][NYMEM];   /* _mask are 1 over ocean and 0  */
 extern double vmask[NXMEM][NYMEM];   /* over land on the u & v grids. */
+extern double oceanmask[NXMEM][NYMEM];
 
 extern double D[NXMEM][NYMEM];
 
@@ -32,6 +33,13 @@ void initializemasks() {
       else vmask[i][j] = 1.0;
     }
   }
+
+  for(i=0;i<NXMEM;i++)
+	for(j=0;j<NYMEM;j++)
+	if (D[NXMEM][NYMEM]<=Dmin)
+		oceanmask[i][j] = 0.0;
+	else
+		oceanmask[i][j] = 1.0;
 
   /*
   for (j=27;j<=33;j++) {

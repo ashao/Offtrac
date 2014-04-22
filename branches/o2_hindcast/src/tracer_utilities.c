@@ -4,9 +4,12 @@
  *  Created on: Apr 15, 2014
  *      Author: ashao
  */
+#include <string.h>
+#include <stdio.h>
 #include "init.h"
 #include "tracer_utilities.h"
 #include "alloc.h"
+#include "read.h"
 
 extern double D[NXMEM][NYMEM];
 double ***Temptm,***Salttm;
@@ -20,12 +23,22 @@ void allocate_ts( ) {
 
 void read_temp_and_salt( int imon, char *fieldtype) {
 	extern char directory[75];
-	char inpath[200];
-	strcpy(directory,inpath);
-	strcat(inpath,sprintf("ts-%s.nc",fieldtype));
+	char filename[20];
+	char saltpath[300];
+	char temppath[300];
 
-	read_var3d( inpath, "temp", imon, Temptm);
-	read_var3d( inpath, "salt", imon, Salttm);
+	if ( imon % NMONTHS == 0 )
+		imon = 0;
+
+	strcpy(saltpath,directory);
+	sprintf(filename,"salt.%s.nc",fieldtype);
+	strcat(saltpath,filename);
+	strcpy(temppath,directory);
+	sprintf(filename,"temp.%s.nc",fieldtype);
+	strcat(temppath,filename);
+	printf("Reading temperature and salinity from month %d\n",imon);
+	read_var3d( temppath, "temp", imon, Temptm);
+	read_var3d( saltpath, "salt", imon, Salttm);
 
 }
 

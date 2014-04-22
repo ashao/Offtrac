@@ -535,7 +535,7 @@ void read_uvw(int imon, char *fieldtype)
     float*** tmp3d;
     float*** tmp3dp;
     float*** tmp3dn;
-
+	printf("UVW %s index: %d\n",fieldtype,imon);
 
     //
     //   read in separate files for U, V, and W
@@ -1640,11 +1640,14 @@ void read_var3d( char inpath[200], char varname[200], int imon, double ***data)
     if ((status = nc_inq_varid(cdfid, varname, &varid))) 
     bzero(start, MAX_NC_VARS * sizeof(long));
 
+    
     count[0] = 1;
-    if (strcmp(varname,"wd")) count[1]=NZ+1;
-    else count[1] = NZ;
+    count[1] = NZ;
     count[2] = NYTOT;
     count[3] = NXTOT;
+
+    for (i=0;i<4;i++)
+	printf("start[%d]: %d,count[%d]: %d\n",i,start[i],i,count[i]);
 
     tmp3d  = alloc3d_f(NZ+1,NYTOT,NXTOT);
     if ((status = nc_get_vara_float(cdfid,varid,start,count,tmp3d[0][0])))

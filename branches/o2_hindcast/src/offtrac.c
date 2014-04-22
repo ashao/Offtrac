@@ -239,6 +239,7 @@ double trwarn[NTR][2];
 
 double umask[NXMEM][NYMEM];
 double vmask[NXMEM][NYMEM];
+double oceanmask[NXMEM][NYMEM];
 
 int ksub[NXMEM][NYMEM];
 int ksub_clim[NXMEM][NYMEM];
@@ -558,10 +559,13 @@ for (i = 0; i <= NXMEM - 1; i++)
 #ifndef USE_CALC_H
 printf("calling read_D\n");
 read_D();
-for (i = 0; i <= NXMEM - 1; i++)
+
+/*
+ * for (i = 0; i <= NXMEM - 1; i++)
 	for (j = 0; j <= NYMEM - 1; j++)
 		if (D[i][j] < 10.0)
 			D[i][j] = MINIMUM_DEPTH;
+*/
 #endif
 
 /* Copy the variable descriptions to a list of the actual output variables. */
@@ -1052,9 +1056,9 @@ for (cmon = inmon; cmon < inmon + tmon; cmon++)
 #ifdef OXYGEN
 			set_darray3d_zero(mn_oxygen,NZ,NXMEM,NYMEM);
 			set_darray3d_zero(mn_jo2,NZ,NXMEM,NYMEM);
-			set_darray3d_zero(mn_o2sat, NZ, NXMEM, NYMEM, frac);
-			set_darray3d_zero(mn_phos, NZ, NXMEM, NYMEM, frac);
-			set_darray3d_zero(mn_dop, NZ, NXMEM, NYMEM, frac);
+			set_darray3d_zero(mn_o2sat, NZ, NXMEM, NYMEM);
+			set_darray3d_zero(mn_phos, NZ, NXMEM, NYMEM);
+			set_darray3d_zero(mn_dop, NZ, NXMEM, NYMEM);
 #endif
 			// begin ashao
 			// end ashao
