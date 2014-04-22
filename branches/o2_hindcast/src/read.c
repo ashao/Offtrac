@@ -1647,8 +1647,8 @@ void read_var3d( char inpath[200], char varname[200], int imon, double ***data)
     count[2] = NYTOT;
     count[3] = NXTOT;
 
-    for (i=0;i<4;i++)
-	printf("start[%d]: %d,count[%d]: %d\n",i,start[i],i,count[i]);
+//    for (i=0;i<4;i++)
+//	printf("start[%d]: %d,count[%d]: %d\n",i,start[i],i,count[i]);
 
     tmp3d  = alloc3d_f(NZ+1,NYTOT,NXTOT);
     if ((status = nc_get_vara_float(cdfid,varid,start,count,tmp3d[0][0])))

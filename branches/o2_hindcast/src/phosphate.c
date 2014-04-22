@@ -86,13 +86,13 @@ void apply_phosphate_jterms( ) {
 	int i,j,k;
 	extern double dt;
 	extern double ****tr;
-	extern int oceanmask;
+	extern int oceanmask[NXMEM][NYMEM];
 	// j terms here are calculated from biotic_sms routine in biotic.c
 	printf("Applying j terms for phosphate\n");
 	for (i = 0; i <= NXMEM - 1; i++) {
 		for (j = 0; j <= NYMEM - 1; j++) {
 			//BX - reinstated by HF
-			if (oceanmask) {
+			if (oceanmask[i][j]) {
 				for (k = 0; k < NZ; k++) {
 					tr[mPHOSPHATE][k][i][j] += dt * jpo4[k][i][j];
 					tr[mDOP][k][i][j] += dt * jdop[k][i][j];

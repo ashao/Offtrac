@@ -567,7 +567,7 @@ read_D();
 			D[i][j] = MINIMUM_DEPTH;
 */
 #endif
-
+initializemasks();
 /* Copy the variable descriptions to a list of the actual output variables. */
 for (i = 0; i < NOVARS; i++)
 	if (flags[i] > 0)

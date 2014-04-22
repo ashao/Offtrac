@@ -7,9 +7,9 @@
 
 extern double umask[NXMEM][NYMEM];   /* _mask are 1 over ocean and 0  */
 extern double vmask[NXMEM][NYMEM];   /* over land on the u & v grids. */
-extern double oceanmask[NXMEM][NYMEM];
+extern int oceanmask[NXMEM][NYMEM];
 
-extern int D[NXMEM][NYMEM];
+extern double D[NXMEM][NYMEM];
 
 void initializemasks() {
 
@@ -36,7 +36,7 @@ void initializemasks() {
 
   for(i=0;i<NXMEM;i++)
 	for(j=0;j<NYMEM;j++)
-	if (D[NXMEM][NYMEM]<=Dmin)
+	if (D[i][j]<=Dmin)
 		oceanmask[i][j] = 0;
 	else
 		oceanmask[i][j] = 1;

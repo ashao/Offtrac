@@ -246,8 +246,7 @@ void biotic_sms(int ibiodt)
 // compute depth at layer k as the depth of the point in the 
 //  middle of that layer
 	    D_ij = D[i][j]; // create local variable
-	    D_ij = oceanmask[i][j];
-	    if (D_ij) {
+	    if (oceanmask[i][j]) {
 		hsum = h[0][i][j];
 		depth[0] = hsum * 0.5;
 		for (k=1;k<NZ;k++) {
