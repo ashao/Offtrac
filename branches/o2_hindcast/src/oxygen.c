@@ -21,8 +21,8 @@ double ***oxy_init;
 double o2_sat[NZ][NXMEM][NYMEM];
 double oxyflux[NXMEM][NYMEM];
 double jo2[NZ][NXMEM][NYMEM];
-extern double D[NXMEM][NYMEM];
 extern double ****tr;
+extern int oceanmask[NXMEM][NYMEM];
 
 void allocate_oxygen (  ) {
 	printf("Allocating oxygen arrays\n");
@@ -57,7 +57,7 @@ void initialize_oxygen(int imon ) {
 	// Copy the initialized tracer value over to main trace array
 	for (i=0;i<NXMEM;i++) {
 		for (j=0;j<NYMEM;j++) {
-			if (D[i][j]>MINIMUM_DEPTH) {
+			if (oceanmask[i][j]) {
 				for (k=0;k<NZ;k++) {
 					tr[mOXYGEN][k][i][j] = oxy_init[k][i][j];
 				}
@@ -133,7 +133,7 @@ void apply_oxygen_jterms( ) {
 	printf("Example jo2/o2: %f/%f\n",jo2[10][127][127],tr[mOXYGEN][10][127][127]);
 	for (i = 0; i < NXMEM; i++) {
 		for (j = 0; j <NYMEM; j++) {
-			if (D[i][j]>MINIMUM_DEPTH) {
+			if (oceanmask[i][j]) {
 				for (k = 0; k < NZ; k++) {
 					tr[mOXYGEN][k][i][j] += dt * jo2[k][i][j];
 				}
@@ -159,6 +159,9 @@ void surface_oxygen( ) {
 	for (k=0;k<NML;k++)
 		for (i=0;i<NXMEM;i++)
 			for (j=0;j<NYMEM;j++)
-				tr[mOXYGEN][k][i][j]=o2_sat[k][i][j];
+				if (oceanmask[i][j])
+					tr[mOXYGEN][k][i][j]=o2_sat[k][i][j];
+				else
+					tr[mOXYGEN][k][i][j]=0.0;
 }
 

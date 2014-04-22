@@ -29,6 +29,7 @@ extern  double dyq[NYTOT][NXTOT]; HF-e */
 
 extern  double areagr[NXMEM][NYMEM];
 
+extern int oceanmask[NXMEM][NYMEM];
 extern double ***u;
 extern double ***v;
 extern double h[NZ][NXMEM][NYMEM];
@@ -1742,7 +1743,7 @@ void read_woa_file(int imon, double harray[NZ][NXMEM][NYMEM], double ***outarray
 
 	for (i=X1;i<=nx;i++) {
 		for (j=Y1;j<=ny;j++) {
-			if (D[i][j]>MINIMUM_DEPTH) {
+			if (oceanmask[i][j]) {
 				for (k=0;k<NZWOA;k++)
 					po4obsprof[k] = oxytmp[k][i][j];
 				for (k=0;k<NZ;k++) {

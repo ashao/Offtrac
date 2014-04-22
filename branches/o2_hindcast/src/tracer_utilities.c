@@ -10,7 +10,7 @@
 #include "tracer_utilities.h"
 #include "alloc.h"
 #include "read.h"
-
+extern int oceanmask[NXMEM][NYMEM];
 extern double D[NXMEM][NYMEM];
 double ***Temptm,***Salttm;
 
@@ -61,7 +61,7 @@ void z_depth(double h[NZ][NXMEM][NYMEM], double depth[NZ][NXMEM][NYMEM]) {
 	for (i = X1; i <NXMEM; i++) {
 		for (j = Y1; j <NYMEM; j++) {
 			//BX - reinstated by HF
-			if (D[i][j]>MINIMUM_DEPTH) {
+			if (oceanmask[i][j]) {
 				hsum = h[0][i][j];
 				depth[0][i][j] = h[0][i][j] * 0.5;
 				for (k = 1; k < NZ; k++) {

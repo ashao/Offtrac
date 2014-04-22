@@ -23,6 +23,7 @@ extern const double parm_alpha_n15_n2fix;
 
 extern double ****tr;
 extern double D[NXMEM][NYMEM];
+extern int oceanmask[NXMEM][NYMEM];
 extern double h[NZ][NXMEM][NYMEM];
 extern double dt;
 
@@ -245,7 +246,8 @@ void biotic_sms(int ibiodt)
 // compute depth at layer k as the depth of the point in the 
 //  middle of that layer
 	    D_ij = D[i][j]; // create local variable
-	    if (D_ij>MINIMUM_DEPTH) {
+	    D_ij = oceanmask[i][j];
+	    if (D_ij) {
 		hsum = h[0][i][j];
 		depth[0] = hsum * 0.5;
 		for (k=1;k<NZ;k++) {
@@ -536,7 +538,7 @@ void biotic_sms(int ibiodt)
 	    
 /*       bottom boundary condition for shallow grid points (D < 75m) */
 
-		if (D_ij < compensation_depth && D[i][j]>MINIMUM_DEPTH) {
+		if (D_ij < compensation_depth && oceanmask[i][j]) {
 		    jremin_ij[kmax] = flux_pop_ij / h[kmax][i][j];
 		    // printf("D < comp_depth at grid point %i,%i \n",i,j);
 		}
@@ -738,7 +740,7 @@ void biotic_sms(int ibiodt)
 		}
 
 /*       bottom boundary condition for shallow grid points (D < 75m) */
-		if (D_ij < compensation_depth && D[i][j]>MINIMUM_DEPTH) {
+		if (D_ij < compensation_depth && oceanmask[i][j]) {
 		    jca[kmax] = flux_caco3 / h[kmax][i][j];
 		    // printf("D < comp_depth at grid point %i,%i \n",i,j);
 		}

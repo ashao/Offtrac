@@ -239,7 +239,7 @@ double trwarn[NTR][2];
 
 double umask[NXMEM][NYMEM];
 double vmask[NXMEM][NYMEM];
-double oceanmask[NXMEM][NYMEM];
+int oceanmask[NXMEM][NYMEM];
 
 int ksub[NXMEM][NYMEM];
 int ksub_clim[NXMEM][NYMEM];
