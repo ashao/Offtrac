@@ -102,7 +102,6 @@ void apply_phosphate_jterms( ) {
 				for (k = 0; k < NZ; k++) {
 				tr[mPHOSPHATE][k][i][j] = 0.0;
 				tr[mDOP][k][i][j] = 0.0;
-				jpo4[k][i][j] = 0.0;
 				}
 			}
 		}

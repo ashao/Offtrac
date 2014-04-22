@@ -180,6 +180,10 @@ void step_fields(int iyear, int itts, int imon, int iterno) {
 
 	// Update phosphate concentration for surface value restoration
 	read_woa_file(imon, hstart, po4_star_lay, "woalevpo4.nc", "WOAPO4");
+
+	set_fix_darray3d_zero(jo2,NZ);
+	set_fix_darray3d_zero(jdop,NZ);
+	set_fix_darray3d_zero(jpo4,NZ);
 	printf("Calculating biotic sources/sinks\n");
 	biotic_sms(ibiodt);
 	surface_oxygen();
