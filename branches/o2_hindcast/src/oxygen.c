@@ -128,6 +128,7 @@ void oxygen_saturation(double ***T, double ***S,
 void apply_oxygen_jterms( ) {
 	int i,j,k;
 	extern double dt;
+	extern double hend[NZ][NXMEM][NYMEM];
 	// j terms here are calculated from biotic_sms routine in biotic.c
 	printf("dt=%f,mOXYGEN=%d\n",dt,mOXYGEN);
 	printf("Example jo2/o2: %f/%f\n",jo2[10][127][127],tr[mOXYGEN][10][127][127]);
@@ -135,7 +136,8 @@ void apply_oxygen_jterms( ) {
 		for (j = 0; j <NYMEM; j++) {
 			if (oceanmask[i][j]) {
 				for (k = 0; k < NZ; k++) {
-					tr[mOXYGEN][k][i][j] += dt * jo2[k][i][j];
+					if (hend[k][i][j] > EPSILON)
+						tr[mOXYGEN][k][i][j] += dt * jo2[k][i][j];
 				}
 			} else {
 				for (k = 0; k < NZ; k++) {

@@ -148,13 +148,14 @@ void wrap_reentrance_2d( double **arr ) {
 		arr[0][j] =   arr[nx-1][j];
 		arr[1][j] =   arr[nx][j];
 	}
-
+#ifdef REENTRANT_Y
 	//      meridional re-entrance
 	for (i=0;i<=nx+2;i++) {
 		ii = 363 - i;
 		arr[ii][ny+1] = arr[i][ny];
 		arr[ii][ny+2] = arr[i][ny-1];
 	}
+#endif
 
 }
 
@@ -172,13 +173,14 @@ void wrap_reentrance_3d( double ***arr, int nz) {
 			arr[k][0][j] =   arr[k][nx-1][j];
 			arr[k][1][j] =   arr[k][nx][j];
 		}
-
+#ifdef REENTRANT_Y
 		//      meridional re-entrance
 		for (i=0;i<=nx+2;i++) {
 			ii = 363 - i;
 			arr[k][ii][ny+1] = arr[k][i][ny];
 			arr[k][ii][ny+2] = arr[k][i][ny-1];
 		}
+#endif
 	}
 }
 

@@ -12,7 +12,7 @@
 #define DMAX 6500.0            /*    The maximum depth of the basin,  */
                                /*  in m.  This is required for        */
                                /*  initanal.c to give valid advice.   */
-#define MINIMUM_DEPTH 1e-6     /*    The minimum ocean depth, in m.   */
+#define MINIMUM_DEPTH 0.5     /*    The minimum ocean depth, in m.   */
                                /*  Anything shallower than this depth */
                                /*  is assumed to be on land, and all  */
                                /*  appropriate fluxes are masked out. */
@@ -37,7 +37,7 @@
 
 /* Specify properties of the passive tracers                          */
 
-#define NUM_ADV_ITER 30         /* number of iterations for advection */
+#define NUM_ADV_ITER 90         /* number of iterations for advection */
 
 #define MERGED_ML                /* merge the first and second two     */
                                /* layers for all BGC variables       */
@@ -61,7 +61,7 @@
                                /*    Moved here from offtrac.c        */
                                /*  25OCT07 BX ashao                   */
 
-#define BEGYEAR 1900			/* ashao: Set the start year, for
+#define BEGYEAR 1947			/* ashao: Set the start year, for
  	 	 	 	 	 	 	 	 tracers with atmospheric histories */
 
 #undef HINDCAST			/* Expect to read in hindcasat fields */
@@ -77,7 +77,7 @@
                              /* before repetition. E.g., for 10 year  */
                              /* forcing file use 120, 564 for 47yrs */
 
-#define WRINT 1                /*  Number of months between writes AND */
+#define WRINT 12                /*  Number of months between writes AND */
                                /*   the mean interval for each write   */
 
 #define NTSTEP 1                /*  Number of time steps between       */ 
@@ -153,7 +153,7 @@
                                /*  direction.                         */
 # undef   PARALLEL_IO           /*  With PARALLEL_IO and NETCDF_OUTPUT */
                                /*  defined, each processor writes out */
-                               /*  its own NetCDF file.  These files  */
+                               /*  /ts own NetCDF file.  These files  */
                                /*  can be combined using the utility  */
                                /*  mppnccombine.                      */
 # define  NETCDF_OUTPUT         /*    If NETCDF_OUTPUT is defined, all */
@@ -275,4 +275,4 @@
 #define WOA_OXY
 #define WOA_PHOS
 #define PHOSPHATE
-
+#undef RESTART

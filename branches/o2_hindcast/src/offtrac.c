@@ -189,6 +189,7 @@ struct vardesc vars[NOVARS] =
 
 void alloc_fields(void);
 void set_metrics(void);
+char restart_filename[200];
 
 /* Begin edit DT */
 void step_fields(int iyear, int itts, int imon, int iterno); // modified ashao
@@ -345,6 +346,7 @@ int main(void)
 	double *dy;
 	double dmon[12];
 	double dbmon;
+	double *timept;
 	int imon, inxt, ilst;
 # ifndef WRTTS
 int itts; /* tracer time step counter */
@@ -370,7 +372,6 @@ FILE *fn;
 char output_filename[200];
 #endif
 char run_name[200];
-char restart_filename[200];
 struct vardesc var_out[NOVARS];
 #ifndef WRTTS
 struct varcdfinfo varinfo[NOVARS];
@@ -663,7 +664,8 @@ theyear = iyear;
 #ifdef RESTART
 theyear++;
 iyear++;
-sprintf(restart_filename,"restart.%s.%04i.nc",run_name,inmon);
+sprintf(restart_filename,"restart.%s.%04d.nc",run_name,(int) inmon);
+printf("restart file: %s\n",restart_filename);
 #endif
 /*  End edit DT  */
 inxt = imon + 1;
@@ -685,14 +687,16 @@ ilst = (int) (lst + 0.00001);
 
 currtime = BEGYEAR;
 if (usehindcast) {
+	starthindindex+=inmon;
 	// Check to see if simulation started within the hindcast years
-	if ( (currtime >= BEGHIND) || (currtime < (ENDHIND+1) ) ) {
-		hindindex=inmon;
+	if ( (currtime >= BEGHIND) && (currtime < (ENDHIND+1) ) ) {
+		hindindex=ismon;
 		read_h(ismon,hend,"hind");
 	}
 	else {
 		read_h(ismon, hend,"clim");
 	}
+	printf("Hindcast will start at month: %d\n",starthindindex);
 }
 else {
 	read_h(ismon, hend,"clim");
@@ -704,8 +708,8 @@ else {
 // read_h(imon,inxt);
 
 #if defined(OXYGEN) && defined(PHOSPHATE)
-initialize_oxygen( imon );
-initialize_phosphate( imon );
+initialize_oxygen( isnxt );
+initialize_phosphate( isnxt );
 #endif
 
 #ifdef USE_CALC_H
@@ -815,7 +819,7 @@ for (cmon = inmon; cmon < inmon + tmon; cmon++)
 	isnxt = (int) (snxt + 0.00001);
 
 	day = (*iyr) * 365.0 + dmon[imon];
-	*dy = day;
+	*dy = currtime;
 
 	printf("the current day is -%g- \n", *dy);
 	printf("the current ismon/smon is -%i-%g- \n", ismon, smon);
@@ -841,7 +845,7 @@ for (cmon = inmon; cmon < inmon + tmon; cmon++)
 		if (usehindcast) {
 			if ( ( cmon >= starthindindex) && ( hindindex <= (numhindmonths-1) )) {
 
-				printf("Reading in UVW from hindcast\n");
+				printf("Reading in UVW from hindcast using index %d\n",hindindex);
 				read_uvw(hindindex,"hind");
 				read_h(hindindex+1,hend,"hind");
 				read_temp_and_salt( hindindex, "hind");
@@ -870,7 +874,7 @@ for (cmon = inmon; cmon < inmon + tmon; cmon++)
 		 *----------------------------------*/
 
 		printf("step fields - day = %g\n\n", day);
-		step_fields(iyear, itts, imon, iterno); // modified ashao
+		step_fields(iyear, itts, isnxt, iterno); // modified ashao
 
 
 		/*-------------------------------------------------------------------*

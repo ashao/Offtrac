@@ -37,7 +37,6 @@ double ***dop_init;
 void allocate_phosphate(  )
 {
 	int i,j,k;
-	extern char restart_filename[200];
 	// Base the indices of the main tracer array off of the oxygen index
 	extern int mOXYGEN;
 	mDOP = mOXYGEN+1;
@@ -57,18 +56,19 @@ void initialize_phosphate( int imon ) {
 	int i,j,k;
 	extern double hend[NZ][NXMEM][NYMEM];
 	extern double ****tr;
+	extern char restart_filename[200];
 #ifdef WOA_PHOS
 	printf("Initializing phosphate from WOA09\n");
-	read_woa_file(imon, hend, phosphate_init, "woalevpo4.nc", "WOAPO4");
+	read_woa_file(imon, hend, phosphate_init, "woa09.phos.nc", "p_an");
 	printf("Initializing DOP to zero\n");
 	set_darray3d_zero(dop_init, NZ, NXMEM, NYMEM);
 #endif
 
 #ifdef RESTART
 	printf("Initializing phosphate from restart: %s\n",restart_filename);
-	read_var3d( restart_filename, "mn_phos", imon, double phosphate_init);
+	read_var3d( restart_filename, "mn_phos", 0, phosphate_init);
 	printf("Initializing dop from restart: %s\n",restart_filename);
-	read_var3d( restart_filename, "mn_dop", imon, double dop_init);
+	read_var3d( restart_filename, "mn_dop", 0, dop_init);
 #endif
 
 	for (k=0;k<NZ;k++)
@@ -87,6 +87,7 @@ void apply_phosphate_jterms( ) {
 	extern double dt;
 	extern double ****tr;
 	extern int oceanmask[NXMEM][NYMEM];
+	extern double hend[NZ][NXMEM][NYMEM];
 	// j terms here are calculated from biotic_sms routine in biotic.c
 	printf("Applying j terms for phosphate\n");
 	for (i = 0; i <= NXMEM - 1; i++) {
@@ -94,8 +95,10 @@ void apply_phosphate_jterms( ) {
 			//BX - reinstated by HF
 			if (oceanmask[i][j]) {
 				for (k = 0; k < NZ; k++) {
-					tr[mPHOSPHATE][k][i][j] += dt * jpo4[k][i][j];
-					tr[mDOP][k][i][j] += dt * jdop[k][i][j];
+					if (hend[k][i][j] > EPSILON) {
+						tr[mPHOSPHATE][k][i][j] += dt * jpo4[k][i][j];
+						tr[mDOP][k][i][j] += dt * jdop[k][i][j];
+						}
 				}
 			} else {
 

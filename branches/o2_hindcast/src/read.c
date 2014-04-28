@@ -279,7 +279,7 @@ qlat[i+2]=(double)latq[i];
     }
 
     /* meridional re-entrance            */
-
+#ifdef REENTRANT_Y
     for (i=2;i<=nx;i++) {
 	int ii = 363 - i;
 	areagr[ii][ny+1] = areagr[i][ny];
@@ -309,7 +309,7 @@ qlat[i+2]=(double)latq[i];
 	DYu(ii,ny+1) = DYu(i,ny);
 	DYu(ii,ny+2) = DYu(i,ny-1);
     }
-
+#endif
     }
 
 void read_D()
@@ -349,13 +349,14 @@ void read_D()
 	D[0][j] =   D[nx-1][j];
 	D[1][j] =   D[nx][j];
     }
-
+#ifdef REENTRANT_Y
     //      meridional re-entrance
     for (i=0;i<=nx+2;i++) {
 	ii = 363 - i;
 	D[ii][ny+1] = D[i][ny];
 	D[ii][ny+2] = D[i][ny-1];
     }
+#endif
     }
 
 
@@ -503,7 +504,7 @@ void read_clim(int imon, int inxt, int ilst)
 	    hend[k][1][j] =   hend[k][nx][j];
 	}
     }
-
+#ifdef REENTRANT_Y
     //      meridional re-entrance
     for (i=2;i<=nx;i++) {
 	ii = 363 - i;
@@ -514,6 +515,7 @@ void read_clim(int imon, int inxt, int ilst)
 	    hend[k][ii][ny+2] = hend[k][i][ny-1];
 	}
     }
+#endif
     close_file(&cdfid,&file);
     }
 
@@ -1173,7 +1175,7 @@ void read_h(int imon, double (*hread)[NXMEM][NYMEM], char *fieldtype)
 	    hread[k][1][j] =   hread[k][nx][j];
 	}
     }
-
+#ifdef REENTRANT_Y
     //      meridional re-entrance
     for (i=2;i<=nx;i++) {
 	ii = 363 - i;
@@ -1182,11 +1184,11 @@ void read_h(int imon, double (*hread)[NXMEM][NYMEM], char *fieldtype)
 	    hread[k][ii][ny+2]   = hread[k][i][ny-1];
 	}
     }
+#endif
 
     close_file(&cdfid,&file);
 
     }
-
 /* ALL REMOVED IN FAVOR OF READ_TEMP_AND_SALT //ashao
 void read_ts(int imon,int itts)
     {
