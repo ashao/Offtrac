@@ -1662,6 +1662,7 @@ void read_var3d( char inpath[200], char varname[200], int imon, double ***data)
 
     wrap_reentrance_3d(data,count[1]);
 
+    free3d_f(tmp3d);
     }
 
 
