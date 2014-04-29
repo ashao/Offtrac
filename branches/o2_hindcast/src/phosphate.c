@@ -25,7 +25,7 @@ double ***mn_jprod;
 
 // Working arrays
 double ***phosphate_init;
-double po4[NZ][NXMEM][NYMEM];
+// double po4[NZ][NXMEM][NYMEM];
 double jpo4[NZ][NXMEM][NYMEM];
 double ***po4_star_lay;
 double jprod[NZ][NXMEM][NYMEM];
@@ -88,6 +88,7 @@ void apply_phosphate_jterms( ) {
 	extern double ****tr;
 	extern int oceanmask[NXMEM][NYMEM];
 	extern double hend[NZ][NXMEM][NYMEM];
+	extern double misval;
 	// j terms here are calculated from biotic_sms routine in biotic.c
 	printf("Applying j terms for phosphate\n");
 	for (i = 0; i <= NXMEM - 1; i++) {
@@ -95,16 +96,15 @@ void apply_phosphate_jterms( ) {
 			//BX - reinstated by HF
 			if (oceanmask[i][j]) {
 				for (k = 0; k < NZ; k++) {
-					if (hend[k][i][j] > EPSILON) {
-						tr[mPHOSPHATE][k][i][j] += dt * jpo4[k][i][j];
-						tr[mDOP][k][i][j] += dt * jdop[k][i][j];
-						}
-				}
+					tr[mPHOSPHATE][k][i][j] += dt * jpo4[k][i][j];
+					tr[mDOP][k][i][j] += dt * jdop[k][i][j];
+					}
+				
 			} else {
 
 				for (k = 0; k < NZ; k++) {
-				tr[mPHOSPHATE][k][i][j] = 0.0;
-				tr[mDOP][k][i][j] = 0.0;
+				tr[mPHOSPHATE][k][i][j] = misval;
+				tr[mDOP][k][i][j] = misval;
 				}
 			}
 		}

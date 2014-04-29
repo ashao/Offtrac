@@ -643,7 +643,7 @@ if (flags[12]) // oxygen sat
 	set_darray3d_zero(mn_o2sat, NZ, NXMEM, NYMEM);
 if (flags[13])  // mn_dop
 	set_darray3d_zero(mn_dop, NZ, NXMEM, NYMEM);
-if (flags[14]); // mn_phosphate
+if (flags[14]) // mn_phosphate
 	set_darray3d_zero(mn_phos, NZ, NXMEM, NYMEM);
 #endif
 // These were already called earlier: ashao

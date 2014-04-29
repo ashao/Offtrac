@@ -37,7 +37,7 @@
 
 /* Specify properties of the passive tracers                          */
 
-#define NUM_ADV_ITER 90         /* number of iterations for advection */
+#define NUM_ADV_ITER 60         /* number of iterations for advection */
 
 #define MERGED_ML                /* merge the first and second two     */
                                /* layers for all BGC variables       */
@@ -77,7 +77,7 @@
                              /* before repetition. E.g., for 10 year  */
                              /* forcing file use 120, 564 for 47yrs */
 
-#define WRINT 12                /*  Number of months between writes AND */
+#define WRINT 1                /*  Number of months between writes AND */
                                /*   the mean interval for each write   */
 
 #define NTSTEP 1                /*  Number of time steps between       */ 

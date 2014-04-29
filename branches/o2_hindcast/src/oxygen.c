@@ -43,6 +43,7 @@ void initialize_oxygen(int imon ) {
 	int i,j,k;
 	extern double hend[NZ][NXMEM][NYMEM];
 	extern char restart_filename[200];
+	extern double misval;
 	// Determine how to set the initial distribution of oxygen
 #ifdef WOA_OXY
 	printf("Initializing oxygen from WOA09\n");
@@ -63,7 +64,7 @@ void initialize_oxygen(int imon ) {
 				}
 			} else {
 				for (k=0;k<NZ;k++)
-					tr[mOXYGEN][k][i][j] = 0.0;
+					tr[mOXYGEN][k][i][j] = misval;;
 			}
 		}
 	}
@@ -129,6 +130,7 @@ void apply_oxygen_jterms( ) {
 	int i,j,k;
 	extern double dt;
 	extern double hend[NZ][NXMEM][NYMEM];
+	extern double misval;
 	// j terms here are calculated from biotic_sms routine in biotic.c
 	printf("dt=%f,mOXYGEN=%d\n",dt,mOXYGEN);
 	printf("Example jo2/o2: %f/%f\n",jo2[10][127][127],tr[mOXYGEN][10][127][127]);
@@ -136,12 +138,11 @@ void apply_oxygen_jterms( ) {
 		for (j = 0; j <NYMEM; j++) {
 			if (oceanmask[i][j]) {
 				for (k = 0; k < NZ; k++) {
-					if (hend[k][i][j] > EPSILON)
-						tr[mOXYGEN][k][i][j] += dt * jo2[k][i][j];
+					tr[mOXYGEN][k][i][j] += dt * jo2[k][i][j];
 				}
 			} else {
 				for (k = 0; k < NZ; k++) {
-				tr[mOXYGEN][k][i][j] = 0.0;
+				tr[mOXYGEN][k][i][j] = misval;
 				}
 			}
 		}
@@ -161,9 +162,6 @@ void surface_oxygen( ) {
 	for (k=0;k<NML;k++)
 		for (i=0;i<NXMEM;i++)
 			for (j=0;j<NYMEM;j++)
-				if (oceanmask[i][j])
 					tr[mOXYGEN][k][i][j]=o2_sat[k][i][j];
-				else
-					tr[mOXYGEN][k][i][j]=0.0;
 }
 

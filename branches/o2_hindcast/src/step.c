@@ -184,6 +184,7 @@ void step_fields(int iyear, int itts, int imon, int iterno) {
 	set_fix_darray3d_zero(jo2,NZ);
 	set_fix_darray3d_zero(jdop,NZ);
 	set_fix_darray3d_zero(jpo4,NZ);
+	set_fix_darray3d_zero(jprod,NZ);
 	set_fix_darray3d_zero(jremin,NZ);
 	set_fix_darray3d_zero(jremdop,NZ);
 	set_fix_darray2d_zero(flux_pop);
@@ -191,6 +192,9 @@ void step_fields(int iyear, int itts, int imon, int iterno) {
 	surface_oxygen();
 	printf("Calculating biotic sources/sinks\n");
 	biotic_sms(ibiodt);
+# ifdef MERGED_ML
+	merge_ml_j();
+# endif
 	apply_oxygen_jterms();
 	apply_phosphate_jterms();
 	surface_oxygen();
@@ -200,9 +204,6 @@ void step_fields(int iyear, int itts, int imon, int iterno) {
 
 
 
-# ifdef MERGED_ML
-	merge_ml_j();
-# endif
 
 	/*-----------------------------------------
 	 *
@@ -555,6 +556,39 @@ void merge_ml_j() {
 	for (i = X1; i <= nx; i++) {
 		for (j = Y1; j <= ny; j++) {
 			for (k = 0; k <= 2; k = k + 2) {
+
+# ifdef PHOSPHATE 
+                                jpo4[k][i][j] = (jpo4[k][i][j]*h[k][i][j]+
+                                                jpo4[k+1][i][j]*h[k+1][i][j])/
+                                (h[k][i][j] + h[k+1][i][j]);
+                                jpo4[k+1][i][j] = jpo4[k][i][j];
+
+                                jdop[k][i][j] = (jdop[k][i][j]*h[k][i][j]+
+                                                jdop[k+1][i][j]*h[k+1][i][j])/
+                                (h[k][i][j] + h[k+1][i][j]);
+                                jdop[k+1][i][j] = jdop[k][i][j];
+
+                                jremdop[k][i][j] = (jremdop[k][i][j]*h[k][i][j]+
+                                                jremdop[k+1][i][j]*h[k+1][i][j])/
+                                (h[k][i][j] + h[k+1][i][j]);
+                                jremdop[k+1][i][j]= jremdop[k][i][j];
+
+                                jprod[k][i][j] = (jprod[k][i][j]*h[k][i][j]+
+                                                jprod[k+1][i][j]*h[k+1][i][j])/
+                                (h[k][i][j] + h[k+1][i][j]);
+                                jprod[k+1][i][j] = jprod[k][i][j];
+
+                                jremin[k][i][j] = (jremin[k][i][j]*h[k][i][j]+
+                                                jremin[k+1][i][j]*h[k+1][i][j])/
+                                (h[k][i][j] + h[k+1][i][j]);
+                                jremin[k+1][i][j] = jremin[k][i][j];
+# endif // PHOSPHATE
+# ifdef OXYGEN
+                                jo2[k][i][j] = (jo2[k][i][j]*h[k][i][j]+
+                                                jo2[k+1][i][j]*h[k+1][i][j])/
+                                (h[k][i][j] + h[k+1][i][j]);
+                                jo2[k+1][i][j] = jo2[k][i][j];
+# endif
 			}
 		}
 	}
