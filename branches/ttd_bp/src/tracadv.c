@@ -137,6 +137,9 @@ void tracer(int itts)
 	double MLMIN = 4.25;
 	double BLMIN = 0.20;
 
+#ifdef ENTRAIN
+  double nts = dt/DT; /* number of timesteps (#day*86400/3600seconds) */
+#endif
   int i, j, k, m, pstage;
   int itt;
   double fract1;
@@ -239,6 +242,17 @@ void tracer(int itts)
 /* calculate the diapycnal velocities at the interfaces		*/
 /*   if we read in the ea, eb and eaml variables                */
 /*   Otherwise we read in wd directly                           */
+
+#ifdef ENTRAIN
+  for (i=X0;i<=nx+1;i++)                               
+      for (j=Y0;j<=ny;j++)
+        wd[0][i][j] = nts*eaml[i][j];                        
+
+  for (k=1;k<NZ;k++)                              
+      for (i=X0;i<=nx+1;i++)
+	  for (j=Y0;j<=ny;j++)
+	      wd[k][i][j] = nts*(ea[k][i][j] - eb[k-1][i][j]); 
+#endif
 
 #define STANDARD_ADVECTION
 //#undef STANDARD_ADVECTION

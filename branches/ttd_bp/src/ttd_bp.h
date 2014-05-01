@@ -1,11 +1,12 @@
 /*
  * ttd_bp.h
- * Contains subroutine prototypes for TTD estimation by boundary propagation and user modifiable values
  *
- *  Created on: Jan 9, 2014
+ *  Created on: May 1, 2014
  *      Author: ashao
  */
+extern int mTTD;
+extern double ***mn_ttd;
 
-#define NMONSPINUP 12 // Spinup for 12 months (1 year)
-void initialize_boundary_propagator( int );
-
+void allocate_ttd( );
+void initialize_ttd( );
+void ttd_surface( );

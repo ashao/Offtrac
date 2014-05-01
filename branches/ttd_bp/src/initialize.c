@@ -63,6 +63,26 @@ extern int estTTD;
 /*   End added DT      */
 
 
+// end ashao
+
+
+
+
+//BX-a for restart reading
+#ifdef ENTRAIN
+extern double ea_init[NZ][NXMEM][NYMEM];
+extern double eaml_init[NXMEM][NYMEM];
+#endif
+//BX-e
+
+#ifdef SPONGE
+extern double Idamp[NXMEM][NYMEM];
+extern int num_fields;
+extern double sp_e[NZ][NXMEM][NYMEM];
+# if defined (AGE) || defined(CFC) || defined(SF6) // ashao
+extern double sp_age[NZ][NXMEM][NYMEM];
+# endif
+#endif
 
 #ifdef RESTART
 void initialize(int imon, char *run_name)
@@ -75,6 +95,22 @@ void initialize(int imon)
 
     int i, j, k, m;
 
+#ifdef SPONGE
+
+    num_fields=1;  /* that e thing */
+# ifdef AGE
+    num_fields++;
+# endif
+
+// end ashao
+
+    printf("num_fields = %d\n\n",num_fields);
+    read_sponge();
+
+    initialize_sponge(Idamp,num_fields);
+    set_up_sponge_field(sp_e,NULL,NZ);
+ 
+#endif  /* SPONGE */
 
     initializemasks();   /* create land/ocean masks based on topography array (D) */
 
@@ -184,6 +220,10 @@ void initialize(int imon)
       }
     }
     
+
+# ifdef SPONGE
+    set_up_sponge_field(sp_age,age,NZ);
+# endif
 
     mAGE=m;
     printf("index of AGE tracer m = %d\n\n",mAGE);

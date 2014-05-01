@@ -29,10 +29,6 @@ int alloc_arrays()
     extern double ***age;
     extern double ***mn_age;
 #endif
-#ifdef TTDBP
-    extern double ***ttdbp;
-    extern double ***mn_ttdbp;
-#endif
     /*#ifdef SMOOTH_REST
     extern double ***h_init;
     #endif*/
@@ -100,18 +96,6 @@ int alloc_arrays()
 	return 1;
     }
 #endif /* AGE */
-#ifdef TTDBP
-    ttdbp = alloc3d(NZ,NXMEM,NYMEM);
-    if(age == NULL) {
-	fprintf(stderr,"not enough memory for ttdbp!\n");
-	return 1;
-    }
-    mn_ttdbp = alloc3d(NZ,NXMEM,NYMEM);
-    if(mn_age == NULL) {
-	fprintf(stderr,"not enough memory for mn_ttdbp!\n");
-	return 1;
-    }
-#endif // TTDBP
 
     /*#ifdef SMOOTH_REST
     h_init = alloc3d(NZ,NXMEM,NYMEM);

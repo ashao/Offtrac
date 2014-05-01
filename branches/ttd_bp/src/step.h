@@ -4,11 +4,7 @@ double lin_interp(double pleth, const double x[], const double z[], int istart,
 double lin_interpp(double pleth, const double x[], const double z[],
 		int istart, int npts);
 
-void conc_obs_layer(double h[NZ][NXMEM][NYMEM],
-		double conc_lev[NZPHOS][NXMEM][NYMEM],
-		double conc_lay[NZ][NXMEM][NYMEM]);
 
-void z_depth(double h[NZ][NXMEM][NYMEM], double depth[NZ][NXMEM][NYMEM]);
 
 // begin ashao
 /*     Begin added DT     */

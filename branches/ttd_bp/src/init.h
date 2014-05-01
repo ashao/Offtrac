@@ -12,7 +12,7 @@
 #define DMAX 6500.0            /*    The maximum depth of the basin,  */
                                /*  in m.  This is required for        */
                                /*  initanal.c to give valid advice.   */
-#define MINIMUM_DEPTH 1e-6     /*    The minimum ocean depth, in m.   */
+#define MINIMUM_DEPTH 0.5     /*    The minimum ocean depth, in m.   */
                                /*  Anything shallower than this depth */
                                /*  is assumed to be on land, and all  */
                                /*  appropriate fluxes are masked out. */
@@ -32,19 +32,23 @@
                                /*  Otherwise, use '#undef REENTRANT'. */
 #define REENTRANT_Y            /* meridionally reentrant              */
 
-#define NUM_ADV_ITER 30         /* number of iterations for advection */
+//#define HTEST			/*  use htest[] rather than h[]       */
+				/*  for output of mn_h[]              */
+
+/* Specify properties of the passive tracers                          */
+
+#define NUM_ADV_ITER 60         /* number of iterations for advection */
 
 #define MERGED_ML                /* merge the first and second two     */
                                /* layers for all BGC variables       */
 
-#define  AGE                    /*  Define ideal age tracer in years.  */
-
+#undef  AGE                    /*  Define ideal age tracer in years.  */
 
 #define TRNCINIT	       /* read in initial tracers values from */
 			       /* netCDF files -- otherwise initialize*/
 			       /* analytically 			      */
 
-#define NTR 1                 /*  The number of tracers to carry.    */
+#define NTR 3                 /*  The number of tracers to carry.    */
                                /*  Must add up to total of AGE,       */
                                /*    OXYGEN, O18, (CFC11 + CFC12),    */
                                /*    (DOP + PHOSPHATE), (DIC + ALK)   */
@@ -52,18 +56,17 @@
                                /*    (15NO3 + DO15N), SF6
 				/* CFC11_sat, CFC12_sat, SF6_sar ashao    */
 
-#define NOVARS 10              /*  Number of variables used in        */
+#define NOVARS 15              /*  Number of variables used in        */
                                /*    vardesc structure for output.    */
                                /*    Moved here from offtrac.c        */
                                /*  25OCT07 BX ashao                   */
 
-#define BEGYEAR 1900			/* ashao: Set the start year, for
+#define BEGYEAR 1947			/* ashao: Set the start year, for
  	 	 	 	 	 	 	 	 tracers with atmospheric histories */
 
 #undef HINDCAST			/* Expect to read in hindcasat fields */
 #define BEGHIND 1948        /* The first year of hindcast fields */
 #define ENDHIND 2007 		/* Last year of hindcast fields */
-
 
 #define SEPFILES              /* For use with separate input files for    */
                               /* U,V,W,H                                */
@@ -88,9 +91,6 @@
 #undef WRTTS                  /* Write output after each sub time step */
                               /* for debugging - 04AUG08 BX           */
 
-
-#undef VARIAB_FORC            /*  Use time varying forcing fields     */
-                              /*  If switched off, use climatology    */
 #ifdef VARIAB_FORC
 
 # define TS_VARIAB             /* Specify if T and S are read from 
@@ -100,8 +100,11 @@
                                /* climatology--not implemented yet    */
 #endif
 
-//HF #undef  RESTART                 /* define location of initial biotic fields   */ 
-			       /* see read_tracer_init in read.c for details */
+/* Specify if wd is read in, otherwise we read in ea, eb, eaml        */
+#undef ENTRAIN                 /* Define how we get diapycnal Velocity*/
+                               /* If ENTRAIN is defined, must read in */
+                               /* ea, eb, and eaml. Otherwise we must */
+                               /* read in wd.                         */
 
 #ifndef VARIAB_FORC
 # define SMOOTH_REST            /* save h to restart file and use it to */
@@ -150,7 +153,7 @@
                                /*  direction.                         */
 # undef   PARALLEL_IO           /*  With PARALLEL_IO and NETCDF_OUTPUT */
                                /*  defined, each processor writes out */
-                               /*  its own NetCDF file.  These files  */
+                               /*  /ts own NetCDF file.  These files  */
                                /*  can be combined using the utility  */
                                /*  mppnccombine.                      */
 # define  NETCDF_OUTPUT         /*    If NETCDF_OUTPUT is defined, all */
@@ -258,14 +261,17 @@
 #define KD   1.00e-5		/* was 1.00e-5		*/
 #endif
 
-
-
 #define NML 1
 
 #define MDT 4800
-
-
 //HF
 #ifndef RESTART
 # undef SMOOTH_REST
 #endif
+
+#define NZWOA 33
+
+#undef RESTART
+
+#define TTD
+#define NMONTHSTTD 12

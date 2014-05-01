@@ -7,47 +7,41 @@
 
 extern double umask[NXMEM][NYMEM];   /* _mask are 1 over ocean and 0  */
 extern double vmask[NXMEM][NYMEM];   /* over land on the u & v grids. */
-extern int wetmask[NXMEM][NYMEM];
+extern int oceanmask[NXMEM][NYMEM];
 
 extern double D[NXMEM][NYMEM];
 
 void initializemasks() {
 
-	int i,j;
-	double Dmin;
+  int i,j;
+  double Dmin;
 
-	Dmin = MINIMUM_DEPTH;  /* value set in init.h */
-	Dmin = (Dmin > 2.0*EPSILON) ? Dmin : 2.0*EPSILON;
-
-
-	for (j=Y0;j<=ny+2;j++) {
-		for (i=X0-1;i<=nx+2;i++) {
-			if ((D[i][j] <= Dmin) || (D[i+1][j] <= Dmin)) umask[i][j] = 0.0;
-			else umask[i][j] = 1.0;
-		}
-	}
+  Dmin = MINIMUM_DEPTH;  /* value set in init.h */
+  Dmin = (Dmin > 2.0*EPSILON) ? Dmin : 2.0*EPSILON;
 
 
-	for (j=Y0-1;j<=ny+2;j++) {
-		for (i=X0;i<=nx+2;i++) {
-			if ((D[i][j] <= Dmin) || (D[i][j+1] <= Dmin)) vmask[i][j] = 0.0;
-			else vmask[i][j] = 1.0;
-		}
-	}
+  for (j=Y0;j<=ny+2;j++) {
+    for (i=X0-1;i<=nx+2;i++) {
+      if ((D[i][j] <= Dmin) || (D[i+1][j] <= Dmin)) umask[i][j] = 0.0;
+      else umask[i][j] = 1.0;
+    }
+  }
 
-	for (i=0;i<NXMEM;i++) {
-		for(j=0;j<NYMEM;j++) {
-			if (D[i][j]<Dmin) {
-				wetmask[i][j]=0;
-			}
-			else {
-				wetmask[i][j]=1;
-			}
-		}
-	}
+  for (j=Y0-1;j<=ny+2;j++) {
+    for (i=X0;i<=nx+2;i++) {
+      if ((D[i][j] <= Dmin) || (D[i][j+1] <= Dmin)) vmask[i][j] = 0.0;
+      else vmask[i][j] = 1.0;
+    }
+  }
 
+  for(i=0;i<NXMEM;i++)
+	for(j=0;j<NYMEM;j++)
+	if (D[i][j]<=Dmin)
+		oceanmask[i][j] = 0;
+	else
+		oceanmask[i][j] = 1;
 
-	/*
+  /*
   for (j=27;j<=33;j++) {
     printf("D = %g,%g,%g,%g,%g,%g \n", 
 	   D[190][j],D[191][j],D[192][j],D[193][j],D[194][j],D[195][j]);
@@ -60,7 +54,7 @@ void initializemasks() {
     printf("vmask = %g,%g,%g,%g,%g,%g \n", 
 	   vmask[190][j],vmask[191][j],vmask[192][j],vmask[193][j],vmask[194][j],vmask[195][j]);
   }
-	 */
+  */
 
 
 }

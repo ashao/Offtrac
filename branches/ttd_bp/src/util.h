@@ -34,3 +34,7 @@ void copy_fix_darray3d(double ***arr1, double arr2[NZ][NXMEM][NYMEM], int nz, in
 // ashao
 double linear_interp( double x0, double y0,  double x1, double y1, double xstar);
 int calc_hindindex(int inmon, int nmonths);
+
+void wrap_reentrance_2d( double **arr );
+void wrap_reentrance_3d( double ***arr, int nz );
+

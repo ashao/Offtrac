@@ -1,46 +1,64 @@
 /*
  * ttd_bp.c
- * Contains all subroutines for needed to estimate the TTD using the boundary propagator method
- *  Created on: Jan 9, 2014
+ *
+ *  Created on: May 1, 2014
  *      Author: ashao
  */
-#define DAYSINYEAR 365.00
+#include "init.h"
+#include "read.h"
+int ttdidx;
+double int mTTD;
+double ***mn_ttd;
+double ***ttd_init;
 
-void initialize_boundary_propagator( int imon )
-{
+void allocate_ttd( ){
+
+
+	int i, j, k;
+	// Set index in tracer array
+	mTTD = 0;
+	mn_ttd = alloc3d(NZ,NXMEM,NYMEM);
+	ttd_init = alloc3d(NZ,NXMEM,NYMEM);
+
+}
+
+void initialize_ttd(  ) {
 
 	int i,j,k;
-	double volume, mldepth,totvolume;
-	extern double areagr[NXMEM][NYMEM];
-	extern double hstart[NZ][NXMEM][NYMEM];
-	extern int wetmask[NXMEM][NYMEM];
-	extern int mlen[12];
-	extern int mTTDBP;
-	extern double ****tr;
+	extern char restart_filename[200];
+	extern int oceanmask[NXMEM][NYMEM];
+
+	for (i=0;i<NXMEM;i++)
+		for (j=0;j<NYMEM;j++)
+			for (k=0;k<NZ;k++)
+				if (oceanmask[i][j] && k < 2) {
+					ttd_init[k][i][j] = 1.0;
+				} else
+					ttd_init[k][i][j] = misval;
 
 
-	totvolume = 0;
+	#ifdef RESTART
+	printf("Initializing oxygen from restart %s\n",restart_filename);
+	read_var3d( restart_filename, "mn_ttd", 0, ttd_init);
+	#endif
+
+	for (i=0;i<NXMEM;i++)
+		for (j=0;j<NYMEM;j++)
+			for (k=0;k<NZ;k++)
+				tr[mTTD][k][i][j] = ttd_init[k][i][j];
 
 
+}
 
-	for ( i=0; i<NXMEM; i++ ) {
-		for ( j=0; j<NYMEM; j++ ) {
+void ttd_surface( ) {
 
-			mldepth = hstart[0][i][j]+hstart[1][i][j];
-			volume = mldepth * areagr[i][j] * (double) wetmask[i][j];
-			totvolume += volume;
-			tr[mTTDBP][0][i][j] = volume;
-			tr[mTTDBP][1][i][j] = volume;
-
-		}
+	int i,j,k;
+	if (ttdidx < NMONTHSTTD){
+		ttdidx++;
+	for (i=0;i<NXMEM;i++)
+		for (j=0;j<NYMEM;j++)
+			for (k=0;k<2;k++)
+				tr[mTTD][k][i][j] = ttd_init[k][i][j];
 	}
 
-	for ( i=0; i<NXMEM; i++ ) {
-		for ( j=0; j<NYMEM; j++ ) {
-
-			tr[mTTDBP][0][i][j] = tr[mTTDBP][0][i][j] * mlen[imon] / DAYSINYEAR / totvolume;
-			tr[mTTDBP][1][i][j] = tr[mTTDBP][1][i][j] * mlen[imon] / DAYSINYEAR / totvolume;
-
-		}
-	}
 }

@@ -29,17 +29,16 @@ extern  double dyq[NYTOT][NXTOT]; HF-e */
 
 extern  double areagr[NXMEM][NYMEM];
 
+extern int oceanmask[NXMEM][NYMEM];
 extern double ***u;
 extern double ***v;
 extern double h[NZ][NXMEM][NYMEM];
 extern double hend[NZ][NXMEM][NYMEM];
 extern double hstart[NZ][NXMEM][NYMEM];
 extern double rml[2][NXMEM][NYMEM];
-extern double po4_star_lev[NZPHOS][NXMEM][NYMEM];
-extern double po4_star_lay[NZ][NXMEM][NYMEM];
-
 extern double salt_woa[NXMEM][NYMEM];
-
+///extern double Temptm[NZ][NXMEM][NYMEM];
+///extern double Salttm[NZ][NXMEM][NYMEM];
 extern double dt;
 /*   Begin added DT    */
 extern int beginyear;
@@ -50,11 +49,6 @@ extern int lastsave;
 extern double ***uhtm,***vhtm;
 extern double ***ea,***eb;
 extern double eaml[NXMEM][NYMEM];
-extern double Temptm[NZ][NXMEM][NYMEM];
-extern double Salttm[NZ][NXMEM][NYMEM];
-extern double atmpres[NXMEM][NYMEM];
-extern double xkw[NXMEM][NYMEM];
-extern double fice[NXMEM][NYMEM];
 extern double wd[NZ+1][NXMEM][NYMEM];
 
 extern double D[NXMEM][NYMEM];
@@ -72,146 +66,26 @@ extern double qlat[NYMEM],hlat[NYMEM];
 extern double age_init[NZ][NXMEM][NYMEM];
 #endif
 
+
+#ifdef ENTRAIN
+extern double ea_init[NZ][NXMEM][NYMEM];
+extern double eaml_init[NXMEM][NYMEM];
+#endif
+
 #ifdef SMOOTH_REST
 //extern double ***h_init;
 extern double h_init[NZ][NXMEM][NYMEM];
 #endif
 
+#ifdef SPONGE
+extern double Idamp[NXMEM][NYMEM];
+extern double sp_e[NZ][NXMEM][NYMEM];
+# if defined(AGE) || defined(CFC) || defined(SF6) //ashao
+extern double sp_age[NZ][NXMEM][NYMEM];
+# endif
+#endif
+
 #define ERR(e) {printf("Error: %s\n", nc_strerror(e)); exit(2);}
-
-void read_fields(int imon,int itts)
-    {
-
-    /* Read ocmip gas exchange parameter fields */
-    int i,j;
-    int err, cdfid, timeid;
-    char infile[25], inpath[200];
-    FILE *file;
-    int status;
-
-    int xkwid, ficeid, atmpid;
-
-    size_t start[MAX_NC_VARS];
-    size_t count[MAX_NC_VARS];
-
-    float** tmp2d;
-    int inxt,iprv;
-    double fact0,fact1,fact2;
-    float** tmp2dp;
-    float** tmp2dn;
-
-    if (imon==11) {
-	inxt = 0;
-	iprv = 10;
-    } else if (imon==0) {
-	inxt = 1;
-	iprv = 11;
-    } else {
-	inxt = imon + 1;
-	iprv = imon - 1;
-    }
-    //  calculate weight factors for input files - fact0 for previous month,
-    //   fact1 for imon, fact2 for next month
-    fact1 = 0.5 + ((2.0*(double)itts-1.0) / (2.0*(double)NTSTEP));
-    if (fact1 <= 1.0) {
-	fact0 = 1.0 - fact1;
-	fact2 = 0.0;
-    } else {
-	fact0 = 0.0;
-	fact2 = fact1 - 1.0;
-	fact1 = 2.0 - fact1;
-    }
-
-    // ashao: Modifying so that other things other than OCMIP fields can be used
-    printf("Reading gasex fields: \n");
-    sprintf(infile,"gasx_himgrid.nc");
-
-    strcpy(inpath, directory);
-    strcat(inpath, infile);
-    printf("Reading gasex fields: %s\n",inpath);
-
-    err = open_input_file(inpath,&file,&cdfid,&timeid);
-    if (err != 0) {
-	strcat(inpath, ".cdf");
-	err = open_input_file(inpath,&file,&cdfid,&timeid);
-	if (err != 0) {
-	    printf("Unable to find gasex file.\n");
-	    exit(-73);
-	}
-    }
-
-    printf("read gasex month=%i\n",imon);
-
-    if ((status = nc_inq_varid(cdfid, "OCMIP_FICE", &ficeid)))
-	ERR(status);
-    if ((status = nc_inq_varid(cdfid, kw_varname, &xkwid)))
-	ERR(status);
-    if ((status = nc_inq_varid(cdfid, "OCMIP_ATMP", &atmpid)))
-	ERR(status);
-
-    bzero(start, MAX_NC_VARS * sizeof(long));
-
-    count[0] = 1;
-    count[1] = NYTOT;
-    count[2] = NXTOT;
-
-    tmp2d = alloc2d_f(NYTOT, NXTOT);
-    tmp2dp = alloc2d_f(NYTOT, NXTOT);
-    tmp2dn = alloc2d_f(NYTOT, NXTOT);
-    start[0] = imon;
-    if ((status = nc_get_vara_float(cdfid,atmpid,start,count,tmp2d[0])))
-	ERR(status);
-    start[0] = iprv;
-    if ((status = nc_get_vara_float(cdfid,atmpid,start,count,tmp2dp[0])))
-	ERR(status);
-    start[0] = inxt;
-    if ((status = nc_get_vara_float(cdfid,atmpid,start,count,tmp2dn[0])))
-	ERR(status);
-    for (i=0;i<NXTOT;i++)
-	for (j=0;j<NYTOT;j++)
-	    atmpres[i+2][j+2]= fact1 * tmp2d[j][i] +
-	    fact0 * tmp2dp[j][i] + fact2 * tmp2dn[j][i];
-
-    start[0] = imon;
-    if ((status = nc_get_vara_float(cdfid,ficeid,start,count,tmp2d[0])))
-	ERR(status);
-    start[0] = iprv;
-    if ((status = nc_get_vara_float(cdfid,ficeid,start,count,tmp2dp[0])))
-	ERR(status);
-    start[0] = inxt;
-    if ((status = nc_get_vara_float(cdfid,ficeid,start,count,tmp2dn[0])))
-	ERR(status);
-    for (i=0;i<NXTOT;i++)
-	for (j=0;j<NYTOT;j++)
-	    fice[i+2][j+2]= fact1 * tmp2d[j][i] +
-	    fact0 * tmp2dp[j][i] + fact2 * tmp2dn[j][i];
-
-    start[0] = imon;
-    if ((status = nc_get_vara_float(cdfid,xkwid,start,count,tmp2d[0])))
-	ERR(status);
-    start[0] = iprv;
-    if ((status = nc_get_vara_float(cdfid,xkwid,start,count,tmp2dp[0])))
-	ERR(status);
-    start[0] = inxt;
-    if ((status = nc_get_vara_float(cdfid,xkwid,start,count,tmp2dn[0])))
-	ERR(status);
-    for (i=0;i<NXTOT;i++)
-	for (j=0;j<NYTOT;j++)
-	    xkw[i+2][j+2]= fact1 * tmp2d[j][i] +
-	    fact0 * tmp2dp[j][i] + fact2 * tmp2dn[j][i];
-
-    free2d_f(tmp2dp, NYTOT);
-    free2d_f(tmp2dn, NYTOT);
-    free2d_f(tmp2d, NYTOT);
-    //BX  temporary bug fix for northern-most row (j=211)
-    for (i=2;i<=NXMEM;i++) {
-	atmpres[i][211] = atmpres[i][210];
-	fice[i][211]    = fice[i][210];
-	xkw[i][211]     = xkw[i][210];
-    }
-    close_file(&cdfid,&file);
-    }
-
 void read_fieldave(int imon)
     {
     }
@@ -253,6 +127,7 @@ void read_grid()
     end[0] = NYTOT;
     end[1] = NXTOT;
 
+	printf("end %d %d\n",end[0],end[1]);
     //HF
     status = nc_inq_varid(cdfid, "latq", &varid);
     if (status != NC_NOERR) handle_error("inq latq", status);
@@ -261,8 +136,8 @@ void read_grid()
     //BX-a  ncvarget(cdfid, 2, start, end, latq);
 
     //CAD should these loop indices be hardwired (to i=0;i<NYTOT) ?
-    for (i=0;i<NYTOT;i++) {
-	qlat[i+2]=(double)latq[i];
+   for (i=0;i<NYTOT;i++) {
+qlat[i+2]=(double)latq[i];
     }
 
     //HF ncvarget(cdfid, 2, start, end, lath);
@@ -404,7 +279,7 @@ void read_grid()
     }
 
     /* meridional re-entrance            */
-
+#ifdef REENTRANT_Y
     for (i=2;i<=nx;i++) {
 	int ii = 363 - i;
 	areagr[ii][ny+1] = areagr[i][ny];
@@ -434,7 +309,7 @@ void read_grid()
 	DYu(ii,ny+1) = DYu(i,ny);
 	DYu(ii,ny+2) = DYu(i,ny-1);
     }
-
+#endif
     }
 
 void read_D()
@@ -474,13 +349,14 @@ void read_D()
 	D[0][j] =   D[nx-1][j];
 	D[1][j] =   D[nx][j];
     }
-
+#ifdef REENTRANT_Y
     //      meridional re-entrance
     for (i=0;i<=nx+2;i++) {
 	ii = 363 - i;
 	D[ii][ny+1] = D[i][ny];
 	D[ii][ny+2] = D[i][ny-1];
     }
+#endif
     }
 
 
@@ -628,7 +504,7 @@ void read_clim(int imon, int inxt, int ilst)
 	    hend[k][1][j] =   hend[k][nx][j];
 	}
     }
-
+#ifdef REENTRANT_Y
     //      meridional re-entrance
     for (i=2;i<=nx;i++) {
 	ii = 363 - i;
@@ -639,6 +515,7 @@ void read_clim(int imon, int inxt, int ilst)
 	    hend[k][ii][ny+2] = hend[k][i][ny-1];
 	}
     }
+#endif
     close_file(&cdfid,&file);
     }
 
@@ -661,7 +538,7 @@ void read_uvw(int imon, char *fieldtype)
     float*** tmp3d;
     float*** tmp3dp;
     float*** tmp3dn;
-
+	printf("UVW %s index: %d\n",fieldtype,imon);
 
     //
     //   read in separate files for U, V, and W
@@ -1298,7 +1175,7 @@ void read_h(int imon, double (*hread)[NXMEM][NYMEM], char *fieldtype)
 	    hread[k][1][j] =   hread[k][nx][j];
 	}
     }
-
+#ifdef REENTRANT_Y
     //      meridional re-entrance
     for (i=2;i<=nx;i++) {
 	ii = 363 - i;
@@ -1307,121 +1184,19 @@ void read_h(int imon, double (*hread)[NXMEM][NYMEM], char *fieldtype)
 	    hread[k][ii][ny+2]   = hread[k][i][ny-1];
 	}
     }
-
-    close_file(&cdfid,&file);
-
-    }
-
-
-#ifdef LEV_OXY
-void read_oxy_ic()
-    {
-    int i,j,k;
-    int err, cdfid, timeid;
-    char infile[25], inpath[200];
-    FILE *file;
-    int status;
-
-    int levo2id;
-
-    size_t start[MAX_NC_VARS];
-    size_t count[MAX_NC_VARS];
-
-    float*** tmp3d;
-    double*** oxytmp;
-
-    int nzlevitus = NZPHOS;
-    double depth[NZ][NXMEM][NYMEM];
-    double po4obsprof[NZPHOS];
-    double levitus_depths[NZPHOS] = {0, 10, 20, 30, 50, 75, 100,
-	    120, 150, 200, 250, 300, 400, 500, 600,
-	    700, 800, 900, 1000, 1100, 1200, 1300,
-	    1400, 1500, 1750, 2000, 2500, 3000,
-	    3500, 4000, 4500, 5000, 5500};
-
-    printf("Reading Levitus O2 climatology: \n");
-
-    sprintf(infile,"lev94_o2.nc");
-    strcpy(inpath, directory);
-    strcat(inpath, infile);
-
-    printf("Looking for file '%s'.\n",inpath);
-
-    err = open_input_file(inpath,&file,&cdfid,&timeid);
-    if (err != 0) {
-	strcat(inpath, ".cdf");
-	err = open_input_file(inpath,&file,&cdfid,&timeid);
-	if (err != 0) {
-	    printf("Unable to find Levitus O2 file.\n");
-	    exit(-73);
-	}
-    }
-
-    if ((status = nc_inq_varid(cdfid, "LEVO2", &levo2id)))
-	ERR(status);
-
-    bzero(start, MAX_NC_VARS * sizeof(long));
-
-    count[0] = 1;
-    count[1] = NZPHOS;
-    count[2] = NYTOT;
-    count[3] = NXTOT;
-
-    tmp3d = alloc3d_f(NZPHOS,NYTOT,NXTOT);
-    oxytmp = alloc3d(NZPHOS,NXMEM,NYMEM);
-
-    start[0] = 0;
-
-    if ((status = nc_get_vara_float(cdfid,levo2id,start,count,tmp3d[0][0])))
-	ERR(status);
-
-    for (k=0;k<NZPHOS;k++) {
-	for (i=0;i<NXTOT;i++) {
-	    for (j=0;j<NYTOT;j++) {
-		oxytmp[k][i+2][j+2]= tmp3d[k][j][i]*1.e-3;
-	    }
-	}
-    }
-    //  temporary bug fix for northern-most row (j=211)
-    for (i=2;i<NXMEM;i++) {
-	for (k=0;k<NZPHOS;k++) {
-	    oxytmp[k][i][211] = oxytmp[k][i][210];
-	}
-    }
-
-    z_depth(h,depth);
-
-    for (i=X1;i<=nx;i++) {
-	for (j=Y1;j<=ny;j++) {
-	    if (D[i][j]>MINIMUM_DEPTH) {
-		for (k=0;k<nzlevitus;k++)
-		    po4obsprof[k] = oxytmp[k][i][j];
-		for (k=0;k<NZ;k++) {
-		    oxy_init[k][i][j] = lin_interp(depth[k][i][j], po4obsprof,
-			    levitus_depths, 0, nzlevitus);
-		    if (oxy_init[k][i][j] < 0.e0) oxy_init[k][i][j] = 0.;
-		}
-	    } else {
-		for (k=0;k<NZ;k++) {
-		    oxy_init[k][i][j] = misval;
-		}
-	    }
-	}
-    }
-
-    free3d_f(tmp3d, NZPHOS);
-    free3d(oxytmp, NZPHOS);
-    close_file(&cdfid,&file);
-    }
 #endif
 
+    close_file(&cdfid,&file);
+
+    }
+/* ALL REMOVED IN FAVOR OF READ_TEMP_AND_SALT //ashao
 void read_ts(int imon,int itts)
     {
 
 #ifdef TS_VARIAB
-    /* Read temperature and salinity from time varying records. */
+    //  Read temperature and salinity from time varying records.
 #else
-    /* Read temperature and salinity from climatology. */
+     // Read temperature and salinity from climatology.
 #endif
     int i,j,k;
     int err, cdfid, timeid;
@@ -1558,12 +1333,12 @@ void read_ts(int imon,int itts)
 		Salttm[k][i+2][j+2]= fact1 * tmp3d[k][j][i] +
 		fact0 * tmp3dp[k][j][i] + fact2 * tmp3dn[k][j][i];
 
-    /*    // do not use salt_woa from file--use SSS from variability file
+        // do not use salt_woa from file--use SSS from variability file
 	for (i=0;i<NXTOT;i++) {
 	  for (j=0;j<NYTOT;j++) {
 	    salt_woa[i+2][j+2]= Salttm[0][j][i];
 	  }
-	  } */
+	  }
 
     free3d_f(tmp3d, NZ);
     free3d_f(tmp3dp, NZ);
@@ -1692,7 +1467,7 @@ void read_ts(int imon,int itts)
     for (i=2;i<=NXMEM;i++) {
 	salt_woa[i][211] = salt_woa[i][210];
     }
-*/
+*/ /*
 
     if (NZ < 24) {
 	free3d_f(tmp3d, 24);
@@ -1708,7 +1483,7 @@ void read_ts(int imon,int itts)
 #endif // TS_VARIAB
     }
 
-
+*/
 
 #ifdef RESTART
 void read_tracer_init(int imon, char *run_name)
@@ -1803,46 +1578,47 @@ void read_buoy(int imon)
 
     }
 
-
-
-/* void read_patch
- * Read in which grid cells to patch for estimation of TTD
- */
-void read_patch( double ttd_mask[NXMEM][NYMEM] )
+#ifdef SPONGE
+void read_sponge(void)
     {
-
-    /* Read ocmip gas exchange parameter fields */
-    int err, cdfid, timeid;
-    char infile[25], inpath[200];
+    char infile[150], inpath[300];
+    int cdfid, timeid, err;
+    int i,j,k;
     FILE *file;
-    int status;
 
-    int patchid;
+    /* ******************************************************** */
+    /*                                                          */
+    /* IF THIS SUBROUTINE IS TO BE USED MAKE SURE FILES WILL BE */
+    /* CLOSED!!!!!  bx 22OCT07                                  */
+    /*                                                          */
+    /* ******************************************************** */
 
-
-    printf("Enter name of file with TTD patchmask\n");
-    gets(infile);
-
-    strcpy(inpath, directory);
-    strcat(inpath, infile);
-    printf("Reading TTD Patch: %s\n",inpath);
-
+    strcpy(inpath,"/dsk1/suzanne/OFF/input/sponge_1deg.cdf");
     err = open_input_file(inpath,&file,&cdfid,&timeid);
-    if (err != 0) {
-	strcat(inpath, ".cdf");
-	err = open_input_file(inpath,&file,&cdfid,&timeid);
-	if (err != 0) {
-	    printf("Unable to find TTD Patch file.\n");
-	    exit(-73);
-	}
+
+    WARNING NOT YET FIXED
+    read_field(cdfid,file,"IDAMP",NXTOT,NYTOT,1,
+	    0,0,0, 1,1,0, 0, &Idamp[0][0]);
+    read_field(cdfid,file,"E",NXTOT,NYTOT,NZ,
+	    0,0,0, 1,1,0, 0, &sp_e[0][0][0]);
+
+#if defined(AGE) || defined(CFC) || defined(SF6) // ashao
+    read_field(cdfid,file,"SP_AGE",NXTOT,NYTOT,NZ,
+	    0,0,0, 1,1,0, 0, &sp_age[0][0][0]);
+#endif
+#ifdef INERT_UNUSED
+    strcpy(inpath,"/bird3/cdeutsch/OFF/input/sponge_argon.cdf");
+    err = open_input_file(inpath,&file,&cdfid,&timeid);
+    read_field(cdfid,file,"init_argon",NXTOT,NYTOT,NZ,
+	    0,0,0, 1,1,0, 0, &sp_inert1[0][0][0]);
+    read_field(cdfid,file,"init_temp",NXTOT,NYTOT,NZ,
+	    0,0,0, 1,1,0, 0, &sp_inert2[0][0][0]);
+#endif
+
+
     }
+#endif /* SPONGE */
 
-    read_field(cdfid,file,"mask", NXTOT,NYTOT,1, 0,0,0, 0,0,0, 1, ttd_mask[0]);
-    close_file(&cdfid,&file);
-
-    return;
-
-    }
 
 /* ashao: Read data routines (UH, VH, WD, T, S) for hindcast runs */
 void read_var3d( char inpath[200], char varname[200], int imon, double ***data)
@@ -1867,11 +1643,14 @@ void read_var3d( char inpath[200], char varname[200], int imon, double ***data)
     if ((status = nc_inq_varid(cdfid, varname, &varid))) 
     bzero(start, MAX_NC_VARS * sizeof(long));
 
+    
     count[0] = 1;
-    if (strcmp(varname,"wd")) count[1]=NZ;
-    else count[1] = NZ;
+    count[1] = NZ;
     count[2] = NYTOT;
     count[3] = NXTOT;
+
+//    for (i=0;i<4;i++)
+//	printf("start[%d]: %d,count[%d]: %d\n",i,start[i],i,count[i]);
 
     tmp3d  = alloc3d_f(NZ+1,NYTOT,NXTOT);
     if ((status = nc_get_vara_float(cdfid,varid,start,count,tmp3d[0][0])))
@@ -1881,4 +1660,112 @@ void read_var3d( char inpath[200], char varname[200], int imon, double ***data)
 	    for (j=0;j<NYTOT;j++)
 		data[k][i+2][j+2]= tmp3d[k][j][i];
 
+    wrap_reentrance_3d(data,count[1]);
+
+    free3d_f(tmp3d,NZ);
     }
+
+
+
+void read_woa_file(int imon, double harray[NZ][NXMEM][NYMEM], double ***outarray, char *filename, char *varname) {
+
+	int i,j,k;
+	int err, cdfid, timeid;
+	char infile[25], inpath[200];
+	FILE *file;
+	int status;
+
+	int levo2id;
+
+	size_t start[MAX_NC_VARS];
+	size_t count[MAX_NC_VARS];
+
+	float*** tmp3d;
+	double*** oxytmp;
+
+	double depth[NZ][NXMEM][NYMEM];
+	double po4obsprof[NZWOA];
+	double levitus_depths[NZWOA] = {0, 10, 20, 30, 50, 75, 100,
+			120, 150, 200, 250, 300, 400, 500, 600,
+			700, 800, 900, 1000, 1100, 1200, 1300,
+			1400, 1500, 1750, 2000, 2500, 3000,
+			3500, 4000, 4500, 5000, 5500};
+
+//	printf("Reading from WOA09 climatology: \n");
+
+	//   sprintf(infile,"lev94_o2.nc");
+	sprintf(infile,filename);
+	strcpy(inpath, directory);
+	strcat(inpath, infile);
+
+	printf("Looking for file '%s'.\n",inpath);
+
+	err = open_input_file(inpath,&file,&cdfid,&timeid);
+	if (err != 0) {
+		strcat(inpath, ".cdf");
+		err = open_input_file(inpath,&file,&cdfid,&timeid);
+		if (err != 0) {
+			printf("Unable to find Levitus O2 file.\n");
+			exit(-73);
+		}
+	}
+
+	if ((status = nc_inq_varid(cdfid, varname, &levo2id)))
+		ERR(status);
+
+	bzero(start, MAX_NC_VARS * sizeof(long));
+
+	count[0] = 1;
+	count[1] = NZWOA;
+	count[2] = NYTOT;
+	count[3] = NXTOT;
+
+	tmp3d = alloc3d_f(NZWOA,NYTOT,NXTOT);
+	oxytmp = alloc3d(NZWOA,NXMEM,NYMEM);
+
+	start[0] = 0;
+
+	if ((status = nc_get_vara_float(cdfid,levo2id,start,count,tmp3d[0][0])))
+		ERR(status);
+
+	for (k=0;k<NZWOA;k++) {
+		for (i=0;i<NXTOT;i++) {
+			for (j=0;j<NYTOT;j++) {
+				oxytmp[k][i+2][j+2]= tmp3d[k][j][i]*1.e-3;
+			}
+		}
+	}
+	//  temporary bug fix for northern-most row (j=211)
+	for (i=2;i<NXMEM;i++) {
+		for (k=0;k<NZWOA;k++) {
+			oxytmp[k][i][211] = oxytmp[k][i][210];
+		}
+	}
+
+	z_depth(harray,depth);
+
+	for (i=X1;i<=nx;i++) {
+		for (j=Y1;j<=ny;j++) {
+			if (oceanmask[i][j]) {
+				for (k=0;k<NZWOA;k++)
+					po4obsprof[k] = oxytmp[k][i][j];
+				for (k=0;k<NZ;k++) {
+					outarray[k][i][j] = lin_interp(depth[k][i][j], po4obsprof,
+							levitus_depths, 0, NZWOA);
+					if (outarray[k][i][j] < 0.e0) outarray[k][i][j] = 0.;
+				}
+			} else {
+				for (k=0;k<NZ;k++) {
+					outarray[k][i][j] = misval;
+				}
+			}
+		}
+	}
+
+	wrap_reentrance_3d(outarray,NZ);
+	free3d_f(tmp3d, NZWOA);
+	free3d(oxytmp, NZWOA);
+	close_file(&cdfid,&file);
+
+
+}
