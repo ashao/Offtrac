@@ -5,7 +5,7 @@
 #include "init.h"
 #include "step.h"
 #include "phosphate.h"
-#include "util.h"
+
 extern const double misval;
 extern int wetmask[NXMEM][NYMEM];
 
@@ -23,32 +23,12 @@ extern const double parm_alpha_n15_n2fix;
 
 extern double ****tr;
 extern double D[NXMEM][NYMEM];
-extern int oceanmask[NXMEM][NYMEM];
 extern double h[NZ][NXMEM][NYMEM];
-extern double dt;
-
-// extern double po4_star_lev[NZWOA][NXMEM][NYMEM]; unused ashao
-// extern double ***po4_star_lay;
-extern double ***Temptm;
-/*
-extern double jpo4[NZ][NXMEM][NYMEM];
-extern double jdop[NZ][NXMEM][NYMEM];
-extern double jremdop[NZ][NXMEM][NYMEM];
-extern double jprod[NZ][NXMEM][NYMEM];
-extern double jremin[NZ][NXMEM][NYMEM];
-extern double flux_pop[NXMEM][NYMEM];
-*/
-#ifdef OXYGEN
-extern double jo2[NZ][NXMEM][NYMEM];
-extern int mOXYGEN;
-#endif
-
-extern int mPHOSPHATE;
-extern int mDOP;
-
-
+// extern double po4_star_lev[NZPHOS][NXMEM][NYMEM];
+// extern double po4_star_lay[NZ][NXMEM][NYMEM];
+extern double Temptm[NZ][NXMEM][NYMEM];
 # ifdef PROGNOSTIC
-extern double fe_lev[NZWOA][NXMEM][NYMEM];
+extern double fe_lev[NZPHOS][NXMEM][NYMEM];
 extern double fe_lay[NZ][NXMEM][NYMEM];
 extern double par_lay[NZ][NXMEM][NYMEM];
 extern double sfc_swr[NXMEM][NYMEM];
@@ -59,11 +39,21 @@ extern double ***nitrlim;
 extern double ***ironlim;
 # endif /* PROGNOSTIC */
 # ifdef NITRATE
-extern double no3_lev[NZWOA][NXMEM][NYMEM];
+extern double no3_lev[NZPHOS][NXMEM][NYMEM];
 extern double no3_lay[NZ][NXMEM][NYMEM];
 # endif
-
-
+extern double dt;
+/*
+extern double jpo4[NZ][NXMEM][NYMEM];
+extern double jdop[NZ][NXMEM][NYMEM];
+extern double jremdop[NZ][NXMEM][NYMEM];
+extern double jprod[NZ][NXMEM][NYMEM];
+extern double jremin[NZ][NXMEM][NYMEM];
+extern double flux_pop[NXMEM][NYMEM];
+*/
+#ifdef OXYGEN
+extern double jo2[NZ][NXMEM][NYMEM];
+#endif
 #ifdef OXY18
 extern double jo18[NZ][NXMEM][NYMEM];
 extern double Ro18o16[NZ][NXMEM][NYMEM];
@@ -92,6 +82,12 @@ extern double ***jdic;
 extern double ***jalk;
 #endif
 
+extern int mPHOSPHATE;
+extern int mDOP;
+
+#ifdef OXYGEN
+extern int mOXYGEN;
+#endif
 
 #ifdef OXY18
 extern int mo18;
@@ -106,16 +102,13 @@ extern int mDON_15n;
 # endif
 #endif /* NITRATE */
 
-
-const double r_bio_tau = 1.0 / (30.0 * 86400.0);
-
 void biotic_sms(int ibiodt)
 {
     int i, j, k, l, kjunk;
     int kcomp, kmax; 
-    double po4obsprof[NZWOA], junk;
+    double po4obsprof[NZPHOS], junk;
 # ifdef PROGNOSTIC
-    double feobsprof[NZWOA];
+    double feobsprof[NZPHOS];
 # endif
     double compensation_depth, martin_coeff, fracprod;
     double phi_p, kappa_p, phi_ca;
@@ -163,8 +156,8 @@ void biotic_sms(int ibiodt)
     //ratio_o2_sw = 1.00075;
 #endif
 
-    int nzlevitus = NZWOA;
-    double levitus_depths[NZWOA] = {0, 10, 20, 30, 50, 75, 100, 
+    int nzlevitus = NZPHOS;
+    double levitus_depths[NZPHOS] = {0, 10, 20, 30, 50, 75, 100,
 				    120, 150, 200, 250, 300, 400, 500, 600,
 				    700, 800, 900, 1000, 1100, 1200, 1300, 
 				    1400, 1500, 1750, 2000, 2500, 3000, 
@@ -197,16 +190,6 @@ void biotic_sms(int ibiodt)
     const double eps_lim = 1.e-9; // since (po4/dt)*dt is NOT exactly == po4!!
 //BX # endif
 
-// Set arrays to 0 //ashao
-        set_fix_darray3d_zero(jo2,NZ);
-        set_fix_darray3d_zero(jdop,NZ);
-        set_fix_darray3d_zero(jpo4,NZ);
-        set_fix_darray3d_zero(jprod,NZ);
-        set_fix_darray3d_zero(jremin,NZ);
-        set_fix_darray3d_zero(jremdop,NZ);
-        set_fix_darray2d_zero(flux_pop);
-
-
     phi_p = 0.67;
     kappa_p = 1.0 / (1.0 * 360.0 * 86400.0);
     phi_ca = phi_p;
@@ -223,10 +206,9 @@ void biotic_sms(int ibiodt)
 
     dt_bio = dt / (double) ibiodt;
     frac_dt_bio = 1.0 / (double) ibiodt;
-/* deprecated by ashao
-    printf("conc_obs_layer(h,po4_star_lev,po4_star_lay)\n");
-    conc_obs_layer(h,po4_star_lev,po4_star_lay);
-*/ 
+
+//    printf("conc_obs_layer(h,po4_star_lev,po4_star_lay)\n");
+//    conc_obs_layer(h,po4_star_lev,po4_star_lay);
 # ifdef PROGNOSTIC
 #  ifdef NITRATE
     // nitrate
@@ -256,7 +238,7 @@ void biotic_sms(int ibiodt)
 // compute depth at layer k as the depth of the point in the 
 //  middle of that layer
 	    D_ij = D[i][j]; // create local variable
-	    if (oceanmask[i][j]) {
+	    if (D_ij>MINIMUM_DEPTH) {
 		hsum = h[0][i][j];
 		depth[0] = hsum * 0.5;
 		for (k=1;k<NZ;k++) {
@@ -547,7 +529,7 @@ void biotic_sms(int ibiodt)
 	    
 /*       bottom boundary condition for shallow grid points (D < 75m) */
 
-		if (D_ij < compensation_depth && oceanmask[i][j]) {
+		if (D_ij < compensation_depth && D[i][j]>MINIMUM_DEPTH) {
 		    jremin_ij[kmax] = flux_pop_ij / h[kmax][i][j];
 		    // printf("D < comp_depth at grid point %i,%i \n",i,j);
 		}
@@ -749,7 +731,7 @@ void biotic_sms(int ibiodt)
 		}
 
 /*       bottom boundary condition for shallow grid points (D < 75m) */
-		if (D_ij < compensation_depth && oceanmask[i][j]) {
+		if (D_ij < compensation_depth && D[i][j]>MINIMUM_DEPTH) {
 		    jca[kmax] = flux_caco3 / h[kmax][i][j];
 		    // printf("D < comp_depth at grid point %i,%i \n",i,j);
 		}
