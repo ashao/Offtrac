@@ -134,8 +134,8 @@ struct vardesc vars[NOVARS] =
 				-3.17097930758233E-14
 		},// 9
 		{
-				"mn_oxygen",
-				"Oxygen concentration",
+				"mn_ttd",
+				"TTD inferred from boundary propagator",
 				'h',
 				'L',
 				's',
@@ -627,7 +627,7 @@ if (flags[7])
 if (flags[9])
 	set_darray3d_zero(mn_age, NZ, NXMEM, NYMEM);
 #endif
-#if TTD
+#ifdef TTD
 if (flags[10])
 	set_darray3d_zero(mn_ttd, NZ, NXMEM, NYMEM);
 #endif

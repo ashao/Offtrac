@@ -6,11 +6,13 @@
  */
 #include "init.h"
 #include "read.h"
+#include "alloc.h"
 int ttdidx;
-double int mTTD;
+int mTTD;
 double ***mn_ttd;
 double ***ttd_init;
-
+extern double ****tr;
+extern double misval;
 void allocate_ttd( ){
 
 
@@ -34,11 +36,11 @@ void initialize_ttd(  ) {
 				if (oceanmask[i][j] && k < 2) {
 					ttd_init[k][i][j] = 1.0;
 				} else
-					ttd_init[k][i][j] = misval;
+					ttd_init[k][i][j] = 0.0;
 
 
 	#ifdef RESTART
-	printf("Initializing oxygen from restart %s\n",restart_filename);
+	printf("Initializing TTD from restart %s\n",restart_filename);
 	read_var3d( restart_filename, "mn_ttd", 0, ttd_init);
 	#endif
 
@@ -50,11 +52,12 @@ void initialize_ttd(  ) {
 
 }
 
-void ttd_surface( ) {
+void surface_ttd( ) {
 
 	int i,j,k;
 	if (ttdidx < NMONTHSTTD){
 		ttdidx++;
+		printf("Setting surface to 1\n");
 	for (i=0;i<NXMEM;i++)
 		for (j=0;j<NYMEM;j++)
 			for (k=0;k<2;k++)

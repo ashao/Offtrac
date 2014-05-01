@@ -5,7 +5,7 @@
 #include "init.h"
 #include "step.h"
 #include "phosphate.h"
-
+#include "util.h"
 extern const double misval;
 extern int wetmask[NXMEM][NYMEM];
 
@@ -196,6 +196,16 @@ void biotic_sms(int ibiodt)
 //BX # ifdef NITRATE
     const double eps_lim = 1.e-9; // since (po4/dt)*dt is NOT exactly == po4!!
 //BX # endif
+
+// Set arrays to 0 //ashao
+        set_fix_darray3d_zero(jo2,NZ);
+        set_fix_darray3d_zero(jdop,NZ);
+        set_fix_darray3d_zero(jpo4,NZ);
+        set_fix_darray3d_zero(jprod,NZ);
+        set_fix_darray3d_zero(jremin,NZ);
+        set_fix_darray3d_zero(jremdop,NZ);
+        set_fix_darray2d_zero(flux_pop);
+
 
     phi_p = 0.67;
     kappa_p = 1.0 / (1.0 * 360.0 * 86400.0);

@@ -267,7 +267,7 @@ void create_file(char filename[], int type, struct vardesc vars[], int novars,
     float kdml = KDML; // need to copy from macro to variable
     float kd = KD;     // so pointer can be used in nc_put_var_float call
     float khtr = KHTR;
-    extern const double r_bio_tau;
+//    extern const double r_bio_tau;
 #endif /* OUTPUT_DEFS */
 
 /*  Define the sizes in the file of the various axes.                 */
@@ -564,12 +564,13 @@ void create_file(char filename[], int type, struct vardesc vars[], int novars,
       status = nc_put_att_text(*cdfid, khtrvid, "long_name", 27, 
 			       "Diapycnal diffusion coeff.");
       if (status != NC_NOERR) handle_error("Name KHTR",status);
-
+/*
       status = nc_def_var(*cdfid, "r_bio_tau", NC_DOUBLE, 0, &dummy, &tauvid);
       if (status != NC_NOERR) handle_error("r_bio_tau",status);
       status = nc_put_att_text(*cdfid, tauvid, "long_name", 15, 
 			       "Restoring time");
       if (status != NC_NOERR) handle_error("Name r_bio_tau",status);
+*/
 #endif /* OUTPUT_DEFS */
 
 
@@ -725,8 +726,8 @@ void create_file(char filename[], int type, struct vardesc vars[], int novars,
       status = nc_put_var_float(*cdfid, khtrvid, &khtr);
       if (status != NC_NOERR) handle_error("put KHTR",status);
 
-      status = nc_put_var_double(*cdfid, tauvid, &r_bio_tau);
-      if (status != NC_NOERR) handle_error("put r_bio_tau",status);
+//      status = nc_put_var_double(*cdfid, tauvid, &r_bio_tau);
+//      if (status != NC_NOERR) handle_error("put r_bio_tau",status);
 #endif /* OUTPUT_DEFS */
   }
 #endif

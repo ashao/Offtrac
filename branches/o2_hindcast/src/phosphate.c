@@ -91,6 +91,7 @@ void apply_phosphate_jterms( ) {
 	extern double misval;
 	// j terms here are calculated from biotic_sms routine in biotic.c
 	printf("Applying j terms for phosphate\n");
+	printf("Example jpo4/po4: %e/%f\n",jpo4[10][127][127],tr[mPHOSPHATE][10][127][127]);
 	for (i = 0; i <= NXMEM - 1; i++) {
 		for (j = 0; j <= NYMEM - 1; j++) {
 			//BX - reinstated by HF

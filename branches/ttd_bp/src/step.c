@@ -17,10 +17,9 @@
 #include "tracadv.h"
 #include "util.h"
 
-#if defined(OXYGEN) && defined(PHOSPHATE)
 #include "tracer_utilities.h"
-#include "oxygen.h"
-#include "phosphate.h"
+#ifdef TTD
+#include "ttd_bp.h"
 #endif
 /*---------------------------------------------------------------------
  *     define variables and subroutines
@@ -175,7 +174,7 @@ void step_fields(int iyear, int itts, int imon, int iterno) {
 	 *    biological pump is linked to PO4
 	 *
 	 *-----------------------------------------*/
-#ifdef
+#ifdef TTD
 
 	surface_ttd();
 

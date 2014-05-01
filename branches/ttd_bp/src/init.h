@@ -64,7 +64,7 @@
 #define BEGYEAR 1947			/* ashao: Set the start year, for
  	 	 	 	 	 	 	 	 tracers with atmospheric histories */
 
-#undef HINDCAST			/* Expect to read in hindcasat fields */
+#define HINDCAST			/* Expect to read in hindcasat fields */
 #define BEGHIND 1948        /* The first year of hindcast fields */
 #define ENDHIND 2007 		/* Last year of hindcast fields */
 

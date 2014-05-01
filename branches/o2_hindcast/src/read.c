@@ -1686,7 +1686,7 @@ void read_woa_file(int imon, double harray[NZ][NXMEM][NYMEM], double ***outarray
 	double depth[NZ][NXMEM][NYMEM];
 	double po4obsprof[NZWOA];
 	double levitus_depths[NZWOA] = {0, 10, 20, 30, 50, 75, 100,
-			120, 150, 200, 250, 300, 400, 500, 600,
+			125, 150, 200, 250, 300, 400, 500, 600,
 			700, 800, 900, 1000, 1100, 1200, 1300,
 			1400, 1500, 1750, 2000, 2500, 3000,
 			3500, 4000, 4500, 5000, 5500};

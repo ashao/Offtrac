@@ -183,7 +183,17 @@ struct vardesc vars[NOVARS] =
 				"mol m^-3",
 				'd',
 				-1e6
-		} //14
+		}, //14
+		{
+                                "mn_jpo4",
+                                "Phosphate source (+) or sink (-)",
+                                'h',
+                                'L',
+                                's',
+                                "mol m^-3",
+                                'd',
+                                -1e6
+		}
 
 };
 
@@ -514,6 +524,7 @@ for (i = 1; i <= 11; i++)
 	flags[12] = 1; // oxygen sat
 	flags[13] = 1; // mn_dop
 	flags[14] = 1; // mn_phosphate
+	flags[15] = 1;
 	rflags[10] = 1; // oxygen
 	rflags[13] = 1; // dop
 	rflags[14] = 1; // phosphate
@@ -645,6 +656,8 @@ if (flags[13])  // mn_dop
 	set_darray3d_zero(mn_dop, NZ, NXMEM, NYMEM);
 if (flags[14]) // mn_phosphate
 	set_darray3d_zero(mn_phos, NZ, NXMEM, NYMEM);
+if (flags[15]) // mn_phosphate
+	set_darray3d_zero(mn_jpo4, NZ, NXMEM, NYMEM);
 #endif
 // These were already called earlier: ashao
 //read_grid(); 
@@ -957,6 +970,7 @@ for (cmon = inmon; cmon < inmon + tmon; cmon++)
 					mn_o2sat[k][i][j] += o2_sat[k][i][j];
 					mn_phos[k][i][j] += tr[mPHOSPHATE][k][i][j];
 					mn_dop[k][i][j] += tr[mDOP][k][i][j];
+					mn_jpo4[k][i][j] += jpo4[k][i][j];
 				}
 			}
 		}
@@ -996,6 +1010,7 @@ for (cmon = inmon; cmon < inmon + tmon; cmon++)
 			mult_darray3d(mn_o2sat, NZ, NXMEM, NYMEM, frac);
 			mult_darray3d(mn_phos, NZ, NXMEM, NYMEM, frac);
 			mult_darray3d(mn_dop, NZ, NXMEM, NYMEM, frac);
+			mult_darray3d(mn_jpo4, NZ, NXMEM, NYMEM, frac);
 
 
 #endif
@@ -1063,6 +1078,7 @@ for (cmon = inmon; cmon < inmon + tmon; cmon++)
 			set_darray3d_zero(mn_o2sat, NZ, NXMEM, NYMEM);
 			set_darray3d_zero(mn_phos, NZ, NXMEM, NYMEM);
 			set_darray3d_zero(mn_dop, NZ, NXMEM, NYMEM);
+			set_darray3d_zero(mn_jpo4,NZ,NXMEM,NYMEM);
 #endif
 			// begin ashao
 			// end ashao
@@ -1339,6 +1355,7 @@ var[11] = &mn_jo2[0][0][0];
 var[12] = &mn_o2sat[0][0][0];
 var[13] = &mn_dop[0][0][0];
 var[14] = &mn_phos[0][0][0];
+var[14] = &mn_jpo4[0][0][0];
 
 #endif
 
