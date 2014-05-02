@@ -48,7 +48,7 @@
 			       /* netCDF files -- otherwise initialize*/
 			       /* analytically 			      */
 
-#define NTR 3                 /*  The number of tracers to carry.    */
+#define NTR 1                 /*  The number of tracers to carry.    */
                                /*  Must add up to total of AGE,       */
                                /*    OXYGEN, O18, (CFC11 + CFC12),    */
                                /*    (DOP + PHOSPHATE), (DIC + ALK)   */
@@ -77,7 +77,7 @@
                              /* before repetition. E.g., for 10 year  */
                              /* forcing file use 120, 564 for 47yrs */
 
-#define WRINT 1                /*  Number of months between writes AND */
+#define WRINT 12                /*  Number of months between writes AND */
                                /*   the mean interval for each write   */
 
 #define NTSTEP 1                /*  Number of time steps between       */ 
