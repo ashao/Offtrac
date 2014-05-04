@@ -12,7 +12,9 @@
 double ***mn_cfc12;
 double ***cfc12_init;
 double **cfc12_sat;
+double ***mn_cfc12sat;
 double **cfc12_atmconc;
+
 int mCFC12;
 extern double ****tr;
 
@@ -21,6 +23,7 @@ void allocate_cfc12 ( ) {
 	mn_cfc12 = alloc3d(NZ,NXMEM,NYMEM);
 	cfc12_init = alloc3d(NZ,NXMEM,NYMEM);
 	cfc12_sat = alloc2d(NXMEM,NYMEM);
+	mn_cfc12sat = alloc2d(NXMEM,NYMEM);
 	cfc12_atmconc = alloc2d(NXMEM,NYMEM);
 }
 

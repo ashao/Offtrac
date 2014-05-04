@@ -18,8 +18,8 @@
 #include "util.h"
 
 #include "tracer_utilities.h"
-#ifdef TTD
-#include "ttd_bp.h"
+#ifdef CFCS
+#include "cfcs_sf6.h"
 #endif
 /*---------------------------------------------------------------------
  *     define variables and subroutines
@@ -176,7 +176,9 @@ void step_fields(int iyear, int itts, int imon, int iterno) {
 	 *-----------------------------------------*/
 #ifdef TTD
 
-	surface_ttd();
+	surface_cfc11( );
+	surface_cfc12( );
+	surface_sf6( );
 
 #endif
 

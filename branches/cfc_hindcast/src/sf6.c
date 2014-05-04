@@ -12,6 +12,7 @@
 double ***mn_sf6;
 double ***sf6_init;
 double **sf6_sat;
+double **mn_sf6sat;
 double **sf6_atmconc;
 int mSF6;
 extern double ****tr;
@@ -21,6 +22,7 @@ void allocate_sf6 ( ) {
 	mn_sf6 = alloc3d(NZ,NXMEM,NYMEM);
 	sf6_init = alloc3d(NZ,NXMEM,NYMEM);
 	sf6_sat = alloc2d(NXMEM,NYMEM);
+	mn_sf6sat = alloc2d(NXMEM,NYMEM);
 	sf6_atmconc = alloc2d(NXMEM,NYMEM);
 }
 

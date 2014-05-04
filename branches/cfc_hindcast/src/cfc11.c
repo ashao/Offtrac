@@ -18,6 +18,8 @@ double ***mn_cfc11;
 double ***cfc11_init;
 double **cfc11_sat;
 double **cfc11_atmconc;
+double **mn_cfc11sat;
+
 int mCFC11;
 extern double ****tr;
 
@@ -27,7 +29,9 @@ void allocate_cfc11 ( ) {
 	mn_cfc11 = alloc3d(NZ,NXMEM,NYMEM);
 	cfc11_init = alloc3d(NZ,NXMEM,NYMEM);
 	cfc11_sat = alloc2d(NXMEM,NYMEM);
+	mn_cfc11sat = alloc2d(NXMEM,NYMEM);
 	cfc11_atmconc = alloc2d(NXMEM,NYMEM);
+
 }
 
 void read_tracer_boundary ( ) {

@@ -598,8 +598,10 @@ close_file(&cdfid, &fn);
 
 
 #ifdef TTD
-printf("Allocating arrays for TTD\n");
-allocate_ttd( );
+printf("Allocating arrays for CFCs and SF6\n");
+allocate_cfc11( );
+allocate_cfc12( );
+allocate_sf6( );
 #endif
 
 // Allocate temperature and salinity data arrays to be read in
@@ -643,9 +645,13 @@ if (flags[7])
 if (flags[9])
 	set_darray3d_zero(mn_age, NZ, NXMEM, NYMEM);
 #endif
-#ifdef TTD
-if (flags[10])
-	set_darray3d_zero(mn_ttd, NZ, NXMEM, NYMEM);
+#ifdef CFCS
+if (flags[10]) 	set_darray3d_zero(mn_cfc11, NZ, NXMEM, NYMEM);
+if (flags[11]) 	set_darray3d_zero(mn_cfc12, NZ, NXMEM, NYMEM);
+if (flags[12]) 	set_darray3d_zero(mn_sf6, NZ, NXMEM, NYMEM);
+if (flags[13]) 	set_darray3d_zero(mn_cfc11sat, NZ, NXMEM, NYMEM);
+if (flags[14]) 	set_darray3d_zero(mn_cfc12sat, NZ, NXMEM, NYMEM);
+if (flags[15]) 	set_darray3d_zero(mn_sf6sat, NZ, NXMEM, NYMEM);
 #endif
 // These were already called earlier: ashao
 //read_grid(); 
@@ -708,8 +714,10 @@ else {
 //BX
 // read_h(imon,inxt);
 
-#ifdef TTD
-initialize_ttd();
+#ifdef CFCS
+initialize_cfc11( );
+initialize_cfc12( );
+initialize_sf6( );
 #endif
 
 #ifdef USE_CALC_H
@@ -952,7 +960,13 @@ for (cmon = inmon; cmon < inmon + tmon; cmon++)
 			{
 				for (j = 0; j < NYMEM; j++)
 				{
-					mn_ttd[k][i][j] += tr[mTTD][k][i][j];
+					mn_cfc11[k][i][j] += tr[mCFC11][k][i][j];
+					mn_cfc12[k][i][j] += tr[mCFC12][k][i][j];
+					mn_sf6[k][i][j] += tr[mSF6][k][i][j];
+					mn_cfc11sat[k][i][j] += cfc11_sat[k][i][j];
+					mn_cfc12sat[k][i][j] += cfc12_sat[k][i][j];
+					mn_sf6sat[k][i][j] += sf6_sat[k][i][j];
+
 				}
 			}
 		}
@@ -985,9 +999,15 @@ for (cmon = inmon; cmon < inmon + tmon; cmon++)
 				mult_darray3d(mn_age, NZ, NXMEM, NYMEM, frac);
 #endif
 
-#ifdef TTD
+#ifdef CFCS
 
-			mult_darray3d(mn_ttd, NZ, NXMEM, NYMEM, frac);
+			mult_darray3d(mn_cfc11, NZ, NXMEM, NYMEM, frac);
+			mult_darray3d(mn_cfc12, NZ, NXMEM, NYMEM, frac);
+			mult_darray3d(mn_sf6, NZ, NXMEM, NYMEM, frac);
+			mult_darray3d(mn_cfc11sat, NZ, NXMEM, NYMEM, frac);
+			mult_darray3d(mn_cfc12sat, NZ, NXMEM, NYMEM, frac);
+			mult_darray3d(mn_sf6sat, NZ, NXMEM, NYMEM, frac);
+
 
 #endif
 			if (flags[18])
@@ -1048,8 +1068,15 @@ for (cmon = inmon; cmon < inmon + tmon; cmon++)
 				set_darray3d_zero(mn_age, NZ, NXMEM, NYMEM);
 #endif
 
-#ifdef TTD
-			set_darray3d_zero(mn_ttd,NZ,NXMEM,NYMEM);
+#ifdef CFCS
+
+			set_darray3d_zero(mn_cfc11, NZ, NXMEM, NYMEM, frac);
+			set_darray3d_zero(mn_cfc12, NZ, NXMEM, NYMEM, frac);
+			set_darray3d_zero(mn_sf6, NZ, NXMEM, NYMEM, frac);
+			set_darray3d_zero(mn_cfc11sat, NZ, NXMEM, NYMEM, frac);
+			set_darray3d_zero(mn_cfc12sat, NZ, NXMEM, NYMEM, frac);
+			set_darray3d_zero(mn_sf6sat, NZ, NXMEM, NYMEM, frac);
+
 #endif
 			// begin ashao
 			// end ashao
@@ -1320,9 +1347,13 @@ var[9] = &mn_age[0][0][0];
 
 #endif
 
-#ifdef TTD
-var[10] = &mn_ttd[0][0][0];
-
+#ifdef CFCS
+var[10] = &mn_cfc11[0][0][0];
+var[11] = &mn_cfc12[0][0][0];
+var[12] = &mn_sf6[0][0][0];
+var[13] = &mn_cfc11sat[0][0];
+var[14] = &mn_cfc12sat[0][0];
+var[15] = &mn_sf6sat[0][0];
 #endif
 
 // end ashao
