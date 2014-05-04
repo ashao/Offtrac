@@ -1,0 +1,117 @@
+/*
+ * sf6.c
+ *
+ *  Created on: May 2, 2014
+ *      Author: ashao
+ */
+#include "init.h"
+#include "alloc.h"
+#include "read.h"
+#include "math.h"
+
+double ***mn_sf6;
+double ***sf6_init;
+double **sf6_sat;
+double **sf6_atmconc;
+int mSF6;
+extern double ****tr;
+
+void allocate_sf6 ( ) {
+
+	mn_sf6 = alloc3d(NZ,NXMEM,NYMEM);
+	sf6_init = alloc3d(NZ,NXMEM,NYMEM);
+	sf6_sat = alloc2d(NXMEM,NYMEM);
+	sf6_atmconc = alloc2d(NXMEM,NYMEM);
+}
+
+void initialize_sf6 ( ) {
+	int i, j, k;
+	mSF6 = mCFC12+1;
+	extern char restart_filename[200];
+
+#ifdef RESTART
+	printf("Initializing CFC-11 from restart %s\n",restart_filename);
+	read_var3d( restart_filename, "mn_sf6", 0, sf6_init);
+#else
+	set_darray3d_zero(sf6_init,NZ,NXMEM,NYMEM);
+#endif
+
+	for(i=0;i<NXMEM;i++)
+		for(j=0;j<NYMEM;j++)
+			for(k=0;k<NZ;k++)
+				tr[mSF6][k][i][j] = sf6_init[k][i][j];
+
+	free3d(sf6_init,NZ);
+}
+
+void sf6_saturation( double **sat ) {
+
+	const double solcoeffs[6] = {-80.0343,117.232,29.5817,0.0335183,-0.0373942,0.00774862}
+	int i, j, k;
+	double work;
+	double TempK;
+	extern double ***Temptm, ***Salttm;
+
+	for (i=0;i<NXMEM;i++)
+		for (j=0;j<NYMEM;j++)	{
+					TempK = Temptm[k][i][j]+273.15;
+					work = solcoeffs[0] + solcoeffs[1]*(100/TempK) +
+						solcoeffs[2]*log( TempK/100 ) +
+						Salttm[k][i][j]*(solcoeffs[3]+solcoeffs[4]*(TempK/100)+solcoeffs[5]*pow(TempK/100,2));
+					sat[i][j] = exp(work)*sf6_atmconc[i][j];
+			}
+
+
+
+}
+
+void sf6_find_atmconc(  ) {
+
+	int i,j;
+	extern double **geolat;
+	extern double **atmpres;
+	const double equatorbound[2] = {10,-10}; // Set the latitudes where to start interpolating atmospheric concentrations
+	extern double currtime;
+	extern struct atmconc;
+	double hemisphere_concentrations[2];
+
+	// Interpolate in time to find the atmospheric concentration
+	hemisphere_concentrations[0] = lin_interp(currtime,
+			atmconc[mSF6].nval,atmconc[mSF6].time,0,atmconc[mSF6].ntime);
+	hemisphere_concentrations[1] = lin_interp(currtime,
+			atmconc[mSF6].sval,atmconc[mSF6].time,0,atmconc[mSF6].ntime);
+
+
+	for (i=0;i<NXMEM;i++)
+		for (j=0;j<NYMEM;j++) {
+
+			if (geolat[i][j] < equatorbound[0] && geolat[i][j] > equatorbound[1]) {
+				sf6_atmconc[i][j] = lin_interp(geolat[i][j],
+						equatorbound,hemisphere_concentrations,2);
+			}
+			if (geolat[i][j]>equatorbound[0] ) {
+				sf6_atmconc[i][j] = hemisphere_concentrations[0];
+			}
+			if (geolat[i][j]<-equatorbound[1] ) {
+				sf6_atmconc[i][j] = hemisphere_concentrations[1];
+			}
+		}
+
+}
+
+void surface_sf6( ) {
+
+	int i,j,k;
+
+	// Set oxygen values to saturation at the mixed layer to mimic equilibrium with the atmosphere
+	extern double ***Temptm;
+	extern double ***Salttm;
+	sf6_find_atmconc( );
+	sf6_saturation(Temptm, Salttm, sf6_sat);
+	for (k=0;k<NML;k++)
+		for (i=0;i<NXMEM;i++)
+			for (j=0;j<NYMEM;j++)
+					tr[mSF6][k][i][j]=sf6_sat[k][i][j];
+
+}
+
