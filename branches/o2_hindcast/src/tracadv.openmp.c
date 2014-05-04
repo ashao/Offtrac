@@ -143,8 +143,9 @@ double hlst[NYMEM];
 //  double MLMIN = EPSILON;   /* min depth for ML			      */
 
 //	double MLMIN = 4.25; // Changing to 0.8 as done in GOLD
-	double MLMIN = 0.8;
-	double BLMIN = 0.20;
+	double MLMIN = EPSILON;
+//	double BLMIN = 0.20; // ashao: in global configuration of HIM it's 0.1
+	double BLMIN = 0.10;
 
 #ifdef ENTRAIN
   double nts = dt/DT; /* number of timesteps (#day*86400/3600seconds) */

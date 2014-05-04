@@ -132,9 +132,9 @@ void tracer(int itts)
   double ***hnew;
 #endif
 
-//  double MLMIN = EPSILON;   /* min depth for ML			      */
+  double MLMIN = EPSILON;   /* min depth for ML			      */
 
-	double MLMIN = 4.25;
+//	double MLMIN = 4.25;
 	double BLMIN = 0.20;
 
 #ifdef ENTRAIN

@@ -192,9 +192,7 @@ void step_fields(int iyear, int itts, int imon, int iterno) {
 	surface_oxygen();
 	printf("Calculating biotic sources/sinks\n");
 	biotic_sms(ibiodt);
-# ifdef MERGED_ML
-	merge_ml_j();
-# endif
+
 	apply_oxygen_jterms();
 	apply_phosphate_jterms();
 	surface_oxygen();
@@ -535,7 +533,8 @@ void merge_ml_tr() {
 	for (j = Y1; j <= ny; j++) {
 		for (i = X0; i <= nx + 1; i++) {
 			for (m = 0; m < NTR; m++) {
-				for (k = 0; k <= 2; k = k + 2) {
+				// for (k = 0; k <= 2; k = k + 2) {
+				for (k = 0; k < 1; k = k + 2) { // ashao: Buffer layers do not need to have uniform concentration
 					//HF use z-weighted average
 					tr[m][k][i][j] = (tr[m][k][i][j] * h[k][i][j]
 							+ tr[m][k + 1][i][j] * h[k + 1][i][j])

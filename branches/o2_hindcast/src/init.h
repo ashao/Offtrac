@@ -261,7 +261,7 @@
 #define KD   1.00e-5		/* was 1.00e-5		*/
 #endif
 
-#define NML 1
+#define NML 2
 
 #define MDT 4800
 //HF

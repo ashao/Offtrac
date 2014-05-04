@@ -5,7 +5,7 @@
 #include "init.h"
 #include "step.h"
 #include "phosphate.h"
-
+const double r_bio_tau = 1.0 / (30.0 * 86400.0); 
 extern const double misval;
 extern int wetmask[NXMEM][NYMEM];
 
@@ -106,7 +106,7 @@ void biotic_sms(int ibiodt)
 {
     int i, j, k, l, kjunk;
     int kcomp, kmax; 
-    double po4obsprof[NZPHOS], junk;
+    double po4obsprof[NZWOA], junk;
 # ifdef PROGNOSTIC
     double feobsprof[NZPHOS];
 # endif
@@ -156,8 +156,8 @@ void biotic_sms(int ibiodt)
     //ratio_o2_sw = 1.00075;
 #endif
 
-    int nzlevitus = NZPHOS;
-    double levitus_depths[NZPHOS] = {0, 10, 20, 30, 50, 75, 100,
+    int nzlevitus = NZWOA;
+    double levitus_depths[NZWOA] = {0, 10, 20, 30, 50, 75, 100,
 				    120, 150, 200, 250, 300, 400, 500, 600,
 				    700, 800, 900, 1000, 1100, 1200, 1300, 
 				    1400, 1500, 1750, 2000, 2500, 3000, 
@@ -206,7 +206,14 @@ void biotic_sms(int ibiodt)
 
     dt_bio = dt / (double) ibiodt;
     frac_dt_bio = 1.0 / (double) ibiodt;
-
+	set_fix_darray3d_zero(jpo4,NZ);
+	set_fix_darray3d_zero(jdop,NZ);
+	set_fix_darray3d_zero(jremdop,NZ);
+	set_fix_darray3d_zero(jprod,NZ);
+	set_fix_darray3d_zero(jremin,NZ);
+	set_fix_darray2d_zero(flux_pop);
+	set_fix_darray3d_zero(jo2,NZ);
+	
 //    printf("conc_obs_layer(h,po4_star_lev,po4_star_lay)\n");
 //    conc_obs_layer(h,po4_star_lev,po4_star_lay);
 # ifdef PROGNOSTIC
