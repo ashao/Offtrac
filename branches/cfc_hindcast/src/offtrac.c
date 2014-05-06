@@ -245,6 +245,7 @@ double ****tr;
 double trintegral[NTR];
 double trprofile[NZ];
 double trwarn[NTR][2];
+double **geolat;
 
 double umask[NXMEM][NYMEM];
 double vmask[NXMEM][NYMEM];
@@ -597,7 +598,7 @@ printf("Closing file \n");
 close_file(&cdfid, &fn);
 
 
-#ifdef TTD
+#ifdef CFCS
 printf("Allocating arrays for CFCs and SF6\n");
 allocate_cfc11( );
 allocate_cfc12( );
@@ -610,7 +611,7 @@ allocate_ts();
 /* Allocate the memory for the fields to be calculated.		*/
 printf("allocating fields\n");
 alloc_fields();
-
+printf("Done allocating fields\n");
 /* initialize tracer pointers					*/
 
 for (m = 0; m < NOVARS; m++)
@@ -649,9 +650,9 @@ if (flags[9])
 if (flags[10]) 	set_darray3d_zero(mn_cfc11, NZ, NXMEM, NYMEM);
 if (flags[11]) 	set_darray3d_zero(mn_cfc12, NZ, NXMEM, NYMEM);
 if (flags[12]) 	set_darray3d_zero(mn_sf6, NZ, NXMEM, NYMEM);
-if (flags[13]) 	set_darray3d_zero(mn_cfc11sat, NZ, NXMEM, NYMEM);
-if (flags[14]) 	set_darray3d_zero(mn_cfc12sat, NZ, NXMEM, NYMEM);
-if (flags[15]) 	set_darray3d_zero(mn_sf6sat, NZ, NXMEM, NYMEM);
+if (flags[13]) 	set_darray2d_zero(mn_cfc11sat, NXMEM, NYMEM);
+if (flags[14]) 	set_darray2d_zero(mn_cfc12sat, NXMEM, NYMEM);
+if (flags[15]) 	set_darray2d_zero(mn_sf6sat, NXMEM, NYMEM);
 #endif
 // These were already called earlier: ashao
 //read_grid(); 
@@ -718,6 +719,7 @@ else {
 initialize_cfc11( );
 initialize_cfc12( );
 initialize_sf6( );
+read_tracer_boundary();
 #endif
 
 #ifdef USE_CALC_H
@@ -953,21 +955,22 @@ for (cmon = inmon; cmon < inmon + tmon; cmon++)
 
 		/* calculate the mean */
 
-#ifdef TTD
-		for (k = 0; k < NZ; k++)
+#ifdef CFCS
+		for (i = 0; i < NXMEM; i++)
 		{
-			for (i = 0; i < NXMEM; i++)
+			for (j = 0; j < NYMEM; j++)
 			{
-				for (j = 0; j < NYMEM; j++)
+				for (k = 0; k < NZ; k++)
 				{
 					mn_cfc11[k][i][j] += tr[mCFC11][k][i][j];
 					mn_cfc12[k][i][j] += tr[mCFC12][k][i][j];
 					mn_sf6[k][i][j] += tr[mSF6][k][i][j];
-					mn_cfc11sat[k][i][j] += cfc11_sat[k][i][j];
-					mn_cfc12sat[k][i][j] += cfc12_sat[k][i][j];
-					mn_sf6sat[k][i][j] += sf6_sat[k][i][j];
-
 				}
+				mn_cfc11sat[i][j] += cfc11_sat[i][j];
+				mn_cfc12sat[i][j] += cfc12_sat[i][j];
+				mn_sf6sat[i][j] += sf6_sat[i][j];
+
+				
 			}
 		}
 
@@ -1004,9 +1007,9 @@ for (cmon = inmon; cmon < inmon + tmon; cmon++)
 			mult_darray3d(mn_cfc11, NZ, NXMEM, NYMEM, frac);
 			mult_darray3d(mn_cfc12, NZ, NXMEM, NYMEM, frac);
 			mult_darray3d(mn_sf6, NZ, NXMEM, NYMEM, frac);
-			mult_darray3d(mn_cfc11sat, NZ, NXMEM, NYMEM, frac);
-			mult_darray3d(mn_cfc12sat, NZ, NXMEM, NYMEM, frac);
-			mult_darray3d(mn_sf6sat, NZ, NXMEM, NYMEM, frac);
+			mult_darray2d(mn_cfc11sat, NXMEM, NYMEM, frac);
+			mult_darray2d(mn_cfc12sat, NXMEM, NYMEM, frac);
+			mult_darray2d(mn_sf6sat, NXMEM, NYMEM, frac);
 
 
 #endif
@@ -1070,12 +1073,12 @@ for (cmon = inmon; cmon < inmon + tmon; cmon++)
 
 #ifdef CFCS
 
-			set_darray3d_zero(mn_cfc11, NZ, NXMEM, NYMEM, frac);
-			set_darray3d_zero(mn_cfc12, NZ, NXMEM, NYMEM, frac);
-			set_darray3d_zero(mn_sf6, NZ, NXMEM, NYMEM, frac);
-			set_darray3d_zero(mn_cfc11sat, NZ, NXMEM, NYMEM, frac);
-			set_darray3d_zero(mn_cfc12sat, NZ, NXMEM, NYMEM, frac);
-			set_darray3d_zero(mn_sf6sat, NZ, NXMEM, NYMEM, frac);
+			set_darray3d_zero(mn_cfc11, NZ, NXMEM, NYMEM);
+			set_darray3d_zero(mn_cfc12, NZ, NXMEM, NYMEM);
+			set_darray3d_zero(mn_sf6, NZ, NXMEM, NYMEM);
+			set_darray2d_zero(mn_cfc11sat, NXMEM, NYMEM);
+			set_darray2d_zero(mn_cfc12sat, NXMEM, NYMEM);
+			set_darray2d_zero(mn_sf6sat, NXMEM, NYMEM);
 
 #endif
 			// begin ashao

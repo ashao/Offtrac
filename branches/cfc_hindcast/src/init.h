@@ -37,7 +37,7 @@
 
 /* Specify properties of the passive tracers                          */
 
-#define NUM_ADV_ITER 60         /* number of iterations for advection */
+#define NUM_ADV_ITER 30         /* number of iterations for advection */
 
 #define MERGED_ML                /* merge the first and second two     */
                                /* layers for all BGC variables       */
@@ -48,7 +48,7 @@
 			       /* netCDF files -- otherwise initialize*/
 			       /* analytically 			      */
 
-#define NTR 1                 /*  The number of tracers to carry.    */
+#define NTR 3                 /*  The number of tracers to carry.    */
                                /*  Must add up to total of AGE,       */
                                /*    OXYGEN, O18, (CFC11 + CFC12),    */
                                /*    (DOP + PHOSPHATE), (DIC + ALK)   */
@@ -56,12 +56,12 @@
                                /*    (15NO3 + DO15N), SF6
 				/* CFC11_sat, CFC12_sat, SF6_sar ashao    */
 
-#define NOVARS 15              /*  Number of variables used in        */
+#define NOVARS 16              /*  Number of variables used in        */
                                /*    vardesc structure for output.    */
                                /*    Moved here from offtrac.c        */
                                /*  25OCT07 BX ashao                   */
 
-#define BEGYEAR 1947			/* ashao: Set the start year, for
+#define BEGYEAR 1936			/* ashao: Set the start year, for
  	 	 	 	 	 	 	 	 tracers with atmospheric histories */
 
 #define HINDCAST			/* Expect to read in hindcasat fields */
@@ -77,7 +77,7 @@
                              /* before repetition. E.g., for 10 year  */
                              /* forcing file use 120, 564 for 47yrs */
 
-#define WRINT 12                /*  Number of months between writes AND */
+#define WRINT 1                /*  Number of months between writes AND */
                                /*   the mean interval for each write   */
 
 #define NTSTEP 1                /*  Number of time steps between       */ 
@@ -273,5 +273,5 @@
 
 #undef RESTART
 
-#define TTD
+#define CFCS
 #define NMONTHSTTD 12

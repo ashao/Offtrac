@@ -17,6 +17,7 @@ void mult_fix_darray2d(double arr[NXMEM][NYMEM], double factor);
 void add_darray3d(double ***arr1, double ***arr2, int nz, int NX, int NY);
 
 void mult_darray3d(double ***arr, int nz, int NX, int NY, double factor);
+void mult_darray2d(double **arr, int NX, int NY, double factor);
 //BX-a
 void mult_fix_darray2d_mv(double arr[NXMEM][NYMEM], double factor, double D[NXMEM][NYMEM], double mv);
 

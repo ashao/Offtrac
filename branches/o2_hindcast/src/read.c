@@ -1667,7 +1667,7 @@ void read_var3d( char inpath[200], char varname[200], int imon, double ***data)
 
 
 
-void read_woa_file(int imon, double harray[NZ][NXMEM][NYMEM], double ***outarray, char *filename, char *varname) {
+void read_woa_file(int imon, double harray[NZ][NXMEM][NYMEM], double ***outarray, char *filename, char *varname, double conv_factor) {
 
 	int i,j,k;
 	int err, cdfid, timeid;
@@ -1731,7 +1731,7 @@ void read_woa_file(int imon, double harray[NZ][NXMEM][NYMEM], double ***outarray
 	for (k=0;k<NZWOA;k++) {
 		for (i=0;i<NXTOT;i++) {
 			for (j=0;j<NYTOT;j++) {
-				oxytmp[k][i+2][j+2]= tmp3d[k][j][i]*1.e-3;
+				oxytmp[k][i+2][j+2]= tmp3d[k][j][i]*conv_factor;
 			}
 		}
 	}

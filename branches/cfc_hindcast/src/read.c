@@ -60,7 +60,7 @@ extern char inittrac[200];
 extern char kw_varname[100]; // ashao
 
 extern double qlat[NYMEM],hlat[NYMEM];
-
+extern double **geolat;
 
 #ifdef AGE
 extern double age_init[NZ][NXMEM][NYMEM];
@@ -206,7 +206,6 @@ qlat[i+2]=(double)latq[i];
     status = nc_get_vara_double(cdfid, varid, start, end, &dxu_in[0][0]);
     if (status != NC_NOERR) handle_error("read dxu", status);
 
-
     for (i=0;i<NXTOT;i++) {
 	for (j=0;j<NYTOT;j++) {
 	    areagr[i+2][j+2]= Ah[j][i];
@@ -227,7 +226,8 @@ qlat[i+2]=(double)latq[i];
 
     close_file(&cdfid,&file);
     printf("\nFinished reading file '%s'.\n",inpath);
-
+    geolat = alloc2d(NXMEM,NYMEM);
+    read_var2d(inpath,"geolat",geolat);
 
     /* zonal re-entrance            */
 
@@ -1665,6 +1665,43 @@ void read_var3d( char inpath[200], char varname[200], int imon, double ***data)
     free3d_f(tmp3d,NZ);
     }
 
+void read_var2d( char inpath[200], char varname[200], double **data)
+    {
+
+    int i,j,k;
+    int err, cdfid, timeid, varid;
+    char infile[25];
+    FILE *file;
+    int status;
+    int inxt,iprv;
+    size_t start[MAX_NC_VARS];
+    size_t count[MAX_NC_VARS];
+    float **tmp2d;
+
+    start[0] = 0;
+    start[1] = 0;
+
+    err = open_input_file(inpath,&file,&cdfid,&timeid);
+    if ((status = nc_inq_varid(cdfid, varname, &varid))) 
+    bzero(start, MAX_NC_VARS * sizeof(long));
+    
+    count[0] = NYTOT;
+    count[1] = NXTOT;
+
+//    for (i=0;i<4;i++)
+//	printf("start[%d]: %d,count[%d]: %d\n",i,start[i],i,count[i]);
+
+    tmp2d  = alloc2d_f(NYTOT,NXTOT);
+    if ((status = nc_get_vara_float(cdfid,varid,start,count,tmp2d[0])))
+	ERR(status);
+	for (i=0;i<NXTOT;i++)
+	    for (j=0;j<NYTOT;j++)
+		data[i+2][j+2]= tmp2d[j][i];
+
+    wrap_reentrance_2d(data);
+
+    free2d_f(tmp2d,NZ);
+    }
 
 
 void read_woa_file(int imon, double harray[NZ][NXMEM][NYMEM], double ***outarray, char *filename, char *varname) {

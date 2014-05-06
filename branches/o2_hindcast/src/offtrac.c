@@ -974,7 +974,7 @@ for (cmon = inmon; cmon < inmon + tmon; cmon++)
 				}
 			}
 		}
-
+		printf("mn_phos[10][100][100]=%e\n",mn_phos[10][100][100]);
 #endif
 		if (nmn == WRINT && itts == 1)
 		{
@@ -1011,7 +1011,7 @@ for (cmon = inmon; cmon < inmon + tmon; cmon++)
 			mult_darray3d(mn_phos, NZ, NXMEM, NYMEM, frac);
 			mult_darray3d(mn_dop, NZ, NXMEM, NYMEM, frac);
 			mult_darray3d(mn_jpo4, NZ, NXMEM, NYMEM, frac);
-
+		
 
 #endif
 			if (flags[18])
@@ -1355,7 +1355,7 @@ var[11] = &mn_jo2[0][0][0];
 var[12] = &mn_o2sat[0][0][0];
 var[13] = &mn_dop[0][0][0];
 var[14] = &mn_phos[0][0][0];
-var[14] = &mn_jpo4[0][0][0];
+var[15] = &mn_jpo4[0][0][0];
 
 #endif
 

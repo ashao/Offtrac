@@ -8,7 +8,7 @@
 #include "alloc.h"
 #include "read.h"
 #include "math.h"
-
+#include "cfcs_sf6.h"
 double ***mn_sf6;
 double ***sf6_init;
 double **sf6_sat;
@@ -28,7 +28,9 @@ void allocate_sf6 ( ) {
 
 void initialize_sf6 ( ) {
 	int i, j, k;
+	
 	mSF6 = mCFC12+1;
+	printf("mSF6: %d\n",mSF6);
 	extern char restart_filename[200];
 
 #ifdef RESTART
@@ -48,18 +50,18 @@ void initialize_sf6 ( ) {
 
 void sf6_saturation( double **sat ) {
 
-	const double solcoeffs[6] = {-80.0343,117.232,29.5817,0.0335183,-0.0373942,0.00774862}
-	int i, j, k;
+	const double solcoeffs[6] = {-80.0343,117.232,29.5817,0.0335183,-0.0373942,0.00774862};
+	int i, j;
 	double work;
 	double TempK;
 	extern double ***Temptm, ***Salttm;
 
 	for (i=0;i<NXMEM;i++)
 		for (j=0;j<NYMEM;j++)	{
-					TempK = Temptm[k][i][j]+273.15;
+					TempK = Temptm[0][i][j]+273.15;
 					work = solcoeffs[0] + solcoeffs[1]*(100/TempK) +
 						solcoeffs[2]*log( TempK/100 ) +
-						Salttm[k][i][j]*(solcoeffs[3]+solcoeffs[4]*(TempK/100)+solcoeffs[5]*pow(TempK/100,2));
+						Salttm[0][i][j]*(solcoeffs[3]+solcoeffs[4]*(TempK/100)+solcoeffs[5]*pow(TempK/100,2));
 					sat[i][j] = exp(work)*sf6_atmconc[i][j];
 			}
 
@@ -74,13 +76,12 @@ void sf6_find_atmconc(  ) {
 	extern double **atmpres;
 	const double equatorbound[2] = {10,-10}; // Set the latitudes where to start interpolating atmospheric concentrations
 	extern double currtime;
-	extern struct atmconc;
 	double hemisphere_concentrations[2];
 
 	// Interpolate in time to find the atmospheric concentration
-	hemisphere_concentrations[0] = lin_interp(currtime,
+	hemisphere_concentrations[0] = lin_interpp(currtime,
 			atmconc[mSF6].nval,atmconc[mSF6].time,0,atmconc[mSF6].ntime);
-	hemisphere_concentrations[1] = lin_interp(currtime,
+	hemisphere_concentrations[1] = lin_interpp(currtime,
 			atmconc[mSF6].sval,atmconc[mSF6].time,0,atmconc[mSF6].ntime);
 
 
@@ -88,8 +89,8 @@ void sf6_find_atmconc(  ) {
 		for (j=0;j<NYMEM;j++) {
 
 			if (geolat[i][j] < equatorbound[0] && geolat[i][j] > equatorbound[1]) {
-				sf6_atmconc[i][j] = lin_interp(geolat[i][j],
-						equatorbound,hemisphere_concentrations,2);
+				sf6_atmconc[i][j] = lin_interpp(geolat[i][j],
+						equatorbound,hemisphere_concentrations,0,2);
 			}
 			if (geolat[i][j]>equatorbound[0] ) {
 				sf6_atmconc[i][j] = hemisphere_concentrations[0];
@@ -105,15 +106,14 @@ void surface_sf6( ) {
 
 	int i,j,k;
 
+	printf("Setting SF6 surface condition\n");
 	// Set oxygen values to saturation at the mixed layer to mimic equilibrium with the atmosphere
-	extern double ***Temptm;
-	extern double ***Salttm;
 	sf6_find_atmconc( );
-	sf6_saturation(Temptm, Salttm, sf6_sat);
+	sf6_saturation( sf6_sat);
 	for (k=0;k<NML;k++)
 		for (i=0;i<NXMEM;i++)
 			for (j=0;j<NYMEM;j++)
-					tr[mSF6][k][i][j]=sf6_sat[k][i][j];
+					tr[mSF6][k][i][j]=sf6_sat[i][j];
 
 }
 

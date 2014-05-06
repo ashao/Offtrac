@@ -60,6 +60,13 @@ void mult_darray3d(double ***arr, int nz, int NX, int NY, double factor) {
 			for (y = 0; y < NY; y++)
 				arr[z][x][y] *= factor;
 }
+
+void mult_darray2d(double **arr, int NX, int NY, double factor) {
+	int  x, y;
+		for (x = 0; x < NX; x++)
+			for (y = 0; y < NY; y++)
+				arr[x][y] *= factor;
+}
 //BX-a
 void mult_fix_darray2d_mv(double arr[NXMEM][NYMEM], double factor,
 		double D[NXMEM][NYMEM], double mv) {
@@ -184,6 +191,48 @@ void wrap_reentrance_3d( double ***arr, int nz) {
 	}
 }
 
+double linear_interpolation(double *xin, double *yin, double xi, int numin) {
 
+	int i,j,flipidx;
+	int intpidx[2];
+	int decreasing;
+	double deltax,dist;
+	double x[numin],y[numin];
+	double yi,y0,y1,x0,x1;
+
+	// first check to see if xin increases or decreases
+	if (xin[numin-1]-xin[0] > 0.0) decreasing = 0;
+	if (xin[numin-1]-xin[0] < 0.0) decreasing = 1;
+
+	// flip the input vectors if it is decreasing
+	if (decreasing) {
+
+		for (flipidx = 0,i=numin-1; i>=0; i--,flipidx++) {
+			x[flipidx] = xin[i];
+			y[flipidx] = yin[i];
+		}
+	}
+
+	// Figure out which elements of the vector to use
+	deltax = xi-x[0];
+	for (i=0;i<numin;i++) {
+		dist = fabs(xi-x[i]); // Calculate how far away the current x value is from the desired number
+		if (dist<deltax) {
+			deltax = dist;
+			intpidx[0] = i; // We now know at least one bound of the interpolation interval
+			if ( (xi-x[i])<0 ) intpidx[1] = i-1;
+			else intpidx[1] = i + 1;
+		}
+	}
+
+	y0 = y[ intpidx[0] ];
+	y1 = y[ intpidx[1] ];
+	x0 = x[ intpidx[0] ];
+	x1 = x[ intpidx[1] ];
+
+	yi = y0 + (y1-y0)*(xi - x0)/(x1-x0);
+
+	return yi;
+}
 
 // end ashao

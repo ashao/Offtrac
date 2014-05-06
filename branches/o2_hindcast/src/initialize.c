@@ -121,13 +121,13 @@ void initialize(int imon)
 
 
 #ifdef RESTART
-    read_tracer_init(imon,run_name);  /* reading all tracer initial values from restart file*/
+//    read_tracer_init(imon,run_name);  /* reading all tracer initial values from restart file*/
 #else
     /*  for (i=0;i<=NXMEM-1;i++)
     for (j=0;j<=NYMEM-1;j++)
     printf("l202 ini D[%d][%d]=%g\n",i,j,D[i][j]); */
 
-    read_tracer_init(imon);  /* reading all tracer initial values */
+//    read_tracer_init(imon);  /* reading all tracer initial values */
 #endif
     // printf("Initialize 173 for month %i.\n",imon);
 

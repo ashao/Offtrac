@@ -174,7 +174,7 @@ void step_fields(int iyear, int itts, int imon, int iterno) {
 	 *    biological pump is linked to PO4
 	 *
 	 *-----------------------------------------*/
-#ifdef TTD
+#ifdef CFCS
 
 	surface_cfc11( );
 	surface_cfc12( );
@@ -376,6 +376,8 @@ double lin_interp(double pleth, const double x[], const double z[], int istart,
 	int kount;
 	int k;
 
+
+
 	kount = 0;
 	for (k = istart + 1; k < npts; ++k) {
 		val1 = pleth - z[k - 1];
@@ -400,7 +402,6 @@ double lin_interp(double pleth, const double x[], const double z[], int istart,
 	return xout;
 }
 
-#ifdef SMOOTH_REST
 double lin_interpp(double pleth, const double x[], const double z[],
 		int istart, int npts)
 {
@@ -443,7 +444,6 @@ double lin_interpp(double pleth, const double x[], const double z[],
 
 	return xout;
 }
-#endif
 
 double drtsafe(void(*funcd)(double, double *, double *), double x1, double x2,
 		double xacc) {

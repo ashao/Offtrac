@@ -59,7 +59,7 @@ void initialize_phosphate( int imon ) {
 	extern char restart_filename[200];
 #ifdef WOA_PHOS
 	printf("Initializing phosphate from WOA09\n");
-	read_woa_file(imon, hend, phosphate_init, "woa09.phos.nc", "p_an");
+	read_woa_file(imon, hend, phosphate_init, "woa09.phos.nc", "p_an",1e-3);
 	printf("Initializing DOP to zero\n");
 	set_darray3d_zero(dop_init, NZ, NXMEM, NYMEM);
 #endif
@@ -80,6 +80,7 @@ void initialize_phosphate( int imon ) {
 			}
 	free3d(dop_init,NZ);
 	free3d(phosphate_init,NZ);
+	printf("Phosphate Initialization:%e\n",tr[mPHOSPHATE][20][100][100]);
 }
 
 void apply_phosphate_jterms( ) {

@@ -131,3 +131,32 @@ void free2d_f(float** arr2d, int NY)
   arr2d = NULL;
 }
 
+double** alloc2d(int NY, int NX)
+{
+  int iy;
+
+  double **arr2d = (double **) malloc(NY * sizeof(double *));
+  if (arr2d == NULL)
+    return NULL;
+
+  /* allocate the memory for the array */
+  arr2d[0] = (double *) malloc(NY * NX * sizeof(double));
+  if (arr2d[0] == NULL)
+    return NULL;
+
+  /* assign pointers to rows */
+  for (iy = 1; iy < NY; iy++)
+    arr2d[iy] = arr2d[0] + iy * NX;
+
+  return arr2d;
+}
+
+void free2d(double** arr2d, int NY)
+{
+  free(arr2d[0]);
+  arr2d[0] = NULL;
+
+  free(arr2d);
+  arr2d = NULL;
+}
+

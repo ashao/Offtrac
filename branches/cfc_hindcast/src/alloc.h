@@ -12,3 +12,6 @@ void free3d_f(float*** arr3d, int NZED);
 float** alloc2d_f(int NY, int NX);
 
 void free2d_f(float** arr2d, int NY);
+double** alloc2d(int NY, int NX);
+
+void free2d(double** arr2d, int NY);

@@ -179,7 +179,7 @@ void step_fields(int iyear, int itts, int imon, int iterno) {
 	ibiodt = 1; // number of biotic time steps per transport time step (dt)
 
 	// Update phosphate concentration for surface value restoration
-	read_woa_file(imon, hstart, po4_star_lay, "woa09.phos.nc", "p_an");
+	read_woa_file(imon, hstart, po4_star_lay, "woa09.phos.nc", "p_an",1e-3);
 /*
 	set_fix_darray3d_zero(jo2,NZ);
 	set_fix_darray3d_zero(jdop,NZ);

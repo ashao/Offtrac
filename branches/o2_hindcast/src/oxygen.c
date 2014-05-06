@@ -47,7 +47,7 @@ void initialize_oxygen(int imon ) {
 	// Determine how to set the initial distribution of oxygen
 #ifdef WOA_OXY
 	printf("Initializing oxygen from WOA09\n");
-	read_woa_file(imon, hend, oxy_init, "woa09.o2.nc", "LEVO2");
+	read_woa_file(imon, hend, oxy_init, "woa09.o2.nc", "LEVO2",1e-3);
 #endif
 
 #ifdef RESTART
