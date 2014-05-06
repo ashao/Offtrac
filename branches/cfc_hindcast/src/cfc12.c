@@ -78,17 +78,17 @@ void cfc12_find_atmconc(  ) {
 	double hemisphere_concentrations[2];
 
 	// Interpolate in time to find the atmospheric concentration
-	hemisphere_concentrations[0] = linear_interpolation(currtime,
-			atmconc[mCFC12].nval,atmconc[mCFC12].time,0,atmconc[mCFC12].ntime);
-	hemisphere_concentrations[1] = linear_interpolation(currtime,
-			atmconc[mCFC12].sval,atmconc[mCFC12].time,0,atmconc[mCFC12].ntime);
+	hemisphere_concentrations[0] = linear_interpolation(
+				atmconc[mCFC12].time, atmconc[mCFC12].nval, currtime,atmconc[mCFC12].ntime);
+		hemisphere_concentrations[1] = linear_interpolation(
+				atmconc[mCFC12].time, atmconc[mCFC12].sval, currtime,atmconc[mCFC12].ntime);
 
 	for (i=0;i<NXMEM;i++)
 		for (j=0;j<NYMEM;j++) {
 
 			if (geolat[i][j] < equatorbound[0] && geolat[i][j] > equatorbound[1]) {
-				cfc12_atmconc[i][j] = linear_interpolation(geolat[i][j],
-						equatorbound,hemisphere_concentrations,0,2);
+				cfc12_atmconc[i][j] = linear_interpolation(
+						equatorbound,hemisphere_concentrations,geolat[i][j],2);
 			}
 			if (geolat[i][j]>equatorbound[0] ) {
 				cfc12_atmconc[i][j] = hemisphere_concentrations[0];

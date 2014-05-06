@@ -79,18 +79,18 @@ void sf6_find_atmconc(  ) {
 	double hemisphere_concentrations[2];
 
 	// Interpolate in time to find the atmospheric concentration
-	hemisphere_concentrations[0] = lin_interpp(currtime,
-			atmconc[mSF6].nval,atmconc[mSF6].time,0,atmconc[mSF6].ntime);
-	hemisphere_concentrations[1] = lin_interpp(currtime,
-			atmconc[mSF6].sval,atmconc[mSF6].time,0,atmconc[mSF6].ntime);
+	hemisphere_concentrations[0] = linear_interpolation(
+				atmconc[mSF6].time, atmconc[mSF6].nval, currtime,atmconc[mSF6].ntime);
+		hemisphere_concentrations[1] = linear_interpolation(
+				atmconc[mSF6].time, atmconc[mSF6].sval, currtime,atmconc[mSF6].ntime);
 
 
 	for (i=0;i<NXMEM;i++)
 		for (j=0;j<NYMEM;j++) {
 
 			if (geolat[i][j] < equatorbound[0] && geolat[i][j] > equatorbound[1]) {
-				sf6_atmconc[i][j] = lin_interpp(geolat[i][j],
-						equatorbound,hemisphere_concentrations,0,2);
+				sf6_atmconc[i][j] = lin_interpp(
+						equatorbound,hemisphere_concentrations,geolat[i][j],2);
 			}
 			if (geolat[i][j]>equatorbound[0] ) {
 				sf6_atmconc[i][j] = hemisphere_concentrations[0];

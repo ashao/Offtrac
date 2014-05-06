@@ -157,16 +157,16 @@ void cfc11_find_atmconc(  ) {
 	// Interpolate in time to find the atmospheric concentration
 
 	printf("atmconc[mCFC11].time=%f\n",atmconc[mCFC11].time[0]);
-	hemisphere_concentrations[0] = lin_interpp(currtime,
-			atmconc[mCFC11].nval,atmconc[mCFC11].time,0,atmconc[mCFC11].ntime);
-	hemisphere_concentrations[1] = lin_interpp(currtime,
-			atmconc[mCFC11].sval,atmconc[mCFC11].time,0,atmconc[mCFC11].ntime);
+	hemisphere_concentrations[0] = linear_interpolation(
+			atmconc[mCFC11].time, atmconc[mCFC11].nval, currtime,atmconc[mCFC11].ntime);
+	hemisphere_concentrations[1] = linear_interpolation(
+			atmconc[mCFC11].time, atmconc[mCFC11].sval, currtime,atmconc[mCFC11].ntime);
 
 	for (i=0;i<NXMEM;i++)
 		for (j=0;j<NYMEM;j++) {
 			if (geolat[i][j] < equatorbound[0] && geolat[i][j] > equatorbound[1]) {
-				cfc11_atmconc[i][j] = lin_interpp(geolat[i][j],
-						equatorbound,hemisphere_concentrations,0,2);
+				cfc11_atmconc[i][j] = linear_interpolation(
+						equatorbound,hemisphere_concentrations,geolat[i][j],2);
 			}
 			if (geolat[i][j]>equatorbound[0] ) {
 				cfc11_atmconc[i][j] = hemisphere_concentrations[0];
