@@ -99,6 +99,7 @@ void read_grid()
     double latq[NYTOT];
     double lath[NYTOT];
     double Ah[NYTOT][NXTOT];
+ 
     //HF
     double dxh_in[NYTOT][NXTOT], dxq_in[NYTOT][NXTOT];
     double dxu_in[NYTOT][NXTOT], dxv_in[NYTOT][NXTOT];
@@ -1676,7 +1677,7 @@ void read_var2d( char inpath[200], char varname[200], double **data)
     int inxt,iprv;
     size_t start[MAX_NC_VARS];
     size_t count[MAX_NC_VARS];
-    float **tmp2d;
+    double tmp2d[NYTOT][NXTOT];
 
     start[0] = 0;
     start[1] = 0;
@@ -1691,16 +1692,16 @@ void read_var2d( char inpath[200], char varname[200], double **data)
 //    for (i=0;i<4;i++)
 //	printf("start[%d]: %d,count[%d]: %d\n",i,start[i],i,count[i]);
 
-    tmp2d  = alloc2d_f(NYTOT,NXTOT);
-    if ((status = nc_get_vara_float(cdfid,varid,start,count,tmp2d[0])))
+    if ((status = nc_get_vara_double(cdfid,varid,start,count,tmp2d[0])))
 	ERR(status);
 	for (i=0;i<NXTOT;i++)
-	    for (j=0;j<NYTOT;j++)
+	    for (j=0;j<NYTOT;j++) 
 		data[i+2][j+2]= tmp2d[j][i];
+		
 
     wrap_reentrance_2d(data);
 
-    free2d_f(tmp2d,NZ);
+//    free2d(tmp2d,NYTOT);
     }
 
 

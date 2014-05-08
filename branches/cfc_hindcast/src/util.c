@@ -1,6 +1,7 @@
 //HF new utility routines
 #include "init.h"
-#include "math.h"
+#include <math.h>
+#include <stdio.h>
 void set_darray2d_zero(double **arr, int NX, int NY) {
 	int x, y;
 	for (x = 0; x < NX; x++)
@@ -161,6 +162,8 @@ void wrap_reentrance_2d( double **arr ) {
 		ii = 363 - i;
 		arr[ii][ny+1] = arr[i][ny];
 		arr[ii][ny+2] = arr[i][ny-1];
+		arr[ii][0] = arr[ii][2];
+		arr[ii][1] = arr[ii][2];
 	}
 #endif
 
@@ -184,55 +187,13 @@ void wrap_reentrance_3d( double ***arr, int nz) {
 		//      meridional re-entrance
 		for (i=0;i<=nx+2;i++) {
 			ii = 363 - i;
+			
 			arr[k][ii][ny+1] = arr[k][i][ny];
 			arr[k][ii][ny+2] = arr[k][i][ny-1];
+			arr[k][ii][0] = arr[k][i][2];
+			arr[k][ii][1] = arr[k][i][2];
 		}
 #endif
 	}
 }
 
-double linear_interpolation(double *xin, double *yin, double xi, int numin) {
-
-	int i,j,flipidx;
-	int intpidx[2];
-	int decreasing;
-	double deltax,dist;
-	double x[numin],y[numin];
-	double yi,y0,y1,x0,x1;
-
-	// first check to see if xin increases or decreases
-	if (xin[numin-1]-xin[0] > 0.0) decreasing = 0;
-	if (xin[numin-1]-xin[0] < 0.0) decreasing = 1;
-
-	// flip the input vectors if it is decreasing
-	if (decreasing) {
-
-		for (flipidx = 0,i=numin-1; i>=0; i--,flipidx++) {
-			x[flipidx] = xin[i];
-			y[flipidx] = yin[i];
-		}
-	}
-
-	// Figure out which elements of the vector to use
-	deltax = xi-x[0];
-	for (i=0;i<numin;i++) {
-		dist = fabs(xi-x[i]); // Calculate how far away the current x value is from the desired number
-		if (dist<deltax) {
-			deltax = dist;
-			intpidx[0] = i; // We now know at least one bound of the interpolation interval
-			if ( (xi-x[i])<0 ) intpidx[1] = i-1;
-			else intpidx[1] = i + 1;
-		}
-	}
-
-	y0 = y[ intpidx[0] ];
-	y1 = y[ intpidx[1] ];
-	x0 = x[ intpidx[0] ];
-	x1 = x[ intpidx[1] ];
-
-	yi = y0 + (y1-y0)*(xi - x0)/(x1-x0);
-
-	return yi;
-}
-
-// end ashao

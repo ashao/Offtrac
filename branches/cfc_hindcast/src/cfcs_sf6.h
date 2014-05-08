@@ -25,7 +25,7 @@ extern int mSF6;
 #define NUMATMVALS 102
 struct tracer_boundary {
 
-	int ntime;
+//	int ntime;
 	double *time;
 	double *nval;
 	double *sval;

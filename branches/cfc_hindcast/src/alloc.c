@@ -101,7 +101,46 @@ void free3d_f(float*** arr3d, int NZED)
 /////////////////////////////////////////////////////////////////////
 // T W O - D I M E N S I O N A L   A R R A Y S
 /////////////////////////////////////////////////////////////////////
+//
+float** alloc2d_f ( int NY, int NX ) {
 
+        float **arr2d;
+        int i;
+        arr2d = (float**)malloc(NY*sizeof(float*));
+        for (i=0;i<NY;i++)
+                arr2d[i] = (float*)malloc(NX*sizeof(float));
+
+        return arr2d;
+}
+
+void free2d_f(float **arr2d, int NY)
+{
+
+        int i;
+        for (i=0;i<NY;i++) free(arr2d[i]);
+        free(arr2d);
+
+}
+double** alloc2d ( int NY, int NX ) {
+
+        double **arr2d;
+        int i;
+        arr2d = (double**)malloc(NY*sizeof(double*));
+        for (i=0;i<NY;i++)
+                arr2d[i] = (double*)malloc(NX*sizeof(double));
+
+        return arr2d;
+}
+
+void free2d(double **arr2d, int NY)
+{
+
+        int i;
+        for (i=0;i<NY;i++) free(arr2d[i]);
+        free(arr2d);
+
+}
+/*
 float** alloc2d_f(int NY, int NX)
 {
   int iy;
@@ -110,12 +149,12 @@ float** alloc2d_f(int NY, int NX)
   if (arr2d == NULL)
     return NULL;
 
-  /* allocate the memory for the array */
+  // allocate the memory for the array 
   arr2d[0] = (float *) malloc(NY * NX * sizeof(float));
   if (arr2d[0] == NULL)
     return NULL;
 
-  /* assign pointers to rows */
+  // assign pointers to rows 
   for (iy = 1; iy < NY; iy++)
     arr2d[iy] = arr2d[0] + iy * NX;
 
@@ -130,33 +169,5 @@ void free2d_f(float** arr2d, int NY)
   free(arr2d);
   arr2d = NULL;
 }
-
-double** alloc2d(int NY, int NX)
-{
-  int iy;
-
-  double **arr2d = (double **) malloc(NY * sizeof(double *));
-  if (arr2d == NULL)
-    return NULL;
-
-  /* allocate the memory for the array */
-  arr2d[0] = (double *) malloc(NY * NX * sizeof(double));
-  if (arr2d[0] == NULL)
-    return NULL;
-
-  /* assign pointers to rows */
-  for (iy = 1; iy < NY; iy++)
-    arr2d[iy] = arr2d[0] + iy * NX;
-
-  return arr2d;
-}
-
-void free2d(double** arr2d, int NY)
-{
-  free(arr2d[0]);
-  arr2d[0] = NULL;
-
-  free(arr2d);
-  arr2d = NULL;
-}
+*/
 

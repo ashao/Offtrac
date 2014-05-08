@@ -23,7 +23,7 @@ double **mn_cfc11sat;
 int mCFC11;
 extern double ****tr;
 
-	struct tracer_boundary atmconc[NUMTRANSIENT];
+struct tracer_boundary atmconc[NUMTRANSIENT];
 
 void allocate_cfc11 ( ) {
 
@@ -49,10 +49,10 @@ void read_tracer_boundary ( ) {
 	const int numatm = NUMATMVALS;
 	// Allocate all the vectors insdie of atmconc
 	for (i=0;i<NUMTRANSIENT;i++) {
-		atmconc[i].ntime = NUMATMVALS;
-		atmconc[i].nval = (double *) malloc(numatm * sizeof(double));
-		atmconc[i].sval = (double *) malloc(numatm * sizeof(double));
-		atmconc[i].time = (double *) malloc(numatm * sizeof(double));
+//		atmconc[i].ntime = NUMATMVALS;
+		atmconc[i].nval = (double *)  malloc(NUMATMVALS * sizeof(double));
+		atmconc[i].sval = (double *)  malloc(NUMATMVALS * sizeof(double));
+		atmconc[i].time = (double *)  malloc(NUMATMVALS * sizeof(double));
 	}
 
     sprintf(infile,"cfc_sf6_bc.nc");
@@ -146,27 +146,27 @@ void cfc11_find_atmconc(  ) {
 	const double equatorbound[2] = {10,-10}; // Set the latitudes where to start interpolating atmospheric concentrations
 	extern double currtime;
 	double hemisphere_concentrations[2];
-/*
-	*nval = atmconc[mCFC11].nval;
-	*sval = atmconc[mCFC11].sval;
-	ntime = atmconc[mCFC11].ntime;
-	*time = atmconc[mCFC11].time;
-	hemisphere_concentrations[0] = lin_interp(currtime,nval,time,0,ntime);
-	hemisphere_concentrations[1] = lin_interp(currtime,sval,time,0,ntime);
-*/
-	// Interpolate in time to find the atmospheric concentration
-
-	printf("atmconc[mCFC11].time=%f\n",atmconc[mCFC11].time[0]);
-	hemisphere_concentrations[0] = linear_interpolation(
-			atmconc[mCFC11].time, atmconc[mCFC11].nval, currtime,atmconc[mCFC11].ntime);
+	double *time, *atmval;
+	double val;
+	
+// Interpolate in time to find the atmospheric concentration
+	time = atmconc[mCFC11].time;
+	atmval = atmconc[mCFC11].nval;
+//	printf("time: %f nval: %f currtime: %f ntime: %d\n\n",
+//		atmconc[mCFC11].time[NUMATMVALS-1],atmconc[mCFC11].nval[NUMATMVALS-1],currtime,NUMATMVALS);
+	val = linear_interpolation(
+			time, atmval, currtime,NUMATMVALS);
+	hemisphere_concentrations[0]  = val;
+	printf("nval: %f sval: %f\n",hemisphere_concentrations[0],hemisphere_concentrations[1]);
 	hemisphere_concentrations[1] = linear_interpolation(
-			atmconc[mCFC11].time, atmconc[mCFC11].sval, currtime,atmconc[mCFC11].ntime);
-
+			atmconc[mCFC11].time, atmconc[mCFC11].sval, currtime,NUMATMVALS);
+	printf("nval: %f sval: %f\n",hemisphere_concentrations[0],hemisphere_concentrations[1]);
 	for (i=0;i<NXMEM;i++)
 		for (j=0;j<NYMEM;j++) {
 			if (geolat[i][j] < equatorbound[0] && geolat[i][j] > equatorbound[1]) {
-				cfc11_atmconc[i][j] = linear_interpolation(
-						equatorbound,hemisphere_concentrations,geolat[i][j],2);
+//				printf("geolat[%d][%d]: %f\n",i,j,geolat[i][j]);
+//				cfc11_atmconc[i][j] = linear_interpolation(
+//						equatorbound,hemisphere_concentrations,geolat[i][j],2);
 			}
 			if (geolat[i][j]>equatorbound[0] ) {
 				cfc11_atmconc[i][j] = hemisphere_concentrations[0];

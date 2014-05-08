@@ -10,6 +10,7 @@
 #include "tracer_utilities.h"
 #include "alloc.h"
 #include "read.h"
+#include <math.h>
 extern int oceanmask[NXMEM][NYMEM];
 extern double D[NXMEM][NYMEM];
 double ***Temptm,***Salttm;
@@ -77,5 +78,62 @@ void z_depth(double h[NZ][NXMEM][NYMEM], double depth[NZ][NXMEM][NYMEM]) {
 		}
 	}
 
+
+}
+
+
+double linear_interpolation(double *xin, double *yin, double xi, int numin) {
+
+	int i,j,flipidx;
+	int intpidx1,intpidx2;
+	int decreasing;
+	double deltax,dist;
+	double x[numin];
+	double y[numin];
+	double yout,y0,y1,x0,x1,yi;
+
+	// first check to see if xin increases or decreases
+	if (xin[numin-1]>xin[0]) decreasing = 0;
+	if (xin[numin-1]<xin[0]) decreasing = 1;
+	
+	// flip the input vectors if it is decreasing
+	if (decreasing) {
+		printf("Flipping vector\n");
+		for (flipidx = 0,i=numin-1; i>=0; i--,flipidx++) {
+			x[flipidx] = xin[i];
+			y[flipidx] = yin[i];
+		}
+	} else {
+		for (i=0;i<numin;i++) {
+			x[i] = xin[i];
+			y[i] = yin[i];
+		}	
+	}
+	
+	// Figure out which elements of the vector to use
+	deltax = fabs(xi-x[0]);
+	intpidx1 = 0;
+	intpidx2 = 1;
+/*	for (i=0;i<numin;i++) {
+		dist = fabs(xi-x[i]); // Calculate how far away the current x value is from the desired number
+		if (dist<deltax) {
+			deltax = dist;
+			intpidx1 = i; // We now know at least one bound of the interpolation interval
+			if ( xi<x[i] ){
+				intpidx2 = i-1; 
+			}
+			else{
+				intpidx2 = i + 1;
+			}
+		}
+	}
+*/
+	y0 = y[ intpidx1 ];
+	y1 = y[ intpidx2 ];
+	x0 = x[ intpidx1 ];
+	x1 = x[ intpidx2 ];
+	yi = y0 + (y1-y0)*(xi-x0)/(x1-x0);
+	printf("y0: %f y1: %f yi: %f x0: %f x1: %f\n",y0,y1,yi,x0,x1);
+	return(yi);
 
 }

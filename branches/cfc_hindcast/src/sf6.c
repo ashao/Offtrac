@@ -4,6 +4,7 @@
  *  Created on: May 2, 2014
  *      Author: ashao
  */
+#include <stdio.h>
 #include "init.h"
 #include "alloc.h"
 #include "read.h"
@@ -80,9 +81,9 @@ void sf6_find_atmconc(  ) {
 
 	// Interpolate in time to find the atmospheric concentration
 	hemisphere_concentrations[0] = linear_interpolation(
-				atmconc[mSF6].time, atmconc[mSF6].nval, currtime,atmconc[mSF6].ntime);
+				atmconc[mSF6].time, atmconc[mSF6].nval, currtime,NUMATMVALS);
 		hemisphere_concentrations[1] = linear_interpolation(
-				atmconc[mSF6].time, atmconc[mSF6].sval, currtime,atmconc[mSF6].ntime);
+				atmconc[mSF6].time, atmconc[mSF6].sval, currtime,NUMATMVALS);
 
 
 	for (i=0;i<NXMEM;i++)
