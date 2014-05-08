@@ -16,6 +16,7 @@
 
 double ***mn_cfc11;
 double ***cfc11_init;
+
 double **cfc11_sat;
 double **cfc11_atmconc;
 double **mn_cfc11sat;
@@ -117,7 +118,7 @@ void initialize_cfc11 ( ) {
 	free3d(cfc11_init,NZ);
 }
 
-void cfc11_saturation( double **sat ) {
+void cfc11_saturation(  ) {
 
 	const double solcoeffs[7] = {-229.9261,319.6552,119.4471,-1.39165,-0.142382,0.091459,-0.0157274};
 	int i, j;
@@ -131,7 +132,7 @@ void cfc11_saturation( double **sat ) {
 					work = solcoeffs[0] + solcoeffs[1]*(100/TempK) +
 						solcoeffs[2]*log( TempK/100 ) + solcoeffs[3]*pow(TempK/100,2) +
 						Salttm[0][i][j]*(solcoeffs[4]+solcoeffs[5]*(TempK/100)+solcoeffs[6]*pow(TempK/100,2));
-					sat[i][j] = exp(work)*cfc11_atmconc[i][j];
+					cfc11_sat[i][j] = exp(work)*cfc11_atmconc[i][j];
 			}
 
 
@@ -186,7 +187,7 @@ void surface_cfc11( ) {
 	extern double ***Temptm;
 	extern double ***Salttm;
 	cfc11_find_atmconc( );
-	cfc11_saturation( cfc11_sat );
+	cfc11_saturation(  );
 	for (k=0;k<NML;k++)
 		for (i=0;i<NXMEM;i++)
 			for (j=0;j<NYMEM;j++)

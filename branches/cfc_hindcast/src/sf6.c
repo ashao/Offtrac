@@ -10,11 +10,14 @@
 #include "read.h"
 #include "math.h"
 #include "cfcs_sf6.h"
+
 double ***mn_sf6;
 double ***sf6_init;
+
 double **sf6_sat;
 double **mn_sf6sat;
 double **sf6_atmconc;
+
 int mSF6;
 extern double ****tr;
 
@@ -49,7 +52,7 @@ void initialize_sf6 ( ) {
 	free3d(sf6_init,NZ);
 }
 
-void sf6_saturation( double **sat ) {
+void sf6_saturation(  ) {
 
 	const double solcoeffs[6] = {-80.0343,117.232,29.5817,0.0335183,-0.0373942,0.00774862};
 	int i, j;
@@ -63,7 +66,7 @@ void sf6_saturation( double **sat ) {
 					work = solcoeffs[0] + solcoeffs[1]*(100/TempK) +
 						solcoeffs[2]*log( TempK/100 ) +
 						Salttm[0][i][j]*(solcoeffs[3]+solcoeffs[4]*(TempK/100)+solcoeffs[5]*pow(TempK/100,2));
-					sat[i][j] = exp(work)*sf6_atmconc[i][j];
+					sf6_sat[i][j] = exp(work)*sf6_atmconc[i][j];
 			}
 
 
@@ -110,7 +113,7 @@ void surface_sf6( ) {
 	printf("Setting SF6 surface condition\n");
 	// Set oxygen values to saturation at the mixed layer to mimic equilibrium with the atmosphere
 	sf6_find_atmconc( );
-	sf6_saturation( sf6_sat);
+	sf6_saturation( );
 	for (k=0;k<NML;k++)
 		for (i=0;i<NXMEM;i++)
 			for (j=0;j<NYMEM;j++)

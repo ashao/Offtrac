@@ -10,8 +10,10 @@
 #include "read.h"
 #include "math.h"
 #include "cfcs_sf6.h"
+
 double ***mn_cfc12;
 double ***cfc12_init;
+
 double **cfc12_sat;
 double **mn_cfc12sat;
 double **cfc12_atmconc;
@@ -48,7 +50,7 @@ void initialize_cfc12 ( ) {
 	free3d(cfc12_init,NZ);
 }
 
-void cfc12_saturation( double **sat ) {
+void cfc12_saturation(  ) {
 
 	const double solcoeffs[7] = {-218.0971,298.9702,113.8049,-1.39165,-0.143566,0.091015,-0.0153924};
 	int i, j;
@@ -62,7 +64,7 @@ void cfc12_saturation( double **sat ) {
 			work = solcoeffs[0] + solcoeffs[1]*(100/TempK) +solcoeffs[2]*log( TempK/100 ) +
 				solcoeffs[3]*pow(TempK/100,2) + Salttm[0][i][j]*(solcoeffs[4]+
 				solcoeffs[5]*(TempK/100)+solcoeffs[6]*pow(TempK/100,2));
-				sat[i][j] = exp(work)*cfc12_atmconc[i][j];
+				cfc12_sat[i][j] = exp(work)*cfc12_atmconc[i][j];
 			}
 
 
@@ -108,7 +110,7 @@ void surface_cfc12( ) {
 	printf("Setting CFC-12 surface condition\n");
 	// Set oxygen values to saturation at the mixed layer to mimic equilibrium with the atmosphere
 	cfc12_find_atmconc( );
-	cfc12_saturation( cfc12_sat);
+	cfc12_saturation(  );
 	for (k=0;k<NML;k++)
 		for (i=0;i<NXMEM;i++)
 			for (j=0;j<NYMEM;j++)
