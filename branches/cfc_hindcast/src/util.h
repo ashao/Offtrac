@@ -39,5 +39,4 @@ int calc_hindindex(int inmon, int nmonths);
 void wrap_reentrance_2d( double **arr );
 void wrap_reentrance_3d( double ***arr, int nz );
 
-double linear_interpolation(double *xin, double *yin, double xi, int numin);
 

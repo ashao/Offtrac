@@ -126,8 +126,20 @@ double** alloc2d ( int NY, int NX ) {
         double **arr2d;
         int i;
         arr2d = (double**)malloc(NY*sizeof(double*));
-        for (i=0;i<NY;i++)
+
+	if(arr2d == NULL) {
+		printf("2D Double array not allocated");
+		exit;
+	}
+	
+        for (i=0;i<NY;i++) {
                 arr2d[i] = (double*)malloc(NX*sizeof(double));
+		if(arr2d[i] == NULL) {
+			printf("2D Double array not allocated");
+			exit;
+		}
+
+	}
 
         return arr2d;
 }

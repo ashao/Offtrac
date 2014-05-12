@@ -81,7 +81,7 @@ void sf6_find_atmconc(  ) {
 	const double equatorbound[2] = {10,-10}; // Set the latitudes where to start interpolating atmospheric concentrations
 	extern double currtime;
 	double hemisphere_concentrations[2];
-
+/*
 	// Interpolate in time to find the atmospheric concentration
 	hemisphere_concentrations[0] = linear_interpolation(
 				atmconc[mSF6].time, atmconc[mSF6].nval, currtime,NUMATMVALS);
@@ -103,7 +103,7 @@ void sf6_find_atmconc(  ) {
 				sf6_atmconc[i][j] = hemisphere_concentrations[1];
 			}
 		}
-
+*/
 }
 
 void surface_sf6( ) {

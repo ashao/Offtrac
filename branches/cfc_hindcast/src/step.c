@@ -175,10 +175,10 @@ void step_fields(int iyear, int itts, int imon, int iterno) {
 	 *
 	 *-----------------------------------------*/
 #ifdef CFCS
-
+	test_lin_interp();
 	surface_cfc11( );
 	surface_cfc12( );
-	surface_sf6( );
+//	surface_sf6( );
 
 #endif
 

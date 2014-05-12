@@ -150,7 +150,9 @@ qlat[i+2]=(double)latq[i];
     //CAD should these loop indices be hardwired (to i=0;i<NYTOT) ?
     for (i=0;i<NYTOT;i++) {
 	hlat[i+2]=(double)lath[i];
-    }
+    } 
+	hlat[0] = hlat[2]; // need to fill the top row ashao
+	hlat[1] = hlat[2];
     //BX-e
 
     //   ncvarget(cdfid,10, start, end, dxv);
@@ -227,8 +229,8 @@ qlat[i+2]=(double)latq[i];
 
     close_file(&cdfid,&file);
     printf("\nFinished reading file '%s'.\n",inpath);
-    geolat = alloc2d(NXMEM,NYMEM);
-    read_var2d(inpath,"geolat",geolat);
+//    geolat = alloc2d(NXMEM,NYMEM);
+//    read_var2d(inpath,"geolat",geolat);
 
     /* zonal re-entrance            */
 

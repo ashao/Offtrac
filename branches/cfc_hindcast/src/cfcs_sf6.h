@@ -23,16 +23,16 @@ extern double **sf6_sat;
 extern double **mn_sf6sat;
 extern int mSF6;
 #define NUMATMVALS 102
-struct tracer_boundary {
+typedef struct {
 
 //	int ntime;
-	double *time;
-	double *nval;
-	double *sval;
+	double time[NUMATMVALS];
+	double nval[NUMATMVALS];
+	double sval[NUMATMVALS];
 
-};
+} tracer_boundary;
 
 #define NUMTRANSIENT 3
-extern struct tracer_boundary atmconc[NUMTRANSIENT];
+extern tracer_boundary atmconc[NUMTRANSIENT];
 
 

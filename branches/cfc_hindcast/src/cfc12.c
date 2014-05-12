@@ -79,13 +79,13 @@ void cfc12_find_atmconc(  ) {
 	const double equatorbound[2] = {10,-10}; // Set the latitudes where to start interpolating atmospheric concentrations
 	extern double currtime;
 	double hemisphere_concentrations[2];
-
+/*
 	// Interpolate in time to find the atmospheric concentration
 	hemisphere_concentrations[0] = linear_interpolation(
-				atmconc[mCFC12].time, atmconc[mCFC12].nval, currtime,NUMATMVALS);
-		hemisphere_concentrations[1] = linear_interpolation(
-				atmconc[mCFC12].time, atmconc[mCFC12].sval, currtime,NUMATMVALS);
-
+		atmconc[mCFC12].time, atmconc[mCFC12].nval, currtime,NUMATMVALS);
+	hemisphere_concentrations[1] = linear_interpolation(
+		atmconc[mCFC12].time, atmconc[mCFC12].sval, currtime,NUMATMVALS);
+	printf("Nval: %f Sval: %f\n",hemisphere_concentrations[0],hemisphere_concentrations[1]);
 	for (i=0;i<NXMEM;i++)
 		for (j=0;j<NYMEM;j++) {
 
@@ -100,6 +100,7 @@ void cfc12_find_atmconc(  ) {
 				cfc12_atmconc[i][j] = hemisphere_concentrations[1];
 			}
 		}
+*/
 	printf("cfc12_atmconc[100][100] = %f\n",cfc12_atmconc[100][100]);
 }
 

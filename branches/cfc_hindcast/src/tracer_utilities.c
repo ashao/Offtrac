@@ -6,6 +6,7 @@
  */
 #include <string.h>
 #include <stdio.h>
+#include <stdlib.h>
 #include "init.h"
 #include "tracer_utilities.h"
 #include "alloc.h"
@@ -82,15 +83,17 @@ void z_depth(double h[NZ][NXMEM][NYMEM], double depth[NZ][NXMEM][NYMEM]) {
 }
 
 
-double linear_interpolation(double *xin, double *yin, double xi, int numin) {
+double linear_interpolation(const double xin[], const double yin[], double xi, int numin, double *yout) {
 
 	int i,j,flipidx;
 	int intpidx1,intpidx2;
 	int decreasing;
 	double deltax,dist;
-	double x[numin];
-	double y[numin];
-	double yout,y0,y1,x0,x1,yi;
+	double *x,*y;
+	double y0,y1,x0,x1,yi;
+
+	x = (double *) malloc(numin * sizeof(double));
+	y = (double *) malloc(numin * sizeof(double));
 
 	// first check to see if xin increases or decreases
 	if (xin[numin-1]>xin[0]) decreasing = 0;
@@ -100,10 +103,11 @@ double linear_interpolation(double *xin, double *yin, double xi, int numin) {
 	if (decreasing) {
 		printf("Flipping vector\n");
 		for (flipidx = 0,i=numin-1; i>=0; i--,flipidx++) {
-			x[flipidx] = xin[i];
-			y[flipidx] = yin[i];
+			x[flipidx] = *(xin+i);
+			y[flipidx] = *(yin+i);
 		}
-	} else {
+	}
+	if (!decreasing) {
 		for (i=0;i<numin;i++) {
 			x[i] = xin[i];
 			y[i] = yin[i];
@@ -114,7 +118,7 @@ double linear_interpolation(double *xin, double *yin, double xi, int numin) {
 	deltax = fabs(xi-x[0]);
 	intpidx1 = 0;
 	intpidx2 = 1;
-/*	for (i=0;i<numin;i++) {
+	for (i=0;i<numin;i++) {
 		dist = fabs(xi-x[i]); // Calculate how far away the current x value is from the desired number
 		if (dist<deltax) {
 			deltax = dist;
@@ -127,13 +131,16 @@ double linear_interpolation(double *xin, double *yin, double xi, int numin) {
 			}
 		}
 	}
-*/
 	y0 = y[ intpidx1 ];
 	y1 = y[ intpidx2 ];
 	x0 = x[ intpidx1 ];
 	x1 = x[ intpidx2 ];
 	yi = y0 + (y1-y0)*(xi-x0)/(x1-x0);
-	printf("y0: %f y1: %f yi: %f x0: %f x1: %f\n",y0,y1,yi,x0,x1);
+	yout = &yi+1;
+	printf("y0: %f y1: %f yi: %f x0: %f x1: %f xi: %f\n",y0,y1,yi,x0,x1,xi);
+
+	free(x);
+	free(y);
 	return(yi);
 
 }
