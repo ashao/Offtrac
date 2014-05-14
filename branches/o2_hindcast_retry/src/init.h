@@ -187,7 +187,7 @@
                                /* ea, eb, and eaml. Otherwise we must */
                                /* read in wd.                         */
 
-#undef  RESTART                 /* define location of initial biotic fields   */ 
+#define  RESTART                 /* define location of initial biotic fields   */ 
 			       /* see read_tracer_init in read.c for details */
 
 #ifndef VARIAB_FORC
@@ -370,4 +370,4 @@
 #define BEGYEAR 1947
 #define BEGHIND 1948
 #define ENDHIND 2007
-
+#define HINDCAST

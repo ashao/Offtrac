@@ -130,4 +130,32 @@ double linear_interp(double x0, double y0, double x1, double y1, double xstar) {
 
 	return ystar;
 }
+
+void wrap_reentrance_3d( double ***arr, int nz ){
+        int i,j,k, ii;
+
+        for (k = 0; k < nz; k++) {
+                for (j = 0; j <= NYMEM - 1; j++) {
+                        arr[k][0][j] = arr[k][nx - 1][j];
+                        arr[k][1][j] = arr[k][nx][j];
+                        arr[k][nx + 1][j] = arr[k][2][j];
+                        arr[k][nx + 2][j] = arr[k][3][j];
+                        }
+                }
+                for (i = 2; i <= nx; i++) {
+                        ii = 363 - i;
+                        for (k = 0; k < NZ; k++) {
+                                arr[k][ii][ny + 1] = arr[k][i][ny];
+                                arr[k][ii][ny + 2] = arr[k][i][ny - 1];
+                        }
+                }
+}
+void copy_2fix_darray3d(double (*arr1)[NXMEM][NYMEM], double (*arr2)[NXMEM][NYMEM], int nz,
+                int NX, int NY) {
+        int z, x, y;
+        for (z = 0; z < nz; z++)
+                for (x = 0; x < NX; x++)
+                        for (y = 0; y < NY; y++)
+                                arr1[z][x][y] = arr2[z][x][y];
+}
 // end ashao

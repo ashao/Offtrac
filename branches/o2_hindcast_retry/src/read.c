@@ -2707,6 +2707,7 @@ void read_patch( double ttd_mask[NXMEM][NYMEM] )
     }
 
 /* ashao: Read data routines (UH, VH, WD, T, S) for hindcast runs */
+/*
 void read_hind( int cmon )
     {
     extern double currtime;
@@ -2798,7 +2799,7 @@ void read_hind( int cmon )
 
 
     }
-
+*/
 void read_var3d( char inpath[200], char varname[200], int imon, double ***data)
     {
 
@@ -2849,7 +2850,9 @@ void read_temp_and_salt( int imon, char *fieldtype) {
 	char filename[20];
 	char saltpath[300];
 	char temppath[300];
-
+	int i,j,k;
+	double ***temparray;
+	temparray = alloc3d(NZ,NXMEM,NYMEM);
 	if ( imon % NMONTHS == 0 )
 		imon = 0;
 
@@ -2860,7 +2863,18 @@ void read_temp_and_salt( int imon, char *fieldtype) {
 	sprintf(filename,"temp.%s.nc",fieldtype);
 	strcat(temppath,filename);
 	printf("Reading temperature and salinity from month %d\n",imon);
-	read_var3d( temppath, "temp", imon, Temptm);
-	read_var3d( saltpath, "salt", imon, Salttm);
+	read_var3d( temppath, "temp", imon, temparray);
 
+	for (k=0;k<NZ;k++)
+		for (i=0;i<NXMEM;i++)
+			for(j=0;j<NYMEM;j++)
+				Temptm[k][i][j] = temparray[k][i][j];
+
+	read_var3d( saltpath, "salt", imon, temparray);
+	for (k=0;k<NZ;k++)
+		for (i=0;i<NXMEM;i++)
+			for(j=0;j<NYMEM;j++)
+				Salttm[k][i][j] = temparray[k][i][j];
+
+	free3d(temparray,NZ);
 }

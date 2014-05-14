@@ -23,7 +23,7 @@ extern const double parm_alpha_n15_n2fix;
 extern double ****tr;
 extern double D[NXMEM][NYMEM];
 extern double h[NZ][NXMEM][NYMEM];
-// extern double po4_star_lev[NZPHOS][NXMEM][NYMEM];
+extern double po4_star_lev[NZPHOS][NXMEM][NYMEM];
 extern double po4_star_lay[NZ][NXMEM][NYMEM];
 extern double Temptm[NZ][NXMEM][NYMEM];
 # ifdef PROGNOSTIC

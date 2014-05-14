@@ -1859,6 +1859,7 @@ dbmon = (double) inmon;
 lst = 12 * modf((dbmon - 1 + 12) / 12, iyr);
 ilst = (int) (lst + 0.00001);
 
+currtime = BEGYEAR;
 #  ifdef SEPFILES
 //BX  files are not in regular order (uvw are midmonth and h starts with last month)
 if (usehindcast) {
@@ -2076,7 +2077,6 @@ printf("netcdf record = %d\n",nrec++);
 mon = 0.0; /* reiniti */
 nmnfirst = 1;
 
-currtime = BEGYEAR; //ashao: keep track of the current time
 
 for (cmon = inmon; cmon < inmon + tmon; cmon++)
 {
@@ -2146,10 +2146,10 @@ for (cmon = inmon; cmon < inmon + tmon; cmon++)
 	printf("Length of timestep: %d\n",dt);
 	dt = dt * 86400 / (double) NTSTEP;
 # ifdef SEPFILES
-	read_h(ismon, isnxt);
+//	read_h(ismon, isnxt);
 	printf("Layer thicknesses from end of %s to end of %s\n",monthname[imon],monthname[inxt]);
 # else
-	read_h(imon,inxt);
+//	read_h(imon,inxt);
 # endif
 	for (itts = 1; itts <= NTSTEP; itts++)
 	{
@@ -2884,8 +2884,8 @@ for (cmon = inmon; cmon < inmon + tmon; cmon++)
 				strcat(message, output_filename);
 				handle_error(message, status);
 			}
-
-			err = write_time(cdfid, fn, timeid[0], nrec, currtime); //Use current time instead
+			*dy = currtime;
+			err = write_time(cdfid, fn, timeid[0], nrec, dy); //Use current time instead
 			if (err == -1)
 				printf("Error writing day.\n");
 
