@@ -1743,11 +1743,11 @@ void read_woa_file(int imon, double harray[NZ][NXMEM][NYMEM], double ***outarray
 		}
 	}
 */
-	wrap_reentrance_3d(oxytmp,NZWOA);
+//	wrap_reentrance_3d(oxytmp,NZWOA);
 	z_depth(harray,depth);
 
-	for (i=X1;i<=nx;i++) {
-		for (j=Y1;j<=ny;j++) {
+	for (i=0;i<NXMEM;i++) {
+		for (j=0;j<NYMEM;j++) {
 			if (oceanmask[i][j]) {
 				for (k=0;k<NZWOA;k++)
 					po4obsprof[k] = oxytmp[k][i][j];
