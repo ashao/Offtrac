@@ -1736,12 +1736,14 @@ void read_woa_file(int imon, double harray[NZ][NXMEM][NYMEM], double ***outarray
 		}
 	}
 	//  temporary bug fix for northern-most row (j=211)
+/*
 	for (i=2;i<NXMEM;i++) {
 		for (k=0;k<NZWOA;k++) {
 			oxytmp[k][i][211] = oxytmp[k][i][210];
 		}
 	}
-
+*/
+	wrap_reentrance_3d(oxytmp,NZWOA);
 	z_depth(harray,depth);
 
 	for (i=X1;i<=nx;i++) {

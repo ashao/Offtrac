@@ -204,8 +204,8 @@ void biotic_sms(int ibiodt)
     dt_bio = dt / (double) ibiodt;
     frac_dt_bio = 1.0 / (double) ibiodt;
 
-//    printf("conc_obs_layer(h,po4_star_lev,po4_star_lay)\n");
-//    conc_obs_layer(h,po4_star_lev,po4_star_lay);
+    printf("conc_obs_layer(h,po4_star_lev,po4_star_lay)\n");
+    conc_obs_layer(h,po4_star_lev,po4_star_lay);
 # ifdef PROGNOSTIC
 #  ifdef NITRATE
     // nitrate
