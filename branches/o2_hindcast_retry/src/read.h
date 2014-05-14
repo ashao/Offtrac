@@ -1,8 +1,8 @@
-void read_var3d( char inpath[200], char varname[200], int imon, double*** data);
+void read_var3d( char inpath[200], char varname[200], int imon, double ***data);
 void read_fieldave(int imon);
 void read_D();
 void read_uvw(int imon,char *fieldtype);
-void read_h(int imon, char *fieldtype);
+void read_h(int imon, double (*hread)[NXMEM][NYMEM], char *fieldtype);
 void read_fields(int imon,int itts);
 void read_biotic_bc(int imon,int itts);
 void read_ts(int imon,int itts);

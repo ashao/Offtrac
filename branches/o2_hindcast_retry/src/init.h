@@ -367,5 +367,7 @@
 #undef ZEROENTRAIN	//ashao: Calculate surface concentration, assuming mixed layer entrains zero CFC water
 #undef RESTCONC		//ashao: Restore concentration before advection diffusion
 // end ashao
-
+#define BEGYEAR 1947
+#define BEGHIND 1948
+#define ENDHIND 2007
 
