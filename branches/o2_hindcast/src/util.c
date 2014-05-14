@@ -158,7 +158,7 @@ void wrap_reentrance_2d( double **arr ) {
 #endif
 
 }
-
+/*
 void wrap_reentrance_3d( double ***arr, int nz) {
 
 	int i, j, k;
@@ -183,7 +183,27 @@ void wrap_reentrance_3d( double ***arr, int nz) {
 #endif
 	}
 }
+*/
 
+void wrap_reentrance_3d( double ***arr, int nz ){
+	int i,j,k, ii;
+
+	for (k = 0; k < nz; k++) {
+		for (j = 0; j <= NYMEM - 1; j++) {
+			arr[k][0][j] = arr[k][nx - 1][j];
+			arr[k][1][j] = arr[k][nx][j];
+			arr[k][nx + 1][j] = arr[k][2][j];
+			arr[k][nx + 2][j] = arr[k][3][j];
+                        }
+                }
+		for (i = 2; i <= nx; i++) {
+			ii = 363 - i;
+			for (k = 0; k < NZ; k++) {
+				arr[k][ii][ny + 1] = arr[k][i][ny];
+				arr[k][ii][ny + 2] = arr[k][i][ny - 1];
+                        }
+                }
+}
 
 
 // end ashao

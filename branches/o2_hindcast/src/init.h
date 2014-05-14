@@ -37,7 +37,7 @@
 
 /* Specify properties of the passive tracers                          */
 
-#define NUM_ADV_ITER 60         /* number of iterations for advection */
+#define NUM_ADV_ITER 80         /* number of iterations for advection */
 
 #define MERGED_ML                /* merge the first and second two     */
                                /* layers for all BGC variables       */
@@ -64,7 +64,7 @@
 #define BEGYEAR 1947			/* ashao: Set the start year, for
  	 	 	 	 	 	 	 	 tracers with atmospheric histories */
 
-#undef HINDCAST			/* Expect to read in hindcasat fields */
+#define HINDCAST			/* Expect to read in hindcasat fields */
 #define BEGHIND 1948        /* The first year of hindcast fields */
 #define ENDHIND 2007 		/* Last year of hindcast fields */
 
@@ -275,4 +275,4 @@
 #define WOA_OXY
 #define WOA_PHOS
 #define PHOSPHATE
-#undef RESTART
+#define RESTART

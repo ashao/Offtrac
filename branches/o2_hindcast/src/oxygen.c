@@ -138,7 +138,7 @@ void apply_oxygen_jterms( ) {
 		for (j = 0; j <NYMEM; j++) {
 			if (oceanmask[i][j]) {
 				for (k = 0; k < NZ; k++) {
-					tr[mOXYGEN][k][i][j] += dt * jo2[k][i][j];
+					if (hend[k][i][j]>EPSILON) tr[mOXYGEN][k][i][j] += dt * jo2[k][i][j];
 				}
 			} else {
 				for (k = 0; k < NZ; k++) {

@@ -1754,8 +1754,18 @@ void read_woa_file(int imon, double harray[NZ][NXMEM][NYMEM], double ***outarray
 							levitus_depths, 0, NZWOA);
 					if (outarray[k][i][j] < 0.e0) outarray[k][i][j] = 0.;
 				}
+                                for (k = 0; k <= 2; k = k + 2) {
+                                        outarray[k][i][j] = lin_interp(((depth[k][i][j] + depth[k
+                                                        + 1][i][j]) / 2.), po4obsprof, levitus_depths, 0,
+                                                        NZWOA);
+                                        if (outarray[k][i][j] < 0.e0)
+                                                outarray[k][i][j] = 0.;
+                                        outarray[k + 1][i][j] = outarray[k][i][j];
+                                }
+
+
 			} else {
-				for (k=0;k<NZ;k++) {
+				for (k=0;k<NZ;k++ ) {
 					outarray[k][i][j] = misval;
 				}
 			}

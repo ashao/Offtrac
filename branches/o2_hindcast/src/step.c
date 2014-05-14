@@ -189,10 +189,11 @@ void step_fields(int iyear, int itts, int imon, int iterno) {
 	set_fix_darray3d_zero(jremdop,NZ);
 	set_fix_darray2d_zero(flux_pop);
 */	
-	surface_oxygen();
 	printf("Calculating biotic sources/sinks\n");
 	biotic_sms(ibiodt);
 
+	merge_ml_tr();
+	merge_ml_j();
 	apply_oxygen_jterms();
 	apply_phosphate_jterms();
 	surface_oxygen();
@@ -533,8 +534,8 @@ void merge_ml_tr() {
 	for (j = Y1; j <= ny; j++) {
 		for (i = X0; i <= nx + 1; i++) {
 			for (m = 0; m < NTR; m++) {
-				// for (k = 0; k <= 2; k = k + 2) {
-				for (k = 0; k < 1; k = k + 2) { // ashao: Buffer layers do not need to have uniform concentration
+				 for (k = 0; k <= 2; k = k + 2) {
+				//for (k = 0; k < 1; k = k + 2) { // ashao: Buffer layers do not need to have uniform concentration
 					//HF use z-weighted average
 					tr[m][k][i][j] = (tr[m][k][i][j] * h[k][i][j]
 							+ tr[m][k + 1][i][j] * h[k + 1][i][j])
@@ -554,7 +555,8 @@ void merge_ml_j() {
 	int i, j, k, m;
 	for (i = X1; i <= nx; i++) {
 		for (j = Y1; j <= ny; j++) {
-			for (k = 0; k <= 2; k = k + 2) {
+			for (k = 0; k <= 2; k = k + 2) { //ashao: buffer layer do not need to be uniform
+//			for (k = 0; k < 1; k = k + 2) { //ashao: buffer layer do not need to be uniform
 
 # ifdef PHOSPHATE 
                                 jpo4[k][i][j] = (jpo4[k][i][j]*h[k][i][j]+
