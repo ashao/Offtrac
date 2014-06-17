@@ -860,6 +860,7 @@ for (cmon = inmon; cmon < inmon + tmon; cmon++)
 
 				printf("Reading in UVW from hindcast using index %d\n",hindindex);
 				read_uvw(hindindex,"hind");
+				printf("reading in h from hindcast using %d\n",hindindex+1);
 				read_h(hindindex+1,hend,"hind");
 				read_temp_and_salt( hindindex, "hind");
 				hindindex++;

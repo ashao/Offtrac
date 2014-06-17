@@ -74,8 +74,10 @@ void initialize_phosphate( int imon ) {
 	for (k=0;k<NZ;k++)
 		for (i=0;i<NXMEM;i++)
 			for(j=0;j<NYMEM;j++) {
-			tr[mDOP][k][i][j] = dop_init[k][i][j];
-			tr[mPHOSPHATE][k][i][j] = phosphate_init[k][i][j];
+			if (dop_init[k][i][j] > 0.0) tr[mDOP][k][i][j] = dop_init[k][i][j];
+			else tr[mDOP][k][i][j] = 0.0;
+			if (phosphate_init[k][i][j]>0.0) tr[mPHOSPHATE][k][i][j] = phosphate_init[k][i][j];
+			else tr[mPHOSPHATE][k][i][j] = 0.0;
 
 			}
 	free3d(dop_init,NZ);
@@ -98,8 +100,12 @@ void apply_phosphate_jterms( ) {
 			//BX - reinstated by HF
 			if (oceanmask[i][j]) {
 				for (k = 0; k < NZ; k++) {
-					tr[mPHOSPHATE][k][i][j] += dt * jpo4[k][i][j];
-					tr[mDOP][k][i][j] += dt * jdop[k][i][j];
+					if (hend[k][i][j]>EPSILON) tr[mPHOSPHATE][k][i][j] += dt * jpo4[k][i][j];
+					if (hend[k][i][j]>EPSILON) tr[mDOP][k][i][j] += dt * jdop[k][i][j];
+					if (tr[mPHOSPHATE][k][i][j] > 0.1) tr[mPHOSPHATE][k][i][j] = 0.1;
+					if (tr[mPHOSPHATE][k][i][j] < 0.0) tr[mPHOSPHATE][k][i][j] = 0.0;
+					if (tr[mDOP][k][i][j] > 0.1) tr[mDOP][k][i][j] = 0.1;
+					if (tr[mDOP][k][i][j] < 0.0) tr[mDOP][k][i][j] = 0.0;
 					}
 				
 			} else {

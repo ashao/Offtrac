@@ -27,8 +27,8 @@ void read_temp_and_salt( int imon, char *fieldtype) {
 	char saltpath[300];
 	char temppath[300];
 
-	if ( imon % NMONTHS == 0 )
-		imon = 0;
+//	if ( imon % NMONTHS == 0 )
+//		imon = 0;
 
 	strcpy(saltpath,directory);
 	sprintf(filename,"salt.%s.nc",fieldtype);

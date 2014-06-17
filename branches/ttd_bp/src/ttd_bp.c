@@ -58,10 +58,17 @@ void surface_ttd( ) {
 	if (ttdidx < NMONTHSTTD){
 		ttdidx++;
 		printf("Setting surface to 1\n");
-	for (i=0;i<NXMEM;i++)
-		for (j=0;j<NYMEM;j++)
-			for (k=0;k<2;k++)
-				tr[mTTD][k][i][j] = ttd_init[k][i][j];
+		for (i=0;i<NXMEM;i++)
+			for (j=0;j<NYMEM;j++)
+				for (k=0;k<2;k++)
+					tr[mTTD][k][i][j] = ttd_init[k][i][j];
+	}
+	else {
+		for (i=0;i<NXMEM;i++)
+			for (j=0;j<NYMEM;j++)
+				for (k=0;k<2;k++)
+					tr[mTTD][k][i][j] = 0.0;
+		
 	}
 
 }
