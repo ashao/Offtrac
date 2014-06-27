@@ -9,3 +9,4 @@
 void z_depth(double h[NZ][NXMEM][NYMEM], double depth[NZ][NXMEM][NYMEM]);
 void allocate_ts( );
 void read_temp_and_salt( int imon, char *fieldtype);
+double tracer_inventory( int tridx );

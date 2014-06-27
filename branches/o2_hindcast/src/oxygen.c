@@ -140,8 +140,8 @@ void apply_oxygen_jterms( ) {
 			if (oceanmask[i][j]) {
 				for (k = 0; k < NZ; k++) {
 					if (hend[k][i][j]>EPSILON)  tr[mOXYGEN][k][i][j] += dt * jo2[k][i][j];
-					if (tr[mOXYGEN][k][i][j] > 0.8) tr[mOXYGEN][k][i][j] = 0.8;
-					if (tr[mOXYGEN][k][i][j] < 0.0) tr[mOXYGEN][k][i][j] = 0.0;
+//					if (tr[mOXYGEN][k][i][j] > 0.8) tr[mOXYGEN][k][i][j] = 0.8;
+//					if (tr[mOXYGEN][k][i][j] < 0.0) tr[mOXYGEN][k][i][j] = 0.0;
 				}
 			} else {
 				for (k = 0; k < NZ; k++) {

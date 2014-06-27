@@ -79,3 +79,25 @@ void z_depth(double h[NZ][NXMEM][NYMEM], double depth[NZ][NXMEM][NYMEM]) {
 
 
 }
+
+double tracer_inventory( int tridx ) {
+
+	extern int oceanmask[NXMEM][NYMEM];
+	extern double ****tr;
+	extern double areagr[NXMEM][NYMEM];
+	extern double hend[NZ][NXMEM][NYMEM];
+	double vol, inventory;
+	int i, j, k;
+
+	inventory = 0.0;
+	for (i = 0; i < NXMEM ; i++ )
+		for (j=0;j<NYMEM;j++)
+			if (oceanmask[i][j])
+				for (k=0;k<NZ;k++) {
+					vol = hend[k][i][j]*areagr[i][j];
+					inventory += vol*tr[tridx][k][i][j];
+				}
+
+	printf("Inventory %e\n",inventory);	
+	return inventory;
+}

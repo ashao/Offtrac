@@ -177,7 +177,6 @@ void step_fields(int iyear, int itts, int imon, int iterno) {
 #ifdef TTD
 
 	surface_ttd();
-
 #endif
 
 

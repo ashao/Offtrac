@@ -102,10 +102,10 @@ void apply_phosphate_jterms( ) {
 				for (k = 0; k < NZ; k++) {
 					if (hend[k][i][j]>EPSILON) tr[mPHOSPHATE][k][i][j] += dt * jpo4[k][i][j];
 					if (hend[k][i][j]>EPSILON) tr[mDOP][k][i][j] += dt * jdop[k][i][j];
-					if (tr[mPHOSPHATE][k][i][j] > 0.1) tr[mPHOSPHATE][k][i][j] = 0.1;
-					if (tr[mPHOSPHATE][k][i][j] < 0.0) tr[mPHOSPHATE][k][i][j] = 0.0;
-					if (tr[mDOP][k][i][j] > 0.1) tr[mDOP][k][i][j] = 0.1;
-					if (tr[mDOP][k][i][j] < 0.0) tr[mDOP][k][i][j] = 0.0;
+	//				if (tr[mPHOSPHATE][k][i][j] > 0.1) tr[mPHOSPHATE][k][i][j] = 0.1;
+	//				if (tr[mPHOSPHATE][k][i][j] < 0.0) tr[mPHOSPHATE][k][i][j] = 0.0;
+	//				if (tr[mDOP][k][i][j] > 0.1) tr[mDOP][k][i][j] = 0.1;
+	//				if (tr[mDOP][k][i][j] < 0.0) tr[mDOP][k][i][j] = 0.0;
 					}
 				
 			} else {

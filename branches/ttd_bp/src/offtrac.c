@@ -144,12 +144,12 @@ struct vardesc vars[NOVARS] =
 				-1e6	
 		}, // 10
 		{
-				"mn_jo2",
-				"Oxygen source (+) or sink (-)",
+				"mn_ttdinv",
+				"TTD Inventory",
 				'h',
 				'L',
 				's',
-				"mol m^-3",
+				"mol",
 				'd',
 				-1e6
 		}, // 11
@@ -511,6 +511,8 @@ for (i = 1; i <= 11; i++)
 
 	flags[10] = 1;
 	rflags[10] = 1;
+	flags[11] = 1;
+	rflags[11] = 1;
 
 #endif
 
@@ -630,6 +632,9 @@ if (flags[9])
 #ifdef TTD
 if (flags[10])
 	set_darray3d_zero(mn_ttd, NZ, NXMEM, NYMEM);
+/*
+if (flags[11])
+	mn_ttdinv = 0.0;*/
 #endif
 // These were already called earlier: ashao
 //read_grid(); 
@@ -831,22 +836,22 @@ for (cmon = inmon; cmon < inmon + tmon; cmon++)
 
 				printf("Reading in UVW from hindcast using index %d\n",hindindex);
 				read_uvw(hindindex,"hind");
-				read_h(hindindex+1,hend,"hind");
-				read_temp_and_salt( hindindex, "hind");
+				read_h(hindindex,hend,"hind");
+//				read_temp_and_salt( hindindex, "hind");
 				hindindex++;
 			}
 			else {
 
 				printf("Reading in UVW from climatology\n");
 				read_uvw(isnxt,"clim");
-				read_temp_and_salt( isnxt, "clim");
+//				read_temp_and_salt( isnxt, "clim");
 				read_h(isnxt, hend,"clim");
 			}
 		}
 		else {
 			printf("Reading in UVW from climatology\n");
 			read_uvw(isnxt,"clim");
-			read_temp_and_salt( isnxt, "clim");
+//			read_temp_and_salt( isnxt, "clim");
 			read_h(isnxt, hend,"clim");
 		}
 		printf("Month- hstart:%d hend:%d\n",ismon,isnxt);
@@ -940,6 +945,7 @@ for (cmon = inmon; cmon < inmon + tmon; cmon++)
 				}
 			}
 		}
+//		*mn_ttdinv += *ttdinv;
 
 #endif
 		if (nmn == WRINT && itts == 1)
@@ -972,6 +978,7 @@ for (cmon = inmon; cmon < inmon + tmon; cmon++)
 #ifdef TTD
 
 			mult_darray3d(mn_ttd, NZ, NXMEM, NYMEM, frac);
+//			*mn_ttdinv = *mn_ttdinv * frac;
 
 #endif
 			if (flags[18])
@@ -1034,6 +1041,7 @@ for (cmon = inmon; cmon < inmon + tmon; cmon++)
 
 #ifdef TTD
 			set_darray3d_zero(mn_ttd,NZ,NXMEM,NYMEM);
+			*mn_ttdinv = 0.0;
 #endif
 			// begin ashao
 			// end ashao
@@ -1306,7 +1314,7 @@ var[9] = &mn_age[0][0][0];
 
 #ifdef TTD
 var[10] = &mn_ttd[0][0][0];
-
+// var[11] = mn_ttdinv;
 #endif
 
 // end ashao
