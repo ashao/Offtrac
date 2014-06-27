@@ -10,7 +10,7 @@
 #include "read.h"
 #include "math.h"
 #include "cfcs_sf6.h"
-
+#include "tracer_utlities.h"
 double ***mn_sf6;
 double ***sf6_init;
 

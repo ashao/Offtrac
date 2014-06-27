@@ -9,6 +9,7 @@
 #include "read.h"
 #include <math.h>
 #include "cfcs_sf6.h"
+#include "tracer_utlities.h"
 #include <stdlib.h>
 #include <stdio.h>
 #include <netcdf.h>

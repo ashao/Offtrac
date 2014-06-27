@@ -732,7 +732,7 @@ int main(void)
 			
 			printf("Reading in UVW from hindcast\n");
 	        	read_uvw(hindindex,"hind");
-		        read_h(hindindex+1,hend,"hind");
+		        read_h(hindindex,hend,"hind");
 	        	hindindex++;
 	        }
 		else {
