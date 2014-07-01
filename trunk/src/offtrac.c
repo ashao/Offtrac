@@ -280,6 +280,7 @@ int main(void)
     double *dy;
     double dmon[12];
     double dbmon;
+    double yearday;
     int imon, inxt, ilst;
 # ifndef WRTTS
     int itts; /* tracer time step counter */
@@ -703,8 +704,12 @@ int main(void)
 	ismon = (int) (smon + 0.00001);
 	isnxt = (int) (snxt + 0.00001);
 
+	yearday = 0;
+	for (i=0;i<=imon;i++) yearday += dmon[imon];
+	currtime = *iyr + BEGYEAR + yearday/365.0;
+
 	day = (*iyr) * 365.0 + dmon[imon];
-	*dy = day;
+	*dy = currtime;
 
 	printf("the current day is -%g- \n", *dy);
 	printf("the current ismon/smon is -%i-%g- \n", ismon, smon);
