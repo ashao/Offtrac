@@ -5,7 +5,10 @@ void read_uvw(int imon, char *fieldtype);
 void read_h(int imon,double (*hread)[NXMEM][NYMEM], char *fieldtype);
 void read_fields(int imon,int itts);
 void read_biotic_bc(int imon,int itts);
-void read_ts(int imon,int itts);
+
+
+
+// void read_ts(int imon,int itts); removed in favor of read_temp_and_salt
 void read_clim(int imon,int inxt,int ilst);
 #ifdef RESTART
 void read_tracer_init(int imon, char *run_name);
@@ -15,6 +18,4 @@ void read_tracer_init(int imon);
 void read_buoy(int imon);
 void read_sponge(void);
 void read_grid();
-#ifdef LEV_OXY
-void read_oxy_ic(void);
-#endif
+void read_woa_file(int imon, double harray[NZ][NXMEM][NYMEM], double ***array, char *filename, char *varname);

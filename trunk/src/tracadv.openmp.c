@@ -142,9 +142,13 @@ double hlst[NYMEM];
 
 //  double MLMIN = EPSILON;   /* min depth for ML			      */
 
-	double MLMIN = 4.25;
+//	double MLMIN = 4.25; // Changing to 0.8 as done in GOLD
+	double MLMIN = 0.8;
 	double BLMIN = 0.20;
 
+#ifdef ENTRAIN
+  double nts = dt/DT; /* number of timesteps (#day*86400/3600seconds) */
+#endif
   int i, j, k, m, ii, pstage;
   int itt;
   double fract1;
@@ -252,6 +256,21 @@ double hlst[NYMEM];
 /* calculate the diapycnal velocities at the interfaces		*/
 /*   if we read in the ea, eb and eaml variables                */
 /*   Otherwise we read in wd directly                           */
+
+#ifdef ENTRAIN
+
+#pragma omp for  private(i,j)
+  for (i=X0;i<=nx+1;i++)                               
+      for (j=Y0;j<=ny;j++)
+        wd[0][i][j] = nts*eaml[i][j];                        
+
+#pragma omp for  private(i,j,k)
+     for (k=1;k<NZ;k++) {
+      for (i=X0;i<=nx+1;i++)
+	  for (j=Y0;j<=ny;j++)
+	      wd[k][i][j] = nts*(ea[k][i][j] - eb[k-1][i][j]); 
+      }
+#endif
 
 } // omp
 
