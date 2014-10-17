@@ -272,3 +272,4 @@
 #define NZWOA 33
 
 #undef RESTART
+#define MISVAL -9999
